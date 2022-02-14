@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>WaziApp Smart Irrigation</title>
+  <meta name="description" content="" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="main.css" type="text/css" />
+  <script type="text/javascript" src="jquery-3.2.1.min.js"></script>
+  
+  <script type="text/javascript">
+    function loadStuff() {
+      $.get("../sensors", function (data) {
+        $("#app").html(data).fadeIn();
+        autoR = setTimeout(function () { loadStuff() }, 2000);
+      });
+    }
+    $(function () {
+      $("#app").html("<img src=\"./loading.gif\" /> Loading, please wait...").fadeIn();
+      loadStuff();
+    });
+  </script>
+</head>
+
+<body style="height: 100%;" >
+  <div class="center">
+    <h1 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">Smart Irrigation WaziApp</h1>
+    <p style="font-family:Verdana, Geneva, Tahoma, sans-serif">Sensors to cloud and remote actuation for your farm project</p>
+    <div class="MuiPaper-root MuiCard-root jssWA2 jssWA3 MuiPaper-elevation1 MuiPaper-rounded"> 
+      <p id="app" class="inset"></p>
+    </div>
+  </div>
+
+  <link rel="stylesheet" href="main.css" />
+  <label class="toggle">
+    <span class="onoff" id="stat" style="font-family:Verdana, Geneva, Tahoma, sans-serif">Actuator</span>
+    <input type="checkbox" />
+    <span class="slider round"></span>
+  </label>
+  <script src="toggle.js"></script>
+</body>
+</html>
