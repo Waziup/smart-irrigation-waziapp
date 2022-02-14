@@ -1,0 +1,20 @@
+{
+	"name": "Smart Irrigation WaziApp",
+	"version": "1.0.0",
+	"description": "Gets Sensor data and has an actuation button",
+	"private": false,
+	"author": {
+		"name": "Waziup"
+	},
+	"license": "NA",
+	"waziapp": {
+		"icon": "ui/waziapp.svg",
+		"menu": {
+			"SmartIrrigationWaziApp": {
+				"primary": "Smart Irrigation WaziApp",
+				"icon": "ui/icon-cube.svg",
+				"href": "#/apps/waziup.waziapp-smart-irrigation/ui/"
+			}
+		}
+	}
+}
