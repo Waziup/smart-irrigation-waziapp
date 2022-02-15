@@ -3,7 +3,7 @@
 
 ## Description
 
-This is a WaziApp that runs on the WaziGate. It gets sensor data of a specific device and also has a switch for actuator switching. Once the different sensor data of a device are obtained, we analyze them and display relevant insights on the WaziApp dashboard.
+This is a WaziApp that runs on the WaziGate. It gets sensor data of a specific device and also has a switch for an actuator. Once the different sensor data of a device are obtained, we analyze them and display relevant insights on the WaziApp dashboard.
 
 Link to GitHub Repository: [Waziup/smart-irrigation-waziapp](https://github.com/Waziup/smart-irrigation-waziapp)
 
@@ -13,7 +13,7 @@ Link to GitHub Repository: [Waziup/smart-irrigation-waziapp](https://github.com/
 
 You first need to have WaziGate  setup . For instructions on how to do this, you can use Waziup’s tutorial from the [WaziApp course](https://www.waziup.io/courses/waziapps/). 
 
-From the tutorial, the steps that you are required to carry out are under _Preparing  the development environment_ section. 
+From the tutorial, the steps that you are required to carry out are under __Preparing  the development environment__ section. 
 
 These are:
 - Setup Wazigate firmware
@@ -24,38 +24,38 @@ These are:
 
 ## Build the WaziApp
 
- ##### 1. Download the repository to your machine
+  1. Download the repository to your machine
 
 ``` 
 git clone https://github.com/Waziup/smart-irrigation-waziapp
 ```
- ##### 2. SSH into the WaziGate ([Tutorial here](https://youtu.be/I746t7khNnk)) and navigate to the waziup repository
+  2. SSH into the WaziGate ([Tutorial here](https://youtu.be/I746t7khNnk)) and navigate to the waziup repository
 
 
- ##### 3. Navigate to the repository
+  3. Navigate to the repository
 
  ```
  cd waziup-gateway/apps/waziup 
  ```
 
- ##### 4. Create a new directory
+  4. Create a new directory
 
  ```
   mkdir waziapp-smart-irrigation
   ```
 
-  ##### 5. Create a new volume
+  5. Create a new volume
 
   ``` 
  docker volume create waziapp-volume
  ```
 
- ##### 6. Create a new container, mount to repository the pulled image
+  6. Create a new container, mount to repository the pulled image
 
  ``` 
  docker run -dit -P –-name pulled-waziup-container -v /home/pi/waziup-gateway/apps/waziup/waziapp-smart-irrigation waziup/smart-irrigation-waziapp
 ```
- ##### 7. Save the source image to current repository
+  7. Save the source image to current repository
  
  ``` 
 docker cp XXX:/root/app/. .
@@ -67,28 +67,28 @@ A device’s JSON needs to have sensors data of : soil moisture, humidity and te
 
 ## Using the WaziApp
 
-##### 1. First open docker-compose.yml and under volumes uncomment line:
+ 1. First open docker-compose.yml and under volumes uncomment line:
 
 ```
 - ./:/root/src/  # Uncomment for development
 ```
 
-##### 2. Open Dockerfile and uncomment the line:
+ 2. Open Dockerfile and uncomment the line:
 
 ```
 ENTRYPOINT ["tail", "-f", "/dev/null"]
 ```
- ##### 3. Open main.py. Change deviceID with your Device ID. Where XXXXX is the Device you want to get its sensor data.
+ 3. Open main.py. Change deviceID with your Device ID. Where XXXXX is the Device you want to get its sensor data.
 
 
- ##### 4. Open ui/toggle.js script. Here, change deviceID and actuatorID values with the IDs of the same device you used in main.py. Actuator ID is for the actuator of that device. These script makes POST requests which sets the actuator states: true or false.
+ 4. Open ui/toggle.js script. Here, change deviceID and actuatorID values with the IDs of the same device you used in main.py. Actuator ID is for the actuator of that device. These script makes POST requests which sets the actuator states: true or false.
 
 
- ##### 5. Build the container: 
+ 5. Build the container: 
  ``` bash
  docker-compose build
  ```
- ##### 6. Start the container in background: 
+ 6. Start the container in background: 
  ```bash
  docker-compose up -d
  ```
