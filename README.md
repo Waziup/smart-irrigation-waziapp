@@ -8,8 +8,6 @@ This is a WaziApp that runs on the WaziGate. It gets sensor data of a specific d
 Link to GitHub Repository: [Waziup/smart-irrigation-waziapp](https://github.com/Waziup/smart-irrigation-waziapp)
 
 
-## Screenshots
-
 ![WaziApp Screenshot](media/WaziApp_screenshot.png)
 ## Quick Start
 
