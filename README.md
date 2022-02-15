@@ -10,7 +10,7 @@ Link to GitHub Repository: [Waziup/smart-irrigation-waziapp](https://github.com/
 
 ## Screenshots
 
-![WaziApp Screenshot](media/WaziApp screenshot.png)
+![WaziApp Screenshot](media/WaziApp_screenshot.png)
 ## Quick Start
 
 You first need to have WaziGate  setup . For instructions on how to do this, you can use Waziup’s tutorial from the [WaziApp course](https://www.waziup.io/courses/waziapps/). 
@@ -98,4 +98,6 @@ ENTRYPOINT ["tail", "-f", "/dev/null"]
  ## View Data in WaziApp and make actions
 
  Once the WaziApp has been configured successfully and started, you can open the Smart Irrigation WaziApp on your gateway. You will see the sensor data, insights from the data and also and actuator switch which toggles your actuator to ‘true’ or ‘false’. These actuator states are sent back to the WaziDev/WaziAct/WaziGate as payloads. 
- You can then control your motors, relays, solenoid, lamps or pumps; from the WaziApp!
+
+You can then control your motors, relays, solenoid, lamps or pumps; from the WaziApp!
+![WaziApp Screenshot](media/Smart_Irrigation_WaziApp_screenshot_on_WaziGate.png)
