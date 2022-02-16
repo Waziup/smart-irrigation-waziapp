@@ -13,7 +13,7 @@
 			"SmartIrrigationWaziApp": {
 				"primary": "Smart Irrigation WaziApp",
 				"icon": "ui/icon-cube.svg",
-				"href": "#/apps/waziup.waziapp-smart-irrigation/ui/"
+				"href": "#/apps/waziup.smart-irrigation-waziapp/ui/"
 			}
 		}
 	}
