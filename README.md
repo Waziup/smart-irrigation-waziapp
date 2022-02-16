@@ -24,21 +24,21 @@ These are:
 
 ## Build the WaziApp
 
- ##### 1. SSH into the WaziGate ([Tutorial here](https://youtu.be/I746t7khNnk)) and navigate to the waziup repository
+ 1. SSH into the WaziGate ([Tutorial here](https://youtu.be/I746t7khNnk)) and navigate to the waziup repository
 
 
- ##### 2. Navigate to waziup : ~/waziup-gateway/apps/waziup
+ 2. Navigate to waziup : ~/waziup-gateway/apps/waziup
  ```
  cd /home/pi/waziup-gateway/apps/waziup
  ```
 
- ##### 3. Download the repository to current directory
+ 3. Download the repository to current directory
 
  ``` 
  git clone https://github.com/Waziup/smart-irrigation-waziapp
  ```
 
-  ##### 4. Navigate into the repository
+  4. Navigate into the repository
 
  ``` 
  cd smart-irrigation-waziapp
@@ -50,28 +50,28 @@ A device’s JSON needs to have sensors data of : soil moisture, humidity and te
 
 ## Using the WaziApp
 
-##### 1. First open docker-compose.yml and under volumes uncomment line:
+1. First open docker-compose.yml and under volumes uncomment line:
 
 ``` bash
 - ./:/root/src/  # Uncomment for development
 ```
 
-##### 2. Open Dockerfile and uncomment the line:
+2. Open Dockerfile and uncomment the line:
 
 ``` bash
 ENTRYPOINT ["tail", "-f", "/dev/null"]
 ```
- ##### 3. Open main.py. Change deviceID with your Device ID. Where XXXXX is the Device you want to get its sensor data.
+3. Open main.py. Change deviceID with your Device ID. Where XXXXX is the Device you want to get its sensor data.
 
 
- ##### 4. Open ui/toggle.js script. Here, change deviceID and actuatorID values with the IDs of the same device you used in main.py. Actuator ID is for the actuator of that device. These script makes POST requests which sets the actuator states: true or false.
+ 4. Open ui/toggle.js script. Here, change deviceID and actuatorID values with the IDs of the same device you used in main.py. Actuator ID is for the actuator of that device. These script makes POST requests which sets the actuator states: true or false.
 
 
- ##### 5. Build the container: 
+ 5. Build the container: 
  ``` bash
  docker-compose build
  ```
- ##### 6. Start the container in background: 
+ 6. Start the container in background: 
  ```bash
  docker-compose up -d
  ```
