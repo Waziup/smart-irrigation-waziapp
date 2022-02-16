@@ -24,7 +24,7 @@ These are:
 
 ## Build the WaziApp
 
- 1. SSH into the WaziGate ([Tutorial here](https://youtu.be/I746t7khNnk)) and navigate to the waziup repository
+ 1. SSH into the WaziGate ([Tutorial here](https://youtu.be/I746t7khNnk)) 
 
 
  2. Navigate to waziup : ~/waziup-gateway/apps/waziup
@@ -46,7 +46,7 @@ These are:
 
 ## Structuring a WaziGate device data for the WaziApp
 
-A device’s JSON needs to have sensors data of : soil moisture, humidity and temperature; in the listed order. Also, an actuator is needed to have been created from the dashboard. This requirement is so that the main.py can correctly obtain the 3 sensors from the JSON.
+A device’s JSON needs to have sensors data of : soil moisture, humidity and temperature; in the listed order. This requirement is so that the main.py can correctly obtain the 3 sensors from the JSON. Also, an actuator is needed to have been created from the dashboard. 
 
 ## Using the WaziApp
 
@@ -64,7 +64,7 @@ ENTRYPOINT ["tail", "-f", "/dev/null"]
 3. Open main.py. Change deviceID with your Device ID. Where XXXXX is the Device you want to get its sensor data.
 
 
- 4. Open ui/toggle.js script. Here, change deviceID and actuatorID values with the IDs of the same device you used in main.py. Actuator ID is for the actuator of that device. These script makes POST requests which sets the actuator states: true or false.
+ 4. Open ui/toggle.js script. Here, change deviceID and actuatorID values with the IDs of the same device you used in main.py. Actuator ID is for the actuator of that device. This script makes POST requests which sets the actuator states: true or false.
 
 
  5. Build the container: 
@@ -79,5 +79,7 @@ ENTRYPOINT ["tail", "-f", "/dev/null"]
  ## View Data in WaziApp and make actions
 
  Once the WaziApp has been configured successfully and started, you can open the Smart Irrigation WaziApp on your gateway. You will see the sensor data, insights from the data and also and actuator switch which toggles your actuator to ‘true’ or ‘false’. These actuator states are sent back to the WaziDev/WaziAct/WaziGate as payloads. 
+ 
  You can then control your motors, relays, solenoid, lamps or pumps; from the WaziApp!
+ 
 ![WaziApp Screenshot](media/Smart_Irrigation_WaziApp_screenshot_on_WaziGate.png)
