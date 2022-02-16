@@ -28,5 +28,5 @@ ENTRYPOINT ["python", "/root/src/main.py"]
 
 
 # Here is how you can access inside your container:
-# sudo docker exec -it waziup.waziapp-smart-irrigation sh
-# sudo docker exec -it waziup.waziapp-smart-irrigation bash
+# sudo docker exec -it waziup.smart-irrigation-waziapp sh
+# sudo docker exec -it waziup.smart-irrigation-waziapp bash
