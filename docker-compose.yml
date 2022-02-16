@@ -2,8 +2,8 @@ version: "3"
 
 services:
   smart-irrigation-app:
-    image: waziup/waziapp-smart-irrigation:beta
-    container_name: waziup.waziapp-smart-irrigation
+    image: waziup/smart-irrigation-waziapp:beta
+    container_name: waziup.smart-irrigation-waziapp
     build:
       context: ./
     volumes:
