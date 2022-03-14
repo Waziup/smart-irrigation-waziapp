@@ -7,7 +7,7 @@ services:
     build:
       context: ./
     volumes:
-      # - ./:/root/src/  # Uncomment for development
+      #- ./:/root/src/  # Uncomment for development
       - ./:/root/app # The unix socket has to have this name and be in ./ : proxy.sock
     privileged: false
     environment:
@@ -17,3 +17,10 @@ services:
       interval: 30s
       retries: 10 # Will try for 5 minutes
     restart: always # Uncomment to always restart
+
+
+networks:
+  default:
+    external: # added because it is preexisting
+      name: wazigate
+

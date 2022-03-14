@@ -1,6 +1,6 @@
 
-var deviceID = "61f7b40b784524000705af83"  // replace with your device id
-var actuatorID= "61f7b980784524000705afaa" // replace with your actuator id
+var deviceID = "dca632609cc6"  // replace with your device id
+var actuatorID= "622710d391b7b0000113e1b6" // replace with your actuator id
 
 
 const toggle = document.querySelector('.toggle input')
@@ -21,7 +21,7 @@ toggle.addEventListener('click', () => {
 
 function POST_true() // function to set actuator value as 'true'
 {
-    var url = `http://wazigate.local/devices/${deviceID}/actuators/${actuatorID}/value`;
+    var url = `/devices/${deviceID}/actuators/${actuatorID}/value`;
     
     var xhr = new XMLHttpRequest();
     xhr.open("POST", url);
@@ -41,7 +41,7 @@ function POST_true() // function to set actuator value as 'true'
 }
 function POST_false() // function to set actuator value as 'false'
 {
-    var url = `http://wazigate.local/devices/${deviceID}/actuators/${actuatorID}/value`;
+    var url = `/devices/${deviceID}/actuators/${actuatorID}/value`;
     
     var xhr = new XMLHttpRequest();
     xhr.open("POST", url);

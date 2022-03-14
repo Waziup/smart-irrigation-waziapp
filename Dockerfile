@@ -20,11 +20,11 @@ RUN cd /root/src/ && zip -q -r /index.zip .
 #----------------------------#
 
 # Uncomment For development
-# ENTRYPOINT ["tail", "-f", "/dev/null"]
+#ENTRYPOINT ["tail", "-f", "/dev/null"]
 
 
 # Uncomment For production
-ENTRYPOINT ["python", "/root/src/main.py"]
+ENTRYPOINT ["python", "-u", "/root/src/main.py"]
 
 
 # Here is how you can access inside your container:

@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 import pathlib
 import requests
 import json
+import re
 
 #---------------------#
 
@@ -27,6 +28,7 @@ out = None
 #---------------------#
 
 def index(url, body=""):
+    
     return 200, b"Salam Goloooo", []
 
 usock.routerGET("/", index)
@@ -77,15 +79,15 @@ usock.routerPOST("/ui/(.*)", ui)
 #------------------#
 
 def sensorsGET(url, body=""): # function to GET sensors data from a device id
-    
+    print("begin of get sensors")
     # Replace with the device id
-    deviceID = "61f7b40b784524000705af83" 
+    deviceID = "dca632609cc6" 
 
     # url = "http://wazigate.local/devices/%s",%deviceID # local url
     # To fix GET local JSON. Returns HTTP Connection Pool error
 
 
-    url = "https://api.waziup.io/api/v2/devices/%s"%deviceID
+    url = "http://waziup.wazigate-edge/devices/%s"%deviceID
     headers = {
         'accept': 'application/json',
         }
@@ -95,10 +97,16 @@ def sensorsGET(url, body=""): # function to GET sensors data from a device id
     # print(data) # uncomment to see the JSON data
 
     # here, we get the sensors values using their position in the JSON
-    soil_moisture = data['sensors'][0]['value']['value'] 
-    humidity = data['sensors'][1]['value']['value']
-    temperature = data['sensors'][3]['value']['value']
-    # print(soil_moisture)
+    for element in data["sensors"]:
+        if re.findall("^humiditySensor_*",element['id'])  and re.findall("(?<=_).*",element["id"]) == ['1']:
+            print("found humiditySensor: " + element["id"] + " value: " + str(element["value"]))
+            humidity = element["value"]
+        elif re.findall("^temperatureSensor_*",element['id'])  and re.findall("(?<=_).*",element["id"]) == ['2']:
+            print("found temperatureSensor: " + element["id"] + " value: " + str(element["value"]))
+            temperature = element["value"]
+        elif re.findall("^analogOutput_*",element['id'])  and re.findall("(?<=_).*",element["id"]) == ['3']:
+            print("found soilmoistureSensor: " + element["id"] + " value: " + str(element["value"]))
+            soil_moisture = element["value"]
 
     # we now analyze the sensor data to get relevant insights for the user
     # moisturePercentage = ( 100.00 - ( (soil_moisture / 1023.00) * 100.00 ) )
@@ -129,7 +137,10 @@ def sensorsGET(url, body=""): # function to GET sensors data from a device id
 
     else:
         out += b"<br><b>Normal plant environment.</b>"
+    
     return 200, out, []
+
+
 
 usock.routerGET("/sensors", sensorsGET)
 
