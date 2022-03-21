@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Sensor Configuration Dashboard</title>
+  <meta name="description" content="" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/menu_bar.css') }}" />
+
+  <script type="text/javascript" src="{{ url_for('static', filename='js/menu_header.js') }}"></script>
+</head>
+
+<body >
+  <div class="header">
+    <!-- three dot menu -->
+    <div class="dropdown">
+        <!-- three dots -->
+        <ul class="dropbtn icons btn-right showLeft" onclick="showDropdown()">
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+        <!-- menu -->
+        <div id="myDropdown" class="dropdown-content">
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('intel_irris_device_manager') }}">Device Manager</a>
+            <a href="{{ url_for('intel_irris_sensor_config') }}">Sensor Configuration</a>
+        </div>
+    </div>
+  
+    <div class="main" style="padding-top: 55px;">
+        <div class="center">
+            {% if no_active == True %}
+            <p> {{no_device }}</p>
+
+            {% else %}
+                <h1 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">Sensor Configuration</h1>
+                {% if no_sensor_config == True %}
+                    <p> No sensor configurations made! </p>
+                {% elif no_sensor_config == False %}
+                    <p>Active Device : {{ deviceID }}</p>
+                {% endif %}
+                <br>
+                <h2 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">Settings for sensor configuration</h2>
+                <br>
+                <form action="http://localhost:5000/intel-irris-sensor-configs"  target="_blank" method="post">
+                    <p> Select a sensor id
+                        <select name="selected_sensor_id" class="input" required>
+                        <option value=""></option>
+                        {% for x in range(0, sensor_len) %}
+                            <option value = "{{ sensors_data['sensors'][x]['id']}}"> {{ sensors_data['sensors'][x]['id'] }}</option>
+                        {% endfor %}
+                        </select>                   
+                    <button type="submit" value="submit">View sensor configuration</button>
+                    </p>
+                </form>
+                <br></br>
+                <p>Update configurations for an added device's sensor : </p>
+                <br>
+                <form action="http://localhost:5000/intel-irris-sensor-config" method="post">
+                    <p> Sensor Id 
+                        <select name="sensor_id" class="input" required>
+                        <option value=""></option>
+                        {% for x in range(0, sensor_len) %}
+                            <option value = "{{ sensors_data['sensors'][x]['id']}}"> {{ sensors_data['sensors'][x]['id'] }}</option>
+                        {% endfor %}
+                        </select>
+                    </p>
+                    <br>
+                    <p> Sensor Type
+                        <select name="sensor_type" class="input" required>
+                            <option value=""></option>
+                            <option value="capacitive"> Capacitive</option>
+                            <option value="tensiometer"> Tensiometer</option>
+                        </select>
+                    </p>
+                    <br>
+                    <p> Sensor Age
+                        <input id="sensor_age" name="sensor_age" type="text" placeholder="months" required>
+                    </p>
+                    <br>
+                    <p> Region
+                        <select name="region" class="input">
+                            <option value=""></option>
+                            <option value="arid"> Arid</option>
+                            <option value="semi-arid"> Semi-Arid</option>
+                            <option value="dry"> Dry</option>
+                        </select>
+                    </p>
+                    <br>
+                    <p> Soil Type 
+                        <select name="soil_type" class="input">
+                            <option value=""></option>
+                            <option value="clay"> Clay</option>
+                            <option value="sandy"> Sandy</option>
+                            <option value="silty"> Silty</option>
+                            <option value="peaty"> Peaty</option>
+                            <option value="chalky"> Chalky</option>
+                            <option value="loamy"> Loamy</option>
+                        </select>
+                    </p>
+                    <br>
+                    <p> Irrigation Type
+                        <select name="irrigation_type" class="input">
+                            <option value=""></option>
+                            <option value="furrow"> Furrow</option>
+                            <option value="sprinkler"> Sprinkler</option>
+                            <option value="drip"> Drip</option>
+                        </select>
+                    </p>
+                    <br>
+                    <p> Plant/Crop
+                        <select name="crop" class="input">
+                            <option value=""></option>
+                            <option value="cassava"> Cassava</option>
+                            <option value="maize"> Maize</option>
+                            <option value="plantains"> Plantains</option>
+                            <option value="potatoes"> Potatoes</option>
+                            <option value="rice"> Rice</option>
+                            <option value="sorghum"> Sorghum</option>
+                            <option value="soybeans"> Soybeans</option>
+                            <option value="sweet_potatoes,"> Sweet Potatoes</option>
+                            <option value="wheat"> Wheat</option>
+                            <option value="yam"> Yam</option>
+                        </select>
+                    </p>
+                    <br>
+                    <p>Soil Salinity
+                        <input id="global_soil_salinity" name="soil_salinity" type="text" placeholder="value">
+                    </p>
+                    <br>
+                    <p>Soil Bulk Density
+                        <input id="global_soil_bulk_density" name="soil_bulk_density" type="text" placeholder="value">
+                    </p>
+                    <br>
+                    <button type="submit" value="submit">Update</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

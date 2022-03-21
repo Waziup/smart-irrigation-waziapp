@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+  intel-irris:
+    image: waziup/intel-irris-waziapp:latest
+    container_name: waziup.intel-irris-waziapp
+    build:
+      context: ./
+    volumes:
+      - /home/pi/waziup-gateway/apps/waziup/intel-irris-waziapp:/app/intel-irris-waziapp
+    ports:
+      - "5000:5000"
+    privileged: false
+    restart: unless-stopped
+    environment:
+      - TEST_VAR=1
+    healthcheck:
+      test: curl --fail --unix-socket /var/lib/waziup/proxy.sock http://localhost/ || exit 1 #curl --fail http://localhost:5000/ || exit 1
+      interval: 30s
+      retries: 10 # Will try for 5 minutes
+
+networks:
+  default:
+    external:
+      name: wazigate

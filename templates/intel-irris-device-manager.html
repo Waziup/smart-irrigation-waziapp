@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Intel-Irris Devices</title>
+  <meta name="description" content="" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/menu_bar.css') }}" />
+
+  <script type="text/javascript" src="{{ url_for('static', filename='js/menu_header.js') }}"></script>
+</head>
+<body >
+  <div class="header">
+    <!-- three dot menu -->
+    <div class="dropdown">
+        <!-- three dots -->
+        <ul class="dropbtn icons btn-right showLeft" onclick="showDropdown()">
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+        <!-- menu -->
+        <div id="myDropdown" class="dropdown-content">
+          <a href="{{ url_for('dashboard') }}">Dashboard</a>
+          <a href="{{ url_for('intel_irris_device_manager') }}">Device Manager</a>
+          <a href="{{ url_for('intel_irris_sensor_config') }}">Sensor Configuration</a>
+        </div>
+    </div>
+  </div>
+  
+  <div class="main">
+    <div class="center">
+      <h1 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">Device Manager</h1>
+      <p>List of Intel-Irris devices, add a new device to using Device_ID and Device Name, select a dashboard device</p>
+      <div class="MuiPaper-root MuiCard-root jssWA2 jssWA3 MuiPaper-elevation1 MuiPaper-rounded"> 
+      </div>
+      <p>{{added_devices}}</p>
+      <div>
+        <form action="http://localhost:5000/intel-irris-devices" method="post" class="center">
+          <label>Dashboard device</label>
+          <select name="device-id-select" class="input" >
+            {% for x in range(1, length) %}
+            <option value = "{{ read_devices[x]['device_id']}}">{{ read_devices[x]['device_id']}}</option>
+            {% endfor %}
+          </select>
+          <button type="submit" value="submit">Select</button>
+        </form>
+      </div>
+      <br></br>
+      <table border="1">
+        <thead>
+          <tr>
+            <th>Device ID</th>
+            <th>Device Name</th>
+          </tr>
+        </thead>   
+        {% for i in range (1, length) %}
+          <tr>
+            <td> {{read_devices[i]['device_id']}} </td>
+            <td> {{read_devices[i]['device_name']}} </td>
+          </tr>
+        {% endfor %}  
+      </table>  
+    </div>
+    <form action="http://localhost:5000/intel-irris-devices" method="post" class="center">
+      <label for="device_id">Device ID</label>
+      <input id="device_id" name="device_id" type="text" placeholder="Enter Device ID" required>
+      <br></br>
+      <label for="device_name">Device Name</label>
+      <input id="device_name" name="device_name" type="text" placeholder="Give your device a name" required>
+      <br></br>
+      <button type="submit" value="submit">Add</button>
+    </form>
+  </div>
+</body>
+</html>

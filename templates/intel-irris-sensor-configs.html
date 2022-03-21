@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Intel-Irris Sensor Configuration</title>
+  <meta name="description" content="" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/menu_bar.css') }}" />
+
+  <script type="text/javascript" src="{{ url_for('static', filename='js/menu_header.js') }}"></script>
+</head>
+
+<body >
+    <div class="header">       
+      <div class="main" style="padding-top: 55px;">
+        <div class="center">
+          {% if selected_found == True %}
+            <h1 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">Intel-Irris Sensor Configuration</h1>
+            <p>Sensor ID : {{sensor_id}}</p>
+            <p>Sensor Type : {{sensor_type }}</p>
+            <p>Region : {{region}}</p>
+            <p>Soil Type : {{soil_type}}</p>
+            <p>Irrigation Type : {{irrigation_type}}</p>
+            <p>Crop : {{crop}} </p>
+            <p>Last Sensor Value : {{last_value}}</p>
+            <br>
+            <p>Global Soil Salinity : {{global_soil_salinity}}</p>
+            <p>Global Soil Bulk Density : {{global_soil_bulk_density}}</p>
+          {% else %}
+            <p>Oops! No sensor configurations available for the selected Sensor ID! </p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+</body>
+</html>
