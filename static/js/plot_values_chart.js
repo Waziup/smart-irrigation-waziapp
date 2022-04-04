@@ -1,8 +1,7 @@
-
 console.log("sensor id: "+sensorID);
 console.log("device id: "+deviceID);
 
-// url =  `https://api.waziup.io/api/v2/devices/${deviceID}/sensors/${sensorID}/values`;
+//url =  `https://api.waziup.io/api/v2/devices/${deviceID}/sensors/${sensorID}/values`;
 url =  `http://waziup.wazigate-edge/devices/${deviceID}/sensors/${sensorID}/values`;
 timestamps  = [];
 values  = [];
@@ -48,7 +47,7 @@ async function getData()
     {
         xaxis: { title: "Timestamp",  showgrid: true},
         yaxis: { range: [0, 780], title: "Raw Values",  showgrid: false},  
-        title: `${sensorID} Sensor Data With Time`,
+        title: `Soil Moisture Values`,
 
         // to highlight the insights we use shapes and create a rectangular
         shapes: [
@@ -126,15 +125,15 @@ async function getData()
     Plotly.newPlot("values_chart", data_plot, layout, {displaylogo: false}, {scrollZoom: true});         
     
 }
-getData();
+//getData();
 
-/*
+
 function foo() {
 
     getData();
 
 
-    setTimeout(foo, 5000);
+    setTimeout(foo, 15000);
 }
 
-foo(); */
+foo(); 

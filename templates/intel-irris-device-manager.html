@@ -6,73 +6,98 @@
   <meta name="description" content="" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/menu_bar.css') }}" />
-
-  <script type="text/javascript" src="{{ url_for('static', filename='js/menu_header.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/device_manager.css') }}" />
 </head>
 <body >
-  <div class="header">
-    <!-- three dot menu -->
+  <div class="topnav" id="myTopnav">
+    <a href="{{ url_for('dashboard') }}" class="active">Dashboard</a>
     <div class="dropdown">
-        <!-- three dots -->
-        <ul class="dropbtn icons btn-right showLeft" onclick="showDropdown()">
-            <li></li>
-            <li></li>
-            <li></li>
-        </ul>
-        <!-- menu -->
-        <div id="myDropdown" class="dropdown-content">
-          <a href="{{ url_for('dashboard') }}">Dashboard</a>
-          <a href="{{ url_for('intel_irris_device_manager') }}">Device Manager</a>
-          <a href="{{ url_for('intel_irris_sensor_config') }}">Sensor Configuration</a>
-        </div>
+      <button class="dropbtn">Menu 
+        <i class="fa fa-caret-down"></i>
+      </button>
+      <div class="dropdown-content">
+        <a href="{{ url_for('intel_irris_device_manager') }}">Device Manager</a>
+        <a href="{{ url_for('intel_irris_sensor_config') }}">Sensor Configuration</a>
+      </div>
     </div>
+    <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
   </div>
-  
-  <div class="main">
-    <div class="center">
-      <h1 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">Device Manager</h1>
-      <p>List of Intel-Irris devices, add a new device to using Device_ID and Device Name, select a dashboard device</p>
-      <div class="MuiPaper-root MuiCard-root jssWA2 jssWA3 MuiPaper-elevation1 MuiPaper-rounded"> 
+  <script>
+    function myFunction() {
+      var x = document.getElementById("myTopnav");
+      if (x.className === "topnav") {
+        x.className += " responsive";
+      } else {
+        x.className = "topnav";
+      }
+    }
+  </script>
+
+  <div style="padding-left:16px; padding-top:16px">
+    <h1 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">Device Manager</h1>
+    <br></br>
+    <p>List of Intel-Irris devices, add a new device using Device_ID and Device Name.</p>
+    <p>Select a device_ID for dashboard plot.</p>
+    
+    <br>
+    <div class="table_container">
+      <div class="tbl-header">
+        <table cellpadding="0" cellspacing="0" border="0">
+          <thead>
+            <tr>
+              <th>Device Id</th>
+              <th>Device Name</th>
+            </tr>
+          </thead>
+        </table>
       </div>
-      <p>{{added_devices}}</p>
-      <div>
-        <form action="http://localhost:5000/intel-irris-devices" method="post" class="center">
-          <label>Dashboard device</label>
-          <select name="device-id-select" class="input" >
-            {% for x in range(1, length) %}
-            <option value = "{{ read_devices[x]['device_id']}}">{{ read_devices[x]['device_id']}}</option>
-            {% endfor %}
-          </select>
-          <button type="submit" value="submit">Select</button>
-        </form>
+      <div class="tbl-content">
+        <table cellpadding="0" cellspacing="0" border="0">
+          <tbody>
+            </tr>
+          </thead>   
+            {% for i in range (1, length) %}
+              <tr>
+                <td style="overflow: hidden; text-overflow: ellipsis"> {{read_devices[i]['device_id']}} </td>
+                <td style="overflow: hidden; text-overflow: ellipsis"> {{read_devices[i]['device_name']}} </td>
+              </tr>
+            {% endfor %}  
+          </tbody>
+        </table>
       </div>
-      <br></br>
-      <table border="1">
-        <thead>
-          <tr>
-            <th>Device ID</th>
-            <th>Device Name</th>
-          </tr>
-        </thead>   
-        {% for i in range (1, length) %}
-          <tr>
-            <td> {{read_devices[i]['device_id']}} </td>
-            <td> {{read_devices[i]['device_name']}} </td>
-          </tr>
-        {% endfor %}  
-      </table>  
     </div>
-    <form action="http://localhost:5000/intel-irris-devices" method="post" class="center">
-      <label for="device_id">Device ID</label>
-      <input id="device_id" name="device_id" type="text" placeholder="Enter Device ID" required>
-      <br></br>
-      <label for="device_name">Device Name</label>
-      <input id="device_name" name="device_name" type="text" placeholder="Give your device a name" required>
-      <br></br>
-      <button type="submit" value="submit">Add</button>
+    <script>
+      $(window).on("load resize ", function() {
+          var scrollWidth = $('.tbl-content').width() - $('.tbl-content table').width();
+          $('.tbl-header').css({'padding-right':scrollWidth});
+        }).resize();
+    </script>
+
+
+    <br>
+    <div class="add_device">
+      <form action="http://localhost:5000/intel-irris-devices" method="post">
+        <label for="device_id">New device : </label>
+        <input id="device_id" name="device_id" type="text" placeholder="Enter Device ID" required class="new_device_form">
+        <input id="device_name" name="device_name" type="text" placeholder="Give your device a name" required class="new_device_form">
+        <button type="submit" value="submit" class="add_button"></button>
+      </form>
+    </div>
+
+    <br>
+    <p>Update Active device with device_ID</p>
+    <form action="http://localhost:5000/intel-irris-devices" method="post">
+      <label></label>
+      <select name="device-id-select" class="device-id-select" >
+        <option value="hide"> -- Select device ID -- </option>
+        {% for x in range(1, length) %}
+          <option value = "{{ read_devices[x]['device_id']}}" >{{ read_devices[x]['device_id']|truncate(10, True, '...')}}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" value="submit" class="device-id-select-button">Select</button>
     </form>
   </div>
+
 </body>
 </html>

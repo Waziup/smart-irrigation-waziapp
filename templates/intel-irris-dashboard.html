@@ -3,54 +3,68 @@
 <head>
   <meta charset="utf-8" />
   <title>Intel-Irris Dashboard</title>
-  <meta name="description" content="" />
+  <!-- <meta name="description" content="" /> -->
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/menu_bar.css') }}" /> 
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" /> 
 
-  <script type="text/javascript" src="{{ url_for('static', filename='js/menu_header.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/plotly.min.js') }}"></script>
 </head>
 
 <body >
-  <div class="header">
-    <!-- three dot menu -->
+  <div class="topnav" id="myTopnav">
+    <a href="{{ url_for('dashboard') }}" class="active">Dashboard</a>
     <div class="dropdown">
-        <!-- three dots -->
-        <ul class="dropbtn icons btn-right showLeft" onclick="showDropdown()">
-            <li></li>
-            <li></li>
-            <li></li>
-        </ul>
-        <!-- menu -->
-        <div id="myDropdown" class="dropdown-content">
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>
-            <a href="{{ url_for('intel_irris_device_manager') }}">Device Manager</a>
-            <a href="{{ url_for('intel_irris_sensor_config') }}">Sensor Configuration</a>
-        </div>
+      <button class="dropbtn">Menu 
+        <i class="fa fa-caret-down"></i>
+      </button>
+      <div class="dropdown-content">
+        <a href="{{ url_for('intel_irris_device_manager') }}">Device Manager</a>
+        <a href="{{ url_for('intel_irris_sensor_config') }}">Sensor Configuration</a>
+      </div>
     </div>
-  
-    <div class="main" style="padding-top: 55px;">
-      <div class="center">
-        <h1 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">Intel-Irris Dashboard</h1>
-        <br></br>
-        <p>{{ added_devices}}</p>
-        {% if no_devices == False %}
-          <p>Active Device : {{deviceID}}</p>
-          <br>
-          <p>Soil Moisture : {{soil_moisture}} </p>
-          <svg height="400" width="400">
+    <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
+  </div>
+  <script>
+    function myFunction() {
+      var x = document.getElementById("myTopnav");
+      if (x.className === "topnav") {
+        x.className += " responsive";
+      } else {
+        x.className = "topnav";
+      }
+    }
+  </script>
+  <div style="padding-left:16px; padding-top:16px">
+    <h1 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">Intel-Irris Dashboard</h1>
+    <br></br>
+    <p>{{ added_devices}}</p>
+    {% if no_devices == False %}
+      <p>Active Device ID : {{deviceID}}</p>
+      <p>Last Soil Moisture Value : {{soil_moisture}} </p>
+          <!--
+          <svg height="50" width="50">
               <circle cx="25" cy="25" r="20" stroke="gray" stroke-width="1" '{% if soil_moisture >= 0 and soil_moisture <= 196 %}' fill="lightblue"  '{% elif soil_moisture >= 196 and soil_moisture <= 390 %}' fill="green" '{% elif soil_moisture >= 391 and soil_moisture <= 585 %}' fill="orange" '{% elif soil_moisture >= 586 and soil_moisture <= 780 %}' fill="red">
             {% endif %}   
-          </svg>
+          </svg> -->
+      <br>
+      {% if soil_moisture >= 0 and soil_moisture <= 196 %}
+        <div class="semi-circle"  style="border: 10px solid lightblue; border-bottom: 0;"></div>
+      {% elif soil_moisture >= 196 and soil_moisture <= 390 %}
+        <div class="semi-circle"  style="border: 10px solid green; border-bottom: 0;"></div>
+      {% elif soil_moisture >= 391 and soil_moisture <= 585 %}
+        <div class="semi-circle"  style="border: 10px solid orange; border-bottom: 0;"></div>
+      {% elif soil_moisture >= 586 and soil_moisture <= 780 %}
+        <div class="semi-circle"  style="border: 10px solid red; border-bottom: 0;"></div>
+      {% endif %} 
 
-          <div id="values_chart" style="width:60%" class="center"></div>
-          <script type="text/javascript"> deviceID = "{{deviceID}}"; sensorID="{{sensorID}}" </script>
-          <script type="text/javascript" src="{{ url_for('static', filename='js/plot_values_chart.js') }}"></script>
-
-        {% endif %}
-      </div>
+      <br>
+      <div id="values_chart" class="plot_center"></div>
+      <script type="text/javascript"> deviceID = "{{deviceID}}"; sensorID="{{sensorID}}" </script>
+      <script type="text/javascript" src="{{ url_for('static', filename='js/plot_values_chart.js') }}"></script>
+      <br>
+    {% endif %}
     </div>
 </body>
 </html>

@@ -1,0 +1,189 @@
+body {
+    background-color: #f1f1f1;
+    height: max-content;
+}
+
+.MuiTypography-noWrap {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.MuiTypography-h1 {
+    font-size: 1.25rem;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 500;
+    line-height: 1.6;
+    letter-spacing: 0.0075em;
+}
+.MuiTypography-root {
+    margin: 0;
+}
+.jssWA1 {
+    color: unset;
+    background: #f1f1f1;
+    box-shadow: 0 0 2px #f1f1f1;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}
+
+/* table */
+.table_container{
+    width:75%;
+}
+table{
+    width: 100%;
+    table-layout: fixed;
+    background-color: #25b7c4;
+}
+.tbl-header{
+    background-color: rgba(255,255,255,0.3);
+}
+.tbl-content{ 
+    height:auto;
+    overflow-x:auto;
+    margin-top: 0px;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+th{
+    padding: 20px 15px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 12px;
+    color: #fff;
+    text-transform: uppercase;
+}
+td{   
+    padding: 15px;
+    text-align: left;
+    vertical-align:middle;
+    font-weight: 300;
+    font-size: 12px;
+    color: #fff;
+    border-bottom: solid 1px rgba(255,255,255,0.1);
+}  
+/*
+body{
+    background: -webkit-linear-gradient(left, #25c481, #25b7c4);
+    background: linear-gradient(to right, #25c481, #25b7c4);
+    font-family: 'Roboto', sans-serif; 
+}*/
+  
+/* add new device form */ 
+.new_device_form{
+    border: thin solid #f4b548;
+    border-radius: 4px;
+    height: 30px;
+}
+.add_device button {
+    padding: 0;
+    border: none;
+    font: inherit;
+    color: inherit;
+    background-color: transparent;
+    cursor: pointer;
+    
+    --b:1px; /* the thickness */
+    width:20px; /* the size */
+    aspect-ratio:1/1;
+    border:10px solid white; 
+    background:
+      conic-gradient(from 90deg at var(--b) var(--b),#fff 90deg,#f4b548 0) 
+      calc(100% + var(--b)/2) calc(100% + var(--b)/2)/
+      calc(50%  + var(--b))   calc(50%  + var(--b));
+    display:inline-block;
+      
+}  
+.add_device button:focus {
+    outline: 0;
+}  
+.add_device button {
+    height: 30px;
+    width: 30px;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+      0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+}
+.add_button{
+    background-color: #474044;
+    border-radius: 5px;
+}
+
+
+/* select form */
+select {
+
+    /* styling */
+    background-color: white;
+    border: thin solid #f4b548;
+    border-radius: 4px;
+    display: inline-block;
+    font: inherit;
+    line-height: 1.5em;
+    padding: 0.5em 3.5em 0.5em 1em; 
+  
+    /* reset */
+  
+    margin: 0;      
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+select.device-id-select {
+    background-image:
+      linear-gradient(45deg, transparent 50%, gray 50%),
+      linear-gradient(135deg, gray 50%, transparent 50%),
+      linear-gradient(to right, #ccc, #ccc);
+    background-position:
+      calc(100% - 20px) calc(1em + 2px),
+      calc(100% - 15px) calc(1em + 2px),
+      calc(100% - 2.5em) 0.5em;
+    background-size:
+      5px 5px,
+      5px 5px,
+      1px 1.5em;
+    background-repeat: no-repeat;
+}
+select.device-id-select:focus {
+    background-image:
+      linear-gradient(45deg, green 50%, transparent 50%),
+      linear-gradient(135deg, transparent 50%, green 50%),
+      linear-gradient(to right, #ccc, #ccc);
+    background-position:
+      calc(100% - 15px) 1em,
+      calc(100% - 20px) 1em,
+      calc(100% - 2.5em) 0.5em;
+    background-size:
+      5px 5px,
+      5px 5px,
+      1px 1.5em;
+    background-repeat: no-repeat;
+    border-color: green;
+    outline: 0;
+}
+select:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 #000;
+}
+
+
+/* select form button */
+button {
+    padding: 0;
+    border: none;
+    font: inherit;
+    color: inherit;
+    background-color: transparent;
+    cursor: pointer;
+}
+button:focus {
+    outline: 0;
+} 
+button {
+    padding: 10px 20px;
+    outline: 1px solid #f4b548;
+}
+.device-id-select-button{
+    background-color: white;
+    border-radius: 10px;
+}

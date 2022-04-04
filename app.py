@@ -9,6 +9,7 @@ added_devices_filename = 'config/intel-irris-devices.json'
 active_device_filename = 'config/intel-irris-active-device.json'
 sensor_config_filename = 'config/intel-irris-conf.json'
 
+
 #---------------------#
 @app.route("/")
 def dashboard():
@@ -31,7 +32,7 @@ def dashboard():
         if (length == 1):
             # instruct user to add a device
             no_devices = True
-            added_devices = "No Devices added to Intel-Irris. Go to the Device Manager to add one." 
+            added_devices = "No devices added to Intel-Irris. Go to the Device Manager to add one." 
         #---------------------#  
         else: # show sensor data of current device in html table
             no_devices = False
@@ -45,7 +46,7 @@ def dashboard():
             #---------------------#  
             #-- GET sensor data of the device --#
             url = "http://waziup.wazigate-edge/devices/%s"%deviceID 
-            # url = "https://api.waziup.io/api/v2/devices/%s"%deviceID
+            #url = "https://api.waziup.io/api/v2/devices/%s"%deviceID
             headers = {
                 'accept': 'application/json',
                 }
@@ -175,7 +176,7 @@ def intel_irris_sensor_config():
 
         #---------------------#
         #-- GET sensor data of the device --#
-        # url = "https://api.waziup.io/api/v2/devices/%s"%deviceID
+        #url = "https://api.waziup.io/api/v2/devices/%s"%deviceID
         url = "http://waziup.wazigate-edge/devices/%s"%deviceID 
         headers = {
             'accept': 'application/json',
@@ -222,20 +223,20 @@ def intel_irris_sensor_config():
             print("Last Value : %s"%last_value)
 
             #-- Check for Null values --#
-            if (region == "" ):
+            if (region == "hide"):
                 region = "undefined"
-            if (soil_type == ""):
+            if (soil_type == "hide"):
                 soil_type = "undefined"
-            if (irrigation_type == ""):
+            if (irrigation_type == "None" ):
                 irrigation_type = "undefined"
-            if (crop == ""):
+            if (crop == "hide"):
                 crop = "undefined"
-            if (global_soil_salinity == ""):
-                global_soil_salinity = int("-1") # means disabled
+            if (global_soil_salinity == "" or global_soil_salinity == int("-1") ):
+                global_soil_salinity = "disabled" # means disabled
             else:
                 global_soil_salinity = int(global_soil_salinity)
-            if (global_soil_bulk_density == ""):
-                global_soil_bulk_density = int("-1") # means disabled
+            if (global_soil_bulk_density == "" or global_soil_bulk_density == int("-1")):
+                global_soil_bulk_density = "disabled"# means disabled
             else:
                 global_soil_bulk_density = int(global_soil_bulk_density)  
 
@@ -345,14 +346,7 @@ def intel_irris_sensor_configs():
     else:
         return render_template("intel-irris-sensor-configs.html", selected_found=selected_found)
 #---------------------#
-"""
-def main():
-    # Run local:
-    app.run(host='0.0.0.0',use_reloader=False,debug=True)
-"""
-
 
 if __name__ == "__main__":
-    # main()
-    #app.run(host='0.0.0.0', debug=True, use_reloader=False)
-    app.run(host='unix:///app/intel-irris-waziapp/proxy.sock',use_reloader=False,debug=True)
+    app.run(host='0.0.0.0', debug=True, use_reloader=False)
+    #app.run(host='unix:///app/intel-irris-waziapp/proxy.sock',use_reloader=False,debug=True)

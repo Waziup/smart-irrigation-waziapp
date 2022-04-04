@@ -6,139 +6,197 @@
   <meta name="description" content="" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/sensor_config.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/menu_bar.css') }}" />
 
-  <script type="text/javascript" src="{{ url_for('static', filename='js/menu_header.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
 </head>
 
 <body >
-  <div class="header">
-    <!-- three dot menu -->
-    <div class="dropdown">
-        <!-- three dots -->
-        <ul class="dropbtn icons btn-right showLeft" onclick="showDropdown()">
-            <li></li>
-            <li></li>
-            <li></li>
-        </ul>
-        <!-- menu -->
-        <div id="myDropdown" class="dropdown-content">
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    <div class="topnav" id="myTopnav">
+        <a href="{{ url_for('dashboard') }}" class="active">Dashboard</a>
+        <div class="dropdown">
+          <button class="dropbtn">Menu 
+            <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
             <a href="{{ url_for('intel_irris_device_manager') }}">Device Manager</a>
             <a href="{{ url_for('intel_irris_sensor_config') }}">Sensor Configuration</a>
+          </div>
         </div>
+        <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
     </div>
-  
-    <div class="main" style="padding-top: 55px;">
-        <div class="center">
-            {% if no_active == True %}
+    <script>
+        function myFunction() {
+          var x = document.getElementById("myTopnav");
+          if (x.className === "topnav") {
+            x.className += " responsive";
+          } else {
+            x.className = "topnav";
+          }
+        }
+    </script>
+    
+    <div style="padding-left:16px; padding-top:16px">
+        {% if no_active == True %}
             <p> {{no_device }}</p>
-
-            {% else %}
-                <h1 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">Sensor Configuration</h1>
-                {% if no_sensor_config == True %}
-                    <p> No sensor configurations made! </p>
-                {% elif no_sensor_config == False %}
-                    <p>Active Device : {{ deviceID }}</p>
-                {% endif %}
-                <br>
-                <h2 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">Settings for sensor configuration</h2>
-                <br>
-                <form action="http://localhost:5000/intel-irris-sensor-configs"  target="_blank" method="post">
-                    <p> Select a sensor id
-                        <select name="selected_sensor_id" class="input" required>
-                        <option value=""></option>
-                        {% for x in range(0, sensor_len) %}
-                            <option value = "{{ sensors_data['sensors'][x]['id']}}"> {{ sensors_data['sensors'][x]['id'] }}</option>
-                        {% endfor %}
-                        </select>                   
-                    <button type="submit" value="submit">View sensor configuration</button>
-                    </p>
-                </form>
-                <br></br>
-                <p>Update configurations for an added device's sensor : </p>
-                <br>
-                <form action="http://localhost:5000/intel-irris-sensor-config" method="post">
-                    <p> Sensor Id 
-                        <select name="sensor_id" class="input" required>
-                        <option value=""></option>
-                        {% for x in range(0, sensor_len) %}
-                            <option value = "{{ sensors_data['sensors'][x]['id']}}"> {{ sensors_data['sensors'][x]['id'] }}</option>
-                        {% endfor %}
-                        </select>
-                    </p>
-                    <br>
-                    <p> Sensor Type
-                        <select name="sensor_type" class="input" required>
-                            <option value=""></option>
-                            <option value="capacitive"> Capacitive</option>
-                            <option value="tensiometer"> Tensiometer</option>
-                        </select>
-                    </p>
-                    <br>
-                    <p> Sensor Age
-                        <input id="sensor_age" name="sensor_age" type="text" placeholder="months" required>
-                    </p>
-                    <br>
-                    <p> Region
-                        <select name="region" class="input">
-                            <option value=""></option>
-                            <option value="arid"> Arid</option>
-                            <option value="semi-arid"> Semi-Arid</option>
-                            <option value="dry"> Dry</option>
-                        </select>
-                    </p>
-                    <br>
-                    <p> Soil Type 
-                        <select name="soil_type" class="input">
-                            <option value=""></option>
-                            <option value="clay"> Clay</option>
-                            <option value="sandy"> Sandy</option>
-                            <option value="silty"> Silty</option>
-                            <option value="peaty"> Peaty</option>
-                            <option value="chalky"> Chalky</option>
-                            <option value="loamy"> Loamy</option>
-                        </select>
-                    </p>
-                    <br>
-                    <p> Irrigation Type
-                        <select name="irrigation_type" class="input">
-                            <option value=""></option>
-                            <option value="furrow"> Furrow</option>
-                            <option value="sprinkler"> Sprinkler</option>
-                            <option value="drip"> Drip</option>
-                        </select>
-                    </p>
-                    <br>
-                    <p> Plant/Crop
-                        <select name="crop" class="input">
-                            <option value=""></option>
-                            <option value="cassava"> Cassava</option>
-                            <option value="maize"> Maize</option>
-                            <option value="plantains"> Plantains</option>
-                            <option value="potatoes"> Potatoes</option>
-                            <option value="rice"> Rice</option>
-                            <option value="sorghum"> Sorghum</option>
-                            <option value="soybeans"> Soybeans</option>
-                            <option value="sweet_potatoes,"> Sweet Potatoes</option>
-                            <option value="wheat"> Wheat</option>
-                            <option value="yam"> Yam</option>
-                        </select>
-                    </p>
-                    <br>
-                    <p>Soil Salinity
-                        <input id="global_soil_salinity" name="soil_salinity" type="text" placeholder="value">
-                    </p>
-                    <br>
-                    <p>Soil Bulk Density
-                        <input id="global_soil_bulk_density" name="soil_bulk_density" type="text" placeholder="value">
-                    </p>
-                    <br>
-                    <button type="submit" value="submit">Update</button>
-                </form>
+ 
+        {% else %}
+            <h1 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">Sensor Configuration</h1>
+            {% if no_sensor_config == True %}
+                <p> No sensor configurations made! </p>
+            {% elif no_sensor_config == False %}
+                <p>Active Device : {{ deviceID }}</p>
             {% endif %}
-        </div>
+            <br>
+            <div class="preview_sensor_config"> 
+                <h2 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">Settings for sensor configuration</h2>
+  
+                <form action="http://localhost:5000/intel-irris-sensor-configs"  target="_blank" method="post">
+                    <p> Select sensor id : </p>
+                    <p>
+                        <select name="selected_sensor_id" class="input" required>
+                            <option value="hide"> -- Select sensor ID -- </option>
+                            {% for x in range(0, sensor_len) %}
+                                <option value = "{{ sensors_data['sensors'][x]['id']}}"> {{ sensors_data['sensors'][x]['id'] |truncate(10, True, '...')}}</option>
+                            {% endfor %}
+                        </select>                   
+                        <button type="submit" value="submit" class="sensor-id-select-button">View sensor configuration</button>
+                    </p>
+                </form>
+            </div>
+            <br>
+            <h3  class="MuiTypography-h1">Update configurations </h3>
+
+            <form action="http://localhost:5000/intel-irris-sensor-config" method="post">
+                <div class="accordion-body">
+                    <div class="accordion">
+                        <div class="container">
+                            <div class="accordion-title">Sensor parameters</div>
+                            <div class="accordion-content">
+                                <div class="sensor_parameters">
+                                    <br>
+                                    <select name="sensor_id" class="input" required>
+                                        <option value="hide"> -- Select sensor ID -- </option>
+                                    {% for x in range(0, sensor_len) %}
+                                        <option value = "{{ sensors_data['sensors'][x]['id']}}"> {{ sensors_data['sensors'][x]['id'] |truncate(10, True, '...')}}</option>
+                                    {% endfor %}
+                                    </select>
+                                    
+                                    <br>
+                                    <p> Sensor Type</p>
+                                    <ul style="list-style-type:none;">
+                                        <li><input type="radio" id="capacitive" name="sensor_type" value="capacitive" required> 
+                                        <label for="capacitive">Capacitive</label></li>
+                                        <li><input type="radio" id="tensiometer" name="sensor_type" value="tensiometer">
+                                        <label for="tensiometer">Tensiometer</label></li>
+                                    </ul>
+                                    <p>Enter Sensor age
+                                        <input id="sensor_age" class="sensor_age" name="sensor_age" type="text" placeholder=" (months) " required>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="container">
+                            <div class="accordion-title">Weather parameters</div>
+                            <div class="accordion-content">
+                                <div class="weather-parameters">
+                                    <p> Region
+                                        <select name="region" class="input">
+                                            <option value="hide"> -- Select -- </option>
+                                            <option value="arid"> Arid</option>
+                                            <option value="semi-arid"> Semi-Arid</option>
+                                            <option value="dry"> Dry</option>
+                                        </select>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="container">
+                            <div class="accordion-title">Plant parameters</div>
+                            <div class="accordion-content">
+                                <div class="plant_parameters">
+                                    <p> Irrigation Type </p>
+                                    <ul style="list-style-type:none;">
+                                        <li><input type="radio" id="undefined" name="irrigation_type" value="undefined" required> 
+                                        <label for="undefined">undefined</label></li>
+                                        <li><input type="radio" id="furrow" name="irrigation_type" value="furrow"> 
+                                        <label for="furrow">Furrow</label></li>
+                                        <li><input type="radio" id="sprinkler" name="irrigation_type" value="sprinkler"> 
+                                        <label for="sprinkler">Sprinkler</label></li>
+                                        <li><input type="radio" id="drip" name="irrigation_type" value="drip"> 
+                                        <label for="drip">Drip</label></li>
+                                    </ul>
+                                    <p> Plant/Crop
+                                        <select name="crop" class="input">
+                                            <option value="hide"> -- Select one -- </option>
+                                            <option value="cassava"> Cassava</option>
+                                            <option value="maize"> Maize</option>
+                                            <option value="plantains"> Plantains</option>
+                                            <option value="potatoes"> Potatoes</option>
+                                            <option value="rice"> Rice</option>
+                                            <option value="sorghum"> Sorghum</option>
+                                            <option value="soybeans"> Soybeans</option>
+                                            <option value="sweet_potatoes,"> Sweet Potatoes</option>
+                                            <option value="wheat"> Wheat</option>
+                                            <option value="yam"> Yam</option>
+                                        </select>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="container">
+                            <div class="accordion-title">Soil parameters</div>
+                            <div class="accordion-content">
+                                <div class="soil_parameters">                           
+                                    <p> Soil Type 
+                                        <select name="soil_type" class="input">
+                                            <option value="hide"> -- Select one -- </option>
+                                            <option value="clay"> Clay</option>
+                                            <option value="sandy"> Sandy</option>
+                                            <option value="silty"> Silty</option>
+                                            <option value="peaty"> Peaty</option>
+                                            <option value="chalky"> Chalky</option>
+                                            <option value="loamy"> Loamy</option>
+                                        </select>
+                                    </p>
+                                    <p>Soil Salinity
+                                        <input id="global_soil_salinity" class="soil_values" name="soil_salinity" type="text" placeholder=" -1 for disabled ">
+                                    </p>
+                                    <p>Soil Bulk Density
+                                        <input id="global_soil_bulk_density" class="soil_values" name="soil_bulk_density" type="text" placeholder=" -1 for disabled ">
+                                    </p>
+                                    <br>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <br>
+                        <button type="submit" value="submit" class="update_parameters">Update</button>
+                    </div>                
+                </div> 
+                <br>         
+            </form>
+        {% endif %}
+
+
+        <script>
+            $(document).ready(function() {
+                $('.accordion-title').click(function() {
+                    if ($(this).hasClass('active')) {
+                        $(this).removeClass('active').next('.accordion-content').slideUp();
+                    } 
+                    else {
+                        $('.accordion-title').removeClass('active');
+                        $('.accordion-content').slideUp();
+                        $(this).addClass('active').next('.accordion-content').slideDown();
+                    }
+                });
+            });
+        </script>
     </div>
 </body>
 </html>

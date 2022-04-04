@@ -19,6 +19,8 @@ services:
       interval: 30s
       retries: 10 # Will try for 5 minutes
 
+    network-mode: "host" # run app on {WaziGate IP}/5000
+
 networks:
   default:
     external:
