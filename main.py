@@ -83,11 +83,8 @@ def sensorsGET(url, body=""): # function to GET sensors data from a device id
     # Replace with the device id
     deviceID = "dca632609cc6" 
 
-    # url = "http://wazigate.local/devices/%s",%deviceID # local url
-    # To fix GET local JSON. Returns HTTP Connection Pool error
-
-
-    url = "http://waziup.wazigate-edge/devices/%s"%deviceID
+    # url = "http://waziup.wazigate-edge/devices/%s"%deviceID
+    url = "http://localhost/devices/%s"%deviceID
     headers = {
         'accept': 'application/json',
         }
