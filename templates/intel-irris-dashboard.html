@@ -61,8 +61,110 @@
 
       <br>
       <div id="values_chart" class="plot_center"></div>
-      <script type="text/javascript"> deviceID = "{{deviceID}}"; sensorID="{{sensorID}}" </script>
-      <script type="text/javascript" src="{{ url_for('static', filename='js/plot_values_chart.js') }}"></script>
+        <!--<script type="text/javascript" src="{{ url_for('static', filename='js/plot_values_chart.js') }}"></script>-->
+
+        <script>
+          values={{values |tojson |safe}}; 
+          timestamps={{timestamps |tojson |safe}};
+        
+          // Define Data
+          var data_plot = [
+              {
+                x: timestamps,
+                y: values,
+                mode: "line",
+                type: "scatter",
+                opacity: 0.8,
+                line: 
+                {
+                  color: "#3366ff",
+                  width: 2
+                }
+              }
+            ];
+                
+          // Define Layout
+          var layout = 
+          {
+            xaxis: { title: "Timestamp",  showgrid: true},
+            yaxis: { range: [0, 780], title: "Raw Values",  showgrid: false},  
+            title: `Soil Moisture Values`,
+
+            // to highlight the insights we use shapes and create a rectangular
+            shapes: [
+                {   // very wet region
+                    layer: 'below',
+                    xref: 'paper',
+                    yref: 'y',
+                    x0: 0,
+                    x1: 1,
+                    y0: 0,
+                    y1: 195,
+                    type: 'rect',
+                    fillcolor: 'lightblue',
+                    opacity: 0.4,
+                    line: 
+                    {
+                        width: 0
+                    }
+                },
+
+                {   // wet region  
+                    layer: 'below',
+                    xref: 'paper',
+                    yref: 'y',
+                    x0: 0,
+                    x1: 1,
+                    y0: 196,
+                    y1: 390,
+                    type: 'rect',
+                    fillcolor: 'green',
+                    opacity: 0.4,
+                    line: 
+                    {
+                        width: 0
+                    }
+                },
+
+                {   // dry region
+                    layer: 'below',
+                    xref: 'paper',
+                    yref: 'y',
+                    x0: 0,
+                    x1: 1,
+                    y0: 391,
+                    y1: 585,
+                    type: 'rect',
+                    fillcolor: 'orange',
+                    opacity: 0.4,
+                    line: 
+                    {
+                        width: 0
+                    }
+                },
+
+                {   // very dry region
+                    layer: 'below',
+                    xref: 'paper',
+                    yref: 'y',
+                    x0: 0,
+                    x1: 1,
+                    y0: 586,
+                    y1: 780,
+                    type: 'rect',
+                    fillcolor: 'red',
+                    opacity: 0.4,
+                    line: 
+                    {
+                        width: 0
+                    }
+                }
+            ]
+          };
+
+          // Display using Plotly
+          Plotly.newPlot("values_chart", data_plot, layout, {displaylogo: false}, {scrollZoom: true}); 
+        </script>
       <br>
     {% endif %}
     </div>

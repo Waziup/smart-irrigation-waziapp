@@ -1,8 +1,9 @@
+/*
 console.log("sensor id: "+sensorID);
 console.log("device id: "+deviceID);
 
 //url =  `https://api.waziup.io/api/v2/devices/${deviceID}/sensors/${sensorID}/values`;
-url =  `http://waziup.wazigate-edge/devices/${deviceID}/sensors/${sensorID}/values`;
+url =  `http://localhost/devices/${deviceID}/sensors/${sensorID}/values`;
 timestamps  = [];
 values  = [];
 
@@ -136,4 +137,4 @@ function foo() {
     setTimeout(foo, 15000);
 }
 
-foo(); 
+foo(); */

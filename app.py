@@ -10,7 +10,11 @@ active_device_filename = 'config/intel-irris-active-device.json'
 sensor_config_filename = 'config/intel-irris-conf.json'
 
 
-#---------------------#
+headers = {
+            'accept': 'application/json',
+        }
+
+#---------------------#  
 @app.route("/")
 def dashboard():
 
@@ -45,11 +49,8 @@ def dashboard():
 
             #---------------------#  
             #-- GET sensor data of the device --#
-            url = "http://waziup.wazigate-edge/devices/%s"%deviceID 
+            url = "http://localhost/devices/%s"%deviceID
             #url = "https://api.waziup.io/api/v2/devices/%s"%deviceID
-            headers = {
-                'accept': 'application/json',
-                }
             response = requests.get(url, headers=headers)
             sensors_data = response.json()
             #print(data) # uncomment to see the JSON data
@@ -57,7 +58,8 @@ def dashboard():
             # obtain sensor ID
             sensorID = sensors_data['sensors'][0]['id']
             # obtain the soil sensor value
-            soil_moisture = sensors_data['sensors'][0]['value']['value'] 
+            soil_moisture = sensors_data['sensors'][0]['value']
+            #soil_moisture = sensors_data['sensors'][0]['value']['value'] 
 
             # insights indicators : 
             """
@@ -73,12 +75,31 @@ def dashboard():
             print("Soil moisture sensor ID = %s"%sensorID)
             print("Last sensor value = %s"%soil_moisture)
 
+            get_capacitive_soil_condition(soil_moisture) #** integration of the simple processing of raw sensor data 
+
+            # obtain all sensor values of the device
+            get_values_endpoint = "http://localhost/devices/%s/sensors/%s/values"%(deviceID,sensorID)
+            #get_values_endpoint = "https://api.waziup.io/api/v2/devices/%s/sensors/%s/values"%(deviceID,sensorID)
+            values = []
+            timestamps = []
+
+            response = requests.get(get_values_endpoint, headers=headers)
+            data = response.json()
+
+            # check how may items 
+            length = len(data)
+            
+            for x in range(0, length):
+                values.append( data[x]['value'])
+                timestamps.append( data[x]['time'])
+            
+
         #---------------------#
     
     if (no_devices == True):
         return render_template("intel-irris-dashboard.html", added_devices=added_devices, no_devices=no_devices)
     elif (no_devices == False):
-        return render_template("intel-irris-dashboard.html", added_devices=added_devices, no_devices=no_devices, deviceID=deviceID, sensorID=sensorID, soil_moisture=soil_moisture)
+        return render_template("intel-irris-dashboard.html", added_devices=added_devices, no_devices=no_devices, deviceID=deviceID, sensorID=sensorID, soil_moisture=soil_moisture, values=values, timestamps=timestamps)
 
 #---------------------#
 
@@ -176,11 +197,8 @@ def intel_irris_sensor_config():
 
         #---------------------#
         #-- GET sensor data of the device --#
+        url = "http://localhost/devices/%s"%deviceID
         #url = "https://api.waziup.io/api/v2/devices/%s"%deviceID
-        url = "http://waziup.wazigate-edge/devices/%s"%deviceID 
-        headers = {
-            'accept': 'application/json',
-            }
         response = requests.get(url, headers=headers)
         sensors_data = response.json()
 
@@ -199,25 +217,34 @@ def intel_irris_sensor_config():
             sensor_id = request.form.get('sensor_id')
             sensor_type = request.form.get('sensor_type')
             sensor_age = request.form.get('sensor_age')
+            sensor_max = request.form.get('sensor_max')
+            sensor_min = request.form.get('sensor_min')
             region = request.form.get('region')
             soil_type = request.form.get('soil_type')
             irrigation_type = request.form.get('irrigation_type')
             crop = request.form.get('crop')
+            plant_sub_type = request.form.get('plant_sub_type')
+            planting_date = request.form.get('planting_date')
             global_soil_salinity = request.form.get('soil_salinity')
             global_soil_bulk_density = request.form.get('soil_bulk_density')
 
             # Get last value of selected sensor id
             for i in range (0, sensor_len):
                 if (sensors_data['sensors'][i]['id'] == sensor_id ):
-                    last_value = sensors_data['sensors'][i]['value']['value']       
+                    #last_value = sensors_data['sensors'][i]['value']['value'] 
+                    last_value = sensors_data['sensors'][i]['value']     
 
             print("Sensor ID : %s"%sensor_id)
             print("Sensor Type : %s"%sensor_type)
-            print("Sensor  Age : %s"%sensor_age)
+            print("Sensor Age : %s"%sensor_age)
+            print("Sensor Max Value : %s"%sensor_max)
+            print("Sensor Min Value : %s"%sensor_min)
             print("Region : %s"%region)
             print("Soil Type : %s"%soil_type)
             print("Irrigation Type : %s"%irrigation_type)
             print("Crop : %s"%crop)
+            print("Plant Sub-Type : %s"%plant_sub_type)
+            print("Planting Date : %s"%planting_date)
             print("Soil Salinity : %s"%global_soil_salinity)
             print("Soil Bulk Density : %s"%global_soil_bulk_density)
             print("Last Value : %s"%last_value)
@@ -231,6 +258,10 @@ def intel_irris_sensor_config():
                 irrigation_type = "undefined"
             if (crop == "hide"):
                 crop = "undefined"
+            if (plant_sub_type == "hide"):
+                plant_sub_type = "undefined"
+            if (planting_date == ""):
+                planting_date = "undefined"
             if (global_soil_salinity == "" or global_soil_salinity == int("-1") ):
                 global_soil_salinity = "disabled" # means disabled
             else:
@@ -243,8 +274,8 @@ def intel_irris_sensor_config():
             #---------------------#          
             #-- add new config to the sensor-config.json --#
 
-            # add_globals = {"global_soil_salinity":global_soil_salinity, "global_soil_bulk_density":global_soil_bulk_density, "sensors":[]}
-            add_sensors = {"value":{ "sensor_type": sensor_type, "sensor_age": sensor_age, "region": region, "soil_type": soil_type, "irrigation_type": irrigation_type, "crop": crop, "last_value": last_value}, "device_id": deviceID, "sensor_id":sensor_id}
+            
+            add_sensors = {"value":{ "sensor_type": sensor_type, "sensor_age": sensor_age, "sensor_max": sensor_max, "sensor_min": sensor_min,  "region": region, "soil_type": soil_type, "irrigation_type": irrigation_type, "crop": crop, "plant_sub_type": plant_sub_type, "planting_date": planting_date, "last_value": last_value}, "device_id": deviceID, "sensor_id":sensor_id}
             # read sensors values
             with open(sensor_config_filename, "r") as file:
                 read_sensors = json.load(file)['sensors']
@@ -259,8 +290,8 @@ def intel_irris_sensor_config():
                 if (read_sensors[x]['sensor_id'] == sensor_id):
                     read_sensors[x] = add_sensors
 
-                    update_config = {"global_soil_salinity":global_soil_salinity, "global_soil_bulk_density":global_soil_bulk_density, "sensors":read_sensors}
-                    
+                    #update_config = {"global_soil_salinity":global_soil_salinity, "global_soil_bulk_density":global_soil_bulk_density, "sensors":read_sensors}
+                    update_config = {"globals": {"global_soil_salinity": global_soil_salinity, "global_soil_bulk_density": global_soil_bulk_density}, "sensors":read_sensors}
                     # update with the sensor config 
                     jsString = json.dumps(update_config)
                     jsFile = open(sensor_config_filename, "w")
@@ -272,8 +303,8 @@ def intel_irris_sensor_config():
             if (updated == False):
                 read_sensors.append(add_sensors)
 
-                update_config = {"global_soil_salinity":global_soil_salinity, "global_soil_bulk_density":global_soil_bulk_density, "sensors":read_sensors}
-
+                #update_config = {"global_soil_salinity":global_soil_salinity, "global_soil_bulk_density":global_soil_bulk_density, "sensors":read_sensors}
+                update_config = {"globals": {"global_soil_salinity": global_soil_salinity, "global_soil_bulk_density": global_soil_bulk_density}, "sensors":read_sensors}
                 # update config file with new values
                 jsString = json.dumps(update_config)
                 jsFile = open(sensor_config_filename, "w")
@@ -315,25 +346,33 @@ def intel_irris_sensor_configs():
                 sensor_id = selected_sensor_id
                 sensor_type = read_sensors[x]['value']['sensor_type']
                 sensor_age = read_sensors[x]['value']['sensor_age']
+                sensor_max = read_sensors[x]['value']['sensor_max']
+                sensor_min = read_sensors[x]['value']['sensor_min']
                 region = read_sensors[x]['value']['region']
                 soil_type = read_sensors[x]['value']['soil_type']
                 irrigation_type = read_sensors[x]['value']['irrigation_type']
                 crop = read_sensors[x]['value']['crop']
+                plant_sub_type = read_sensors[x]['value']['plant_sub_type']
+                planting_date = read_sensors[x]['value']['planting_date']
                 last_value = read_sensors[x]['value']['last_value']
 
                 print("Sensor ID : %s"%sensor_id)
                 print("Sensor Type : %s"%sensor_type)
                 print("Sensor  Age : %s"%sensor_age)
+                print("Sensor Max Value : %s"%sensor_max)
+                print("Sensor Min Value : %s"%sensor_min)
                 print("Region : %s"%region)
                 print("Soil Type : %s"%soil_type)
                 print("Irrigation Type : %s"%irrigation_type)
                 print("Crop : %s"%crop)
+                print("Plant Sub-Type : %s"%plant_sub_type)
+                print("Planting Date : %s"%planting_date)
                 print("Last Value : %s"%last_value)
 
                 # read global values
             
-                global_soil_salinity = read_globals['global_soil_salinity']
-                global_soil_bulk_density = read_globals['global_soil_bulk_density']
+                global_soil_salinity = read_globals['globals']['global_soil_salinity']
+                global_soil_bulk_density = read_globals['globals']['global_soil_bulk_density']
                 print("Soil Salinity (global) : %s"%global_soil_salinity)
                 print("Soil Bulk Density (global) : %s"%global_soil_bulk_density)
 
@@ -342,10 +381,147 @@ def intel_irris_sensor_configs():
 
 
     if (selected_found):
-        return render_template("intel-irris-sensor-configs.html", selected_found=selected_found, sensor_id=sensor_id, sensor_type=sensor_type, sensor_age=sensor_age, region=region, soil_type=soil_type, irrigation_type=irrigation_type, crop=crop, last_value=last_value ,global_soil_salinity=global_soil_salinity, global_soil_bulk_density=global_soil_bulk_density)
+        return render_template("intel-irris-sensor-configs.html", selected_found=selected_found, sensor_id=sensor_id, sensor_type=sensor_type, sensor_age=sensor_age, sensor_max=sensor_max, sensor_min=sensor_min, region=region, soil_type=soil_type, irrigation_type=irrigation_type, crop=crop, plant_sub_type=plant_sub_type, planting_date=planting_date, last_value=last_value ,global_soil_salinity=global_soil_salinity, global_soil_bulk_density=global_soil_bulk_density)
     else:
         return render_template("intel-irris-sensor-configs.html", selected_found=selected_found)
 #---------------------#
+
+
+
+#--------------------------------------------------------------------------
+#determine the soil condition string indication for capacitive
+#--------------------------------------------------------------------------
+import key_device
+
+global active_device_ID 
+#common header for requests
+WaziGate_headers = {'accept':'application/json','content-type':'application/json'}
+WaziGate_headers_auth = {'accept':'application/json','content-type':'application/json','Authorization':'Bearer **'}
+
+def get_device_ID():
+    
+    f = open(added_devices_filename , 'r')
+    read_devices = json.loads(f.read())
+    length = len(read_devices)
+
+    no_devices = True
+    added_devices = ""
+    # check if there are devices in devices JSON
+    if path.isfile(added_devices_filename) is False: # Check if data.json file exists
+        added_devices = "Config file for active device ID not found!"
+        print(added_devices)
+    else:
+        print("Config file for active device ID found!")
+
+        # check if the json list is updated
+
+        if (length == 1):
+            # instruct user to add a device
+            no_devices = True
+            added_devices = "No devices added to Intel-Irris. Go to the Device Manager to add one." 
+        #---------------------#  
+        else: 
+            no_devices = False
+            # open active device config
+            active = open(active_device_filename, 'r')
+            active_device = json.loads(active.read())
+            # print(active_device)
+            active_device_ID = active_device[0]['device_id']
+            print("Active device_id: %s"%active_device_ID)
+
+    return active_device_ID
+
+def get_capacitive_soil_condition(raw_value):
+    device_id = get_device_ID()
+    
+    if key_device.get_value_index_from_local_database:
+        WaziGate_url='http://localhost/devices/'+device_id+'/sensors/temperatureSensor_0'
+        try:
+            response = requests.get(WaziGate_url, headers=WaziGate_headers, timeout=30)
+            print ('oled-service: returned msg from server is '),
+            print (response.status_code)
+            print (response.reason)
+            
+            if 200 <= response.status_code < 300:
+                print ('oled-service: GET success')
+                print (response.text)
+                device_json=json.loads(response.text)
+                global value_index_capacitive
+                value_index_capacitive=device_json["meta"]["value_index"]
+                print(value_index_capacitive)			
+            else:
+                print ('oled-service: bad request')
+                print (response.text)			
+                
+        except requests.exceptions.RequestException as e:
+            print (e)
+            print ('oled-service: requests command failed')
+            
+        print ('=========================================')	
+    else:
+        key_device.capacitive_sensor_n_interval = 6
+        value_interval=int(key_device.capacitive_sensor_dry_max/key_device.capacitive_sensor_n_interval)
+		#global value_index_capacitive
+        value_index_capacitive=int(raw_value/value_interval)	
+		#in case the sensed value is greater than the maximum value defined
+        if value_index_capacitive >= key_device.capacitive_sensor_n_interval:
+            value_index_capacitive = key_device.capacitive_sensor_n_interval-1	
+				
+		#we adopt the following rule: 0:very dry; 1:dry; 2:dry-wet 3-wet-dry; 4-wet; 5-very wet
+		#so for capacitive we need to invert the index
+        value_index_capacitive=key_device.capacitive_sensor_n_interval-1-value_index_capacitive
+        
+    if key_device.set_value_index_in_local_database:
+        my_token="hello"
+		#get the token first
+        WaziGate_url='http://localhost/auth/token'
+        try:
+            pload = '{"username":"admin","password":"loragateway"}'
+            response = requests.post(WaziGate_url, headers=WaziGate_headers, data=pload, timeout=30)
+            print ('oled-service: returned msg from server is '),
+            print (response.status_code)
+            print (response.reason)
+            
+            if 200 <= response.status_code < 300:
+                print ('oled-service: POST success')
+                print (response.text)
+                my_token=response.text
+            else:
+                print ('oled-service: bad request')
+                print (response.text)			
+                
+        except requests.exceptions.RequestException as e:
+            print (e)
+            print ('oled-service: requests command failed')
+            
+        print ('=========================================')	
+        
+        WaziGate_url='http://localhost/devices/'+device_id+'/sensors/temperatureSensor_0/meta'
+        try:
+            pload = '{"value_index":' + str(value_index_capacitive)+'}'
+            WaziGate_headers_auth['Authorization']='Bearer'+my_token[1:-2]
+            response = requests.post(WaziGate_url, headers=WaziGate_headers_auth, data=pload, timeout=30)
+            print ('oled-service: returned msg from server is '),
+            print (response.status_code)
+            print (response.reason)
+            
+            if 200 <= response.status_code < 300:
+                print ('oled-service: POST success')
+                print (response.text)
+                
+            else:
+                print ('oled-service: bad request')
+                print (response.text)			
+                
+        except requests.exceptions.RequestException as e:
+            print (e)
+            print ('oled-service: requests command failed')
+            
+        print ('=========================================')
+        
+    global capacitive_soil_condition
+    capacitive_soil_condition=key_device.capacitive_sensor_soil_condition[value_index_capacitive]
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True, use_reloader=False)

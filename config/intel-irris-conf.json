@@ -1,1 +1,1 @@
-{"global_soil_salinity": "disabled", "global_soil_bulk_density": "disabled", "sensors": []}
+{"globals": {"global_soil_salinity": "disabled", "global_soil_bulk_density": "disabled"}, "sensors": []}

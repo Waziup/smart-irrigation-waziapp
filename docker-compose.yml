@@ -18,8 +18,9 @@ services:
       test: curl --fail --unix-socket /var/lib/waziup/proxy.sock http://localhost/ || exit 1 #curl --fail http://localhost:5000/ || exit 1
       interval: 30s
       retries: 10 # Will try for 5 minutes
+    restart: "always"
 
-    network-mode: "host" # run app on {WaziGate IP}/5000
+    network_mode: "host" # run app on {WaziGate IP}:5000/
 
 networks:
   default:

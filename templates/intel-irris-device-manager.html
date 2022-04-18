@@ -74,10 +74,9 @@
         }).resize();
     </script>
 
-
     <br>
     <div class="add_device">
-      <form action="http://localhost:5000/intel-irris-devices" method="post">
+      <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
         <label for="device_id">New device : </label>
         <input id="device_id" name="device_id" type="text" placeholder="Enter Device ID" required class="new_device_form">
         <input id="device_name" name="device_name" type="text" placeholder="Give your device a name" required class="new_device_form">
@@ -87,7 +86,7 @@
 
     <br>
     <p>Update Active device with device_ID</p>
-    <form action="http://localhost:5000/intel-irris-devices" method="post">
+    <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
       <label></label>
       <select name="device-id-select" class="device-id-select" >
         <option value="hide"> -- Select device ID -- </option>
