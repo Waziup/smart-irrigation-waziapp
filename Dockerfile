@@ -1,6 +1,7 @@
 FROM python:slim-buster
 
-WORKDIR /app/intel-irris-waziapp
+#WORKDIR /app/intel-irris-waziapp
+WORKDIR /
 
 RUN pip3 install --upgrade pip
 RUN pip install requests
@@ -9,8 +10,9 @@ RUN pip install flask
 
 #----------------------------#
 # Copy whole folder to container
-COPY . .
-
+#COPY . .
+COPY . /app/intel-irris-waziapp
+WORKDIR /app/intel-irris-waziapp
 #----------------------------#
 
 # Make port available
