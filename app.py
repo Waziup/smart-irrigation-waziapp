@@ -391,9 +391,26 @@ def intel_irris_sensor_configs():
 #--------------------------------------------------------------------------
 #determine the soil condition string indication for capacitive
 #--------------------------------------------------------------------------
-import key_device
+capacitive_sensor_dry_max=800
+capacitive_sensor_wet_max=0
+capacitive_sensor_n_interval=6
+capacitive_sensor_soil_condition=[]
+
+capacitive_sensor_soil_condition.append('very dry')
+capacitive_sensor_soil_condition.append('dry')
+capacitive_sensor_soil_condition.append('dry-wet')
+capacitive_sensor_soil_condition.append('wet-dry')
+capacitive_sensor_soil_condition.append('wet')
+capacitive_sensor_soil_condition.append('very wet')
+
+
+get_value_index_from_local_database= False
+obtained_value_index_from_local_database = False
+set_value_index_in_local_database= True
 
 global active_device_ID 
+
+
 #common header for requests
 WaziGate_headers = {'accept':'application/json','content-type':'application/json'}
 WaziGate_headers_auth = {'accept':'application/json','content-type':'application/json','Authorization':'Bearer **'}
@@ -434,7 +451,8 @@ def get_device_ID():
 def get_capacitive_soil_condition(raw_value):
     device_id = get_device_ID()
     
-    if key_device.get_value_index_from_local_database:
+    get_value_index_from_local_database = True
+    if get_value_index_from_local_database:
         WaziGate_url='http://localhost/devices/'+device_id+'/sensors/temperatureSensor_0'
         try:
             response = requests.get(WaziGate_url, headers=WaziGate_headers, timeout=30)
@@ -458,20 +476,23 @@ def get_capacitive_soil_condition(raw_value):
             print ('oled-service: requests command failed')
             
         print ('=========================================')	
-    else:
-        key_device.capacitive_sensor_n_interval = 6
-        value_interval=int(key_device.capacitive_sensor_dry_max/key_device.capacitive_sensor_n_interval)
+
+        get_value_index_from_local_database = False
+        obtained_value_index_from_local_database = True
+        
+    if obtained_value_index_from_local_database:
+        value_interval=int(capacitive_sensor_dry_max/capacitive_sensor_n_interval)
 		#global value_index_capacitive
         value_index_capacitive=int(raw_value/value_interval)	
 		#in case the sensed value is greater than the maximum value defined
-        if value_index_capacitive >= key_device.capacitive_sensor_n_interval:
-            value_index_capacitive = key_device.capacitive_sensor_n_interval-1	
+        if value_index_capacitive >= capacitive_sensor_n_interval:
+            value_index_capacitive = capacitive_sensor_n_interval-1	
 				
 		#we adopt the following rule: 0:very dry; 1:dry; 2:dry-wet 3-wet-dry; 4-wet; 5-very wet
 		#so for capacitive we need to invert the index
-        value_index_capacitive=key_device.capacitive_sensor_n_interval-1-value_index_capacitive
+        value_index_capacitive=capacitive_sensor_n_interval-1-value_index_capacitive
         
-    if key_device.set_value_index_in_local_database:
+    if set_value_index_in_local_database:
         my_token="hello"
 		#get the token first
         WaziGate_url='http://localhost/auth/token'
@@ -519,8 +540,6 @@ def get_capacitive_soil_condition(raw_value):
             
         print ('=========================================')
         
-    global capacitive_soil_condition
-    capacitive_soil_condition=key_device.capacitive_sensor_soil_condition[value_index_capacitive]
 
 
 if __name__ == "__main__":
