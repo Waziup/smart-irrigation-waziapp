@@ -9,7 +9,7 @@ echo "copy $1/global_conf.json to /var/lib/wazigate/apps/waziup.wazigate-lora/fo
 cp single_chan_pkt_fwd/$1/global_conf.json /var/lib/wazigate/apps/waziup.wazigate-lora/forwarders/single_chan_pkt_fwd/
 
 echo "copy $1/chirpstack-network-server.toml /var/lib/wazigate/apps/waziup.wazigate-lora/chirpstack-network-server/"
-docker cp chirpstack_conf/$1/chirpstack-network-server.toml /var/lib/wazigate/apps/waziup.wazigate-lora/chirpstack-network-server/
+cp chirpstack_conf/$1/chirpstack-network-server.toml /var/lib/wazigate/apps/waziup.wazigate-lora/chirpstack-network-server/
 
 echo "copy $1/chirpstack-gateway-bridge.toml /var/lib/wazigate/apps/waziup.wazigate-lora/chirpstack-application-server/"
-docker cp chirpstack_conf/$1/chirpstack-gateway-bridge.toml /var/lib/wazigate/apps/waziup.wazigate-lora/chirpstack-application-server/
+cp chirpstack_conf/$1/chirpstack-gateway-bridge.toml /var/lib/wazigate/apps/waziup.wazigate-lora/chirpstack-application-server/
