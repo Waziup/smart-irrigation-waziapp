@@ -1,5 +1,7 @@
 /* Functions to generate devices table */
 devices_url = '/intel-irris-added-devices';
+request_sensors = '/request-device-sensors';
+
 var data;
 
 async function getTableData() {
@@ -8,11 +10,11 @@ async function getTableData() {
     data = await response.json();
     data = data.slice(1);  // remove 'defaults'
 
-    populateTable(data);
+    populateTable();
     update_device_select();
 }
 
-function populateTable(data) {
+function populateTable() {
 
     clearTable() // first clear table
     var table = document.getElementById('devices')
@@ -57,38 +59,35 @@ async function getActiveID() {
     request_device_sensors(active_device_id);
 }
 async function request_device_sensors() {
-    //device_url = `https://api.waziup.io/api/v2/devices/${active_device_id}/sensors`;
-    device_url = `http://localhost/devices/${active_device_id}/sensors`;
 
-    const response = await fetch(device_url);
-    //console.log(response);
-    device_sensors = await response.json();
-    //device_sensors = JSON.stringify(device_sensors)
-    //console.log('device data : '+device_sensors);
+    const response = await fetch(request_sensors + '?deviceID=' + active_device_id);
+    var device_sensors_response = await response.json();
+    device_sensors = device_sensors_response
+    device_sensors_response = JSON.stringify(device_sensors_response)
+    //console.log('device data : ' + device_sensors_response);
 
-    update_sensor_select(device_sensors);
-    
+    if (device_sensors_response != '[{"status":"404"}]') { // show sensor ids if device ID exist
+        update_sensor_select();
+    }
 }
 function update_sensor_select() {
-    if (typeof(device_sensors) != undefined){
-         
+    if (typeof (device_sensors) != undefined || device_sensors != null) {
         no_sensors = device_sensors.length;
         //console.log("number of sensors = " + no_sensors)
 
         var select = document.getElementById("sensor-id-select")
         select.innerHTML = "";
 
-        for (j = 0; j <= no_sensors; j++) {
-            select.options[select.options.length] = new Option(device_sensors[j]['id'])       
-        }   
+        device_sensors.forEach(function (item, index) {
+            select.options[select.options.length] = new Option(device_sensors[index]['id'])
+        })
     }
 }
 /* *** */
 
 function foo() {
-    getTableData();
-
-    getActiveID();
+    getTableData(); //update devices table
+    getActiveID(); //update sensor select options based on active device
     setTimeout(foo, 5000);
 }
 foo();

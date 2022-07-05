@@ -1,6 +1,7 @@
 var sensor_config_url = 'intel-irris-sensor-configurations';
+var active_url = 'intel-irris-active-device'
+var request_DeviceSensors_url = 'request-device-sensors'
 
-//var no_config_made = document.getElementById("no_config_made")
 var active_device = document.getAnimations("active_device");
 var active_device_id = document.getElementById("active_device_id");
 
@@ -71,7 +72,6 @@ function getDevice_SensorCase() {
 /* *** */
 
 /* functions that GET sensor IDs of active device and display in radio */
-active_url = 'intel-irris-active-device'
 var active_device_id;
 var sensors_configs;
 var no_sensors;
@@ -86,16 +86,18 @@ async function getActiveID() {
 }
 async function request_device_sensors() {
     //device_url = `https://api.waziup.io/api/v2/devices/${active_device_id}/sensors`;
-    device_url = `http://localhost/devices/${active_device_id}/sensors`;
+    //device_url = `http://localhost/devices/${active_device_id}/sensors`;
 
-    const response = await fetch(device_url);
+    const response = await fetch(request_DeviceSensors_url + '?deviceID=' +active_device_id);
     //console.log(response);
-    sensors_configs = await response.json();
-    //device_sensors = JSON.stringify(device_sensors)
+    sensors_configs_response = await response.json();
+    sensors_configs = sensors_configs_response
+    sensors_configs_response = JSON.stringify(sensors_configs_response)
     //console.log('device data : '+device_sensors);
 
-    update_sensor_select(sensors_configs);
-
+    if (sensors_configs_response != '[{"status":"404"}]') { // show sensor ids if device ID exist
+        update_sensor_select();
+    }
 }
 function update_sensor_select() {
     if (typeof (sensors_configs) != undefined) {
