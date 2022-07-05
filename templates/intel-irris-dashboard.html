@@ -1,22 +1,23 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8" />
   <title>Intel-Irris Dashboard</title>
   <!-- <meta name="description" content="" /> -->
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/menu_bar.css') }}" /> 
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" /> 
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/menu_bar.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
 
-  <script type="text/javascript" src="{{ url_for('static', filename='js/plotly.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/apexcharts.js') }}"></script>
 </head>
 
-<body >
+<body>
   <div class="topnav" id="myTopnav">
     <a href="{{ url_for('dashboard') }}" class="active">Dashboard</a>
     <div class="dropdown">
-      <button class="dropbtn">Menu 
+      <button class="dropbtn">Menu
         <i class="fa fa-caret-down"></i>
       </button>
       <div class="dropdown-content">
@@ -39,134 +40,24 @@
   <div style="padding-left:16px; padding-top:16px">
     <h1 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">Intel-Irris Dashboard</h1>
     <br></br>
-    <p>{{ added_devices}}</p>
-    {% if no_devices == False %}
-      <p>Active Device ID : {{deviceID}}</p>
-      <p>Last Soil Moisture Value : {{soil_moisture}} </p>
-          <!--
-          <svg height="50" width="50">
-              <circle cx="25" cy="25" r="20" stroke="gray" stroke-width="1" '{% if soil_moisture >= 0 and soil_moisture <= 196 %}' fill="lightblue"  '{% elif soil_moisture >= 196 and soil_moisture <= 390 %}' fill="green" '{% elif soil_moisture >= 391 and soil_moisture <= 585 %}' fill="orange" '{% elif soil_moisture >= 586 and soil_moisture <= 780 %}' fill="red">
-            {% endif %}   
-          </svg> -->
-      <br>
-      {% if soil_moisture >= 0 and soil_moisture <= 196 %}
-        <div class="semi-circle"  style="border: 10px solid lightblue; border-bottom: 0;"></div>
-      {% elif soil_moisture >= 196 and soil_moisture <= 390 %}
-        <div class="semi-circle"  style="border: 10px solid green; border-bottom: 0;"></div>
-      {% elif soil_moisture >= 391 and soil_moisture <= 585 %}
-        <div class="semi-circle"  style="border: 10px solid orange; border-bottom: 0;"></div>
-      {% elif soil_moisture >= 586 and soil_moisture <= 780 %}
-        <div class="semi-circle"  style="border: 10px solid red; border-bottom: 0;"></div>
-      {% endif %} 
+    {% if no_devices == True %}
+      <p>{{ added_devices}}</p>
+    {% elif no_devices == False %}
+      <p id="deviceid">Active Device ID : <span id="deviceid_id"></span></p>
+      <p id="lastvalue">Last Soil Moisture Value : <span id="lastvalue_value"></span></p>
 
-      <br>
-      <div id="values_chart" class="plot_center"></div>
-        <!--<script type="text/javascript" src="{{ url_for('static', filename='js/plot_values_chart.js') }}"></script>-->
-
-        <script>
-          values={{values |tojson |safe}}; 
-          timestamps={{timestamps |tojson |safe}};
-        
-          // Define Data
-          var data_plot = [
-              {
-                x: timestamps,
-                y: values,
-                mode: "line",
-                type: "scatter",
-                opacity: 0.8,
-                line: 
-                {
-                  color: "#3366ff",
-                  width: 2
-                }
-              }
-            ];
-                
-          // Define Layout
-          var layout = 
-          {
-            xaxis: { title: "Timestamp",  showgrid: true},
-            yaxis: { range: [0, 780], title: "Raw Values",  showgrid: false},  
-            title: `Soil Moisture Values`,
-
-            // to highlight the insights we use shapes and create a rectangular
-            shapes: [
-                {   // very wet region
-                    layer: 'below',
-                    xref: 'paper',
-                    yref: 'y',
-                    x0: 0,
-                    x1: 1,
-                    y0: 0,
-                    y1: 195,
-                    type: 'rect',
-                    fillcolor: 'lightblue',
-                    opacity: 0.4,
-                    line: 
-                    {
-                        width: 0
-                    }
-                },
-
-                {   // wet region  
-                    layer: 'below',
-                    xref: 'paper',
-                    yref: 'y',
-                    x0: 0,
-                    x1: 1,
-                    y0: 196,
-                    y1: 390,
-                    type: 'rect',
-                    fillcolor: 'green',
-                    opacity: 0.4,
-                    line: 
-                    {
-                        width: 0
-                    }
-                },
-
-                {   // dry region
-                    layer: 'below',
-                    xref: 'paper',
-                    yref: 'y',
-                    x0: 0,
-                    x1: 1,
-                    y0: 391,
-                    y1: 585,
-                    type: 'rect',
-                    fillcolor: 'orange',
-                    opacity: 0.4,
-                    line: 
-                    {
-                        width: 0
-                    }
-                },
-
-                {   // very dry region
-                    layer: 'below',
-                    xref: 'paper',
-                    yref: 'y',
-                    x0: 0,
-                    x1: 1,
-                    y0: 586,
-                    y1: 780,
-                    type: 'rect',
-                    fillcolor: 'red',
-                    opacity: 0.4,
-                    line: 
-                    {
-                        width: 0
-                    }
-                }
-            ]
-          };
-
-          // Display using Plotly
-          Plotly.newPlot("values_chart", data_plot, layout, {displaylogo: false}, {scrollZoom: true}); 
-        </script>
+      <br><div class="semi-circle" id="semi-circle"></div>
+      <p id="last_value_insight" style="text-align:center; white-space: nowrap"><span id="insight"></span></p>
+      <br><br>
+      <p id="no_sensor_error">Oops! Select a sensor id of the current device to see its data and compute the index value</p>
+      <p id="sensor_id_error">Oops! The sensor id <span id="sensor_id"></span> seems to no longer be in the device.</p>
+      <p id="sensor_id_error_p2">Select a new sensor id from the Device Manager</p>
+      <div id="values_chart" class="plot_center">
+        <script type="text/javascript" src="{{ url_for('static', filename='js/plot_values_chart.js') }}"></script>
+      </div>
       <br>
     {% endif %}
     </div>
 </body>
+
 </html>

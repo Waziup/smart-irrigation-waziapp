@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8" />
   <title>Intel-Irris Devices</title>
@@ -8,12 +9,14 @@
 
   <link rel="stylesheet" href="{{ url_for('static', filename='css/menu_bar.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/device_manager.css') }}" />
+
 </head>
-<body >
+
+<body>
   <div class="topnav" id="myTopnav">
     <a href="{{ url_for('dashboard') }}" class="active">Dashboard</a>
     <div class="dropdown">
-      <button class="dropbtn">Menu 
+      <button class="dropbtn">Menu
         <i class="fa fa-caret-down"></i>
       </button>
       <div class="dropdown-content">
@@ -37,9 +40,10 @@
   <div style="padding-left:16px; padding-top:16px">
     <h1 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">Device Manager</h1>
     <br></br>
-    <p>List of Intel-Irris devices, add a new device using Device_ID and Device Name.</p>
-    <p>Select a device_ID for dashboard plot.</p>
-    
+    <p>Here is a list of Waziup devices added to Intel-Irris.</p>
+    <p>You can also add/delete a device using the form below.</p>
+    <p>To change the information and plot on the Dashboard, simply select a Device_ID and press Select</p>
+
     <br>
     <div class="table_container">
       <div class="tbl-header">
@@ -54,49 +58,69 @@
       </div>
       <div class="tbl-content">
         <table cellpadding="0" cellspacing="0" border="0">
-          <tbody>
-            </tr>
-          </thead>   
-            {% for i in range (1, length) %}
-              <tr>
-                <td style="overflow: hidden; text-overflow: ellipsis"> {{read_devices[i]['device_id']}} </td>
-                <td style="overflow: hidden; text-overflow: ellipsis"> {{read_devices[i]['device_name']}} </td>
-              </tr>
-            {% endfor %}  
+          <tbody id="devices">
+            <script type="text/javascript"
+              src="{{ url_for('static', filename='js/update_devices_data.js') }}"></script>
           </tbody>
         </table>
       </div>
     </div>
     <script>
-      $(window).on("load resize ", function() {
-          var scrollWidth = $('.tbl-content').width() - $('.tbl-content table').width();
-          $('.tbl-header').css({'padding-right':scrollWidth});
-        }).resize();
+      $(window).on("load resize ", function () {
+        var scrollWidth = $('.tbl-content').width() - $('.tbl-content table').width();
+        $('.tbl-header').css({ 'padding-right': scrollWidth });
+      }).resize();
     </script>
 
-    <br>
+    <br></br>
     <div class="add_device">
       <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
-        <label for="device_id">New device : </label>
-        <input id="device_id" name="device_id" type="text" placeholder="Enter Device ID" required class="new_device_form">
-        <input id="device_name" name="device_name" type="text" placeholder="Give your device a name" required class="new_device_form">
+        <label for="device_id">Add new : </label>
+        <input id="device_id" name="device_id" type="text" placeholder="Enter Device ID" required
+          class="new_device_form">
+        <input id="device_name" name="device_name" type="text" placeholder="Give a name" required
+          class="new_device_form">
+
+        <select name="sensors_structure" class="sensors_structure" required>
+          <option value=""> -- Sensor(s) Structure -- </option>
+          <option value="1_capacitive">1 Capacitive</option>
+          <option value="1_watermark">1 Watermark</option>
+          <option value="2_watermark">2 Watermark</option>
+        </select>
+
         <button type="submit" value="submit" class="add_button"></button>
+      </form>
+    </div>
+    <br>
+    <div class="remove_device">
+      <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
+        <label for="device_id_remove">Remove : </label>
+        <input id="device_id_remove" name="device_id_remove" type="text" placeholder="Enter Device ID" required
+          class="remove_device_form">
+        <button type="submit" value="submit" class="remove_button"></button>
       </form>
     </div>
 
     <br>
-    <p>Update Active device with device_ID</p>
+    <p>Use dashboard with device_ID :</p>
     <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
       <label></label>
-      <select name="device-id-select" class="device-id-select" >
-        <option value="hide"> -- Select device ID -- </option>
-        {% for x in range(1, length) %}
-          <option value = "{{ read_devices[x]['device_id']}}" >{{ read_devices[x]['device_id']|truncate(10, True, '...')}}</option>
-        {% endfor %}
+      <select name="device-id-select" class="device-id-select" id="device-id-select">
       </select>
       <button type="submit" value="submit" class="device-id-select-button">Select</button>
     </form>
+    
+    <br>
+    <p>Select sensor for Dashboard:</p>
+    <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
+      <label></label>
+      <select name="sensor-id-select" class="sensor-id-select" id="sensor-id-select">
+      </select>
+      <button type="submit" value="submit" class="sensor-id-select-button">Select</button>
+    </form>
   </div>
+  <br>
 
 </body>
+
 </html>

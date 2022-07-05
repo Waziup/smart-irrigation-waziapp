@@ -1,5 +1,5 @@
 body {
-    background-color: #f1f1f1;
+    background-color: #ffffff;
     height: 100%;
 }
 
@@ -20,8 +20,6 @@ body {
 }
 .jssWA1 {
     color: unset;
-    background: #f1f1f1;
-    box-shadow: 0 0 2px #f1f1f1;
     margin-inline-start: 0px;
     margin-inline-end: 0px;
 }
@@ -30,16 +28,23 @@ body {
 .semi-circle{
     width: 50px;
     height: 25px;
+    border: 10px solid white;
     border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-    
+    border-bottom: 0;
     margin-left: auto;
     margin-right: auto;
-    }
+}
 
 .plot_center
 {
     margin-left: auto;
     margin-right: auto;
     width: 95%;
-    height: 600px;
+    height: auto;
+
+    border-radius: 25px;
+    border: 2px solid #f4b548;
+    /*padding: 20px; */
+    padding-top: 20px;
+    background-color: #ffffff;
 }
