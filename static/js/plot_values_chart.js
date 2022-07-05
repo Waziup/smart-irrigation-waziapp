@@ -108,10 +108,12 @@ async function plotData() {
         for (i = 0; i < length; i++) {
             //timestamps.push(data[i].timestamp);
 
-            formatted_timestamp = parse_ISO8601(data[i].timestamp); // convert ISO8601 to YY HH mm ss format
-            timestamps.push(formatted_timestamp);
+            //formatted_timestamp = parse_ISO8601(data[i].timestamp); // convert ISO8601 to YY HH mm ss format
+            //timestamps.push(formatted_timestamp);
+            timestamps.push(data[i]["time"]);
 
-            values.push(data[i].value);
+            //values.push(data[i].value);
+            values.push(data[i]["value"]);
         }
         if (length == 1) {
             lastvalue_value.innerHTML = values[0];
@@ -163,6 +165,10 @@ async function plotData() {
 
         values_min = Math.min.apply(Math, values);
         values_max = Math.max.apply(Math, values);
+        if (values_min == values_max) // if similar datapoints, reset min to 0
+        {
+            values_min = 0;
+        }
         //console.log("values_min = "+values_min);
         //console.log("values_max = "+values_max);
 

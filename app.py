@@ -598,8 +598,9 @@ def monitor_sensor_value():
         elif (response.status_code == 200):
             four_04 = False
             sensor_DataResponse = response.json()
-            last_PostedSensorValue = sensor_DataResponse['value']['value']
-            print("compute-index-service : last posted sensor value was : %s" % last_PostedSensorValue)
+            #last_PostedSensorValue = sensor_DataResponse['value']['value']
+            last_PostedSensorValue = sensor_DataResponse["value"]
+            print("compute-index-service : last posted sensor value was : %s" %last_PostedSensorValue)
 
             if number_of_configurations != 0:
                 if (last_PostedSensorValue != sensor_lastValue):  # if sensor value has changed, compute index value
