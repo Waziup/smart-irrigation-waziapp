@@ -93,10 +93,13 @@ async function request_device_sensors() {
     sensors_configs_response = await response.json();
     sensors_configs = sensors_configs_response
     sensors_configs_response = JSON.stringify(sensors_configs_response)
-    //console.log('device data : '+device_sensors);
+    console.log('device sensors : ' + sensors_configs);
 
     if (sensors_configs_response != '[{"status":"404"}]') { // show sensor ids if device ID exist
         update_sensor_select();
+    }
+    else if (sensors_configs_response == '[{"status":"404"}]') { // show sensor ids if device ID exist
+        console.log("Unable to obtain the sensors for the active device id :" +active_device_id)
     }
 }
 function update_sensor_select() {
