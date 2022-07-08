@@ -788,6 +788,18 @@ def intel_irris_sensor_configurations():
 #---------------------#
 
 #---------------------# Route methods for making GET requests (JS fix)
+@app.route("/request-gateway-devices", methods=['GET']) # returns data of gateway devices
+def request_gateway_devices():
+    if request.method == 'GET':
+        url = "http://localhost/devices"
+        #url = "https://api.waziup.io/api/v2/devices/"
+
+        response = requests.get(url, headers=WaziGate_headers)
+        data = response.json()
+
+        return jsonify(data)
+
+
 @app.route("/check-device-sensor-id", methods=['GET']) # returns 200 or 404 to indicate if sensor or device id is valid/invalid
 def check_sensor_id():
     if request.method == 'GET':

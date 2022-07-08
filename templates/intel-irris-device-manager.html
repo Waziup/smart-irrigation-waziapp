@@ -41,11 +41,12 @@
     <h1 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">Device Manager</h1>
     <br></br>
     <p>Here is a list of Waziup devices added to Intel-Irris.</p>
-    <p>You can also add/delete a device using the form below.</p>
-    <p>To change the information and plot on the Dashboard, simply select a Device_ID and press Select</p>
+    <p>You can also add/remove a device using the form below.</p>
+    <p>An active device determines sensors values visualization and source for humidity index value computation.</p>
 
     <br>
     <div class="table_container">
+      <p style="text-align:center"><em>Devices added to IIWA</em></p><br>
       <div class="tbl-header">
         <table cellpadding="0" cellspacing="0" border="0">
           <thead>
@@ -73,50 +74,59 @@
     </script>
     <br></br>
     <div class="add_device">
+      <p style="text-align:center"><em>Add a device to IIWA</em></p><br>
       <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
-        <label for="device_id">Add new : </label>
-        <input id="device_id" name="device_id" type="text" placeholder="Enter Device ID" required
-          class="new_device_form">
-        <input id="device_name" name="device_name" type="text" placeholder="Give a name" required
-          class="new_device_form">
-
+        <select name="device_id" class="new_deviceID_select" id="new_deviceID_select"
+          onchange="showName(event)"
+          required>
+        </select>
+        <br><br>
+        <select name="device_name" class="new_deviceName_select" id="new_deviceName_select">
+        </select>
+        <br><br>
         <select name="sensors_structure" class="sensors_structure" required>
           <option value=""> -- Sensor(s) Structure -- </option>
           <option value="1_capacitive">1 Capacitive</option>
           <option value="1_watermark">1 Watermark</option>
           <option value="2_watermark">2 Watermark</option>
         </select>
-
+        <br><br>
         <button type="submit" value="submit" class="add_button"></button>
       </form>
     </div>
     <br>
-    <div class="remove_device">
-      <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
-        <label for="device_id_remove">Remove : </label>
-        <input id="device_id_remove" name="device_id_remove" type="text" placeholder="Enter Device ID" required
-          class="remove_device_form">
-        <button type="submit" value="submit" class="remove_button"></button>
-      </form>
+    <div class="div_containers">
+      <div class="remove_device">
+        <p style="text-align: center;"><em>Remove a device from IIWA</em></p><br>
+        <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
+          <label for="device_id_remove">Remove : </label>
+          <select name="device_id_remove" class="device-id-select" id="remove-device-id-select" required>
+          </select>
+          <button type="submit" value="submit" class="remove_button"></button>
+        </form>
+      </div>
     </div>
 
     <br>
-    <p>Use dashboard with device_ID :</p>
-    <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
-      <label></label>
-      <select name="device-id-select" class="device-id-select" id="device-id-select">
-      </select>
-      <button type="submit" value="submit" class="device-id-select-button">Select</button>
-    </form>
-    
-    <br>
-    <p>Select sensor for Dashboard:</p>
-    <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
-      <label></label>
-      <select name="sensor-id-select" class="sensor-id-select" id="sensor-id-select">
-      </select>
-      <button type="submit" value="submit" class="sensor-id-select-button">Select</button>
-    </form>
+    <div class="div_containers">
+      <p style="text-align: center;"><em>Select an active device and sensor</em></p><br>
+      <p>Use dashboard with device_ID :</p>
+      <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
+        <label></label>
+        <select name="device-id-select" class="device-id-select" id="device-id-select">
+        </select>
+        <button type="submit" value="submit" class="device-id-select-button">Select</button>
+      </form>
+      
+      <br>
+      <p>Select sensor for Dashboard & index value computation:</p>
+      <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
+        <label></label>
+        <select name="sensor-id-select" class="sensor-id-select" id="sensor-id-select">
+        </select>
+        <button type="submit" value="submit" class="sensor-id-select-button">Select</button>
+      </form>
+    </div>
   </div>
   <br>
 </body>

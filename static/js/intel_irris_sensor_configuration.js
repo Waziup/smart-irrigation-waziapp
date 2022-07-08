@@ -93,13 +93,10 @@ async function request_device_sensors() {
     sensors_configs_response = await response.json();
     sensors_configs = sensors_configs_response
     sensors_configs_response = JSON.stringify(sensors_configs_response)
-    console.log('device sensors : ' + sensors_configs);
+    //console.log('device data : '+device_sensors);
 
     if (sensors_configs_response != '[{"status":"404"}]') { // show sensor ids if device ID exist
         update_sensor_select();
-    }
-    else if (sensors_configs_response == '[{"status":"404"}]') { // show sensor ids if device ID exist
-        console.log("Unable to obtain the sensors for the active device id :" +active_device_id)
     }
 }
 function update_sensor_select() {
@@ -155,10 +152,10 @@ function get_configuration_data() { //obtain global variables and sensor configu
     global_soil_bulk_density = sensor_config_data['globals']['global_soil_bulk_density']
 
     if (global_soil_salinity == 'disabled' || typeof(global_soil_salinity) == "undefined") {
-        global_soil_salinity = -1;
+        global_soil_salinity = '';
     }
     if (global_soil_bulk_density == 'disabled' || typeof(global_soil_salinity) == "undefined") {
-        global_soil_bulk_density = -1;
+        global_soil_bulk_density = '';
     }
     console.log('global_soil_salinity = ' + global_soil_salinity);
     console.log('global_soil_bulk_density = ' + global_soil_bulk_density);
@@ -185,6 +182,9 @@ function get_configuration_data() { //obtain global variables and sensor configu
                 soil_temperature_device_id = sensor_config_data['sensors'][x]['soil_temperature_source']['soil_temperature_device_id'];
                 soil_temperature_sensor_id = sensor_config_data['sensors'][x]['soil_temperature_source']['soil_temperature_sensor_id'];
 
+                break;
+            }
+            else{ // set variables to empty when sensor ID config is not found
                 break;
             }
         }
@@ -238,6 +238,9 @@ function update_accordion_parameters() {
         if (sensor_type_radios[k].value == current_sensor_type) {
             sensor_type_radios[k].checked = true;
             // only one radio can be logically checked, don't check the rest
+            break;
+        }
+        else if (sensor_type_radios[k].value == current_sensor_type){
             break;
         }
     }
@@ -354,12 +357,14 @@ function show_temperature_source_fields() {// shows an input for sensor value or
     }
 }
 /* *** */
+var sensorIDRadio_updated = false;
 function foo() {
-    if (!no_active) {
+    if (!sensorIDRadio_updated) {
         inform_on_configurations();
         getDevice_SensorCase();
         getActiveID();
     }
+    sensorIDRadio_updated = true; // prevent refreshing dropdowns when an option is selected
 
     setTimeout(foo, 6000);
 }
