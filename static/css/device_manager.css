@@ -29,7 +29,7 @@ body {
 
 /* table */
 .table_container {
-    width: 75%;
+    width: 80%;
     border-radius: 25px;
     border: 2px solid #f4b548;
     padding: 20px;
@@ -103,12 +103,12 @@ td {
 /* *** */
 
 .div_containers, .add_device {
-    width: 75%;
+    width: 80%;
     padding: 20px;
     border-radius: 25px;
     border-style: solid;
-border-width: thin;
-border-color: #ccccb3;
+    border-width: thin;
+    border-color: #ccccb3;
 }
 
 /* Add device form */

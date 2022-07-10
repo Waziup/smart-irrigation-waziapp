@@ -75,9 +75,21 @@ function populateTable() {
     var table = document.getElementById('devices')
 
     for (var i = 0; i < data.length; i++) {
+        // remove _ in sensor_structure names
+        if (data[i]['sensors_structure'] == '1_capacitive'){
+            data[i]['sensors_structure'] = '1 capacitive'
+        }
+        else if (data[i]['sensors_structure'] == '1_watermark'){
+            data[i]['sensors_structure'] = '1 watermark'
+        }
+        else if (data[i]['sensors_structure'] == '2_watermark'){
+            data[i]['sensors_structure'] = '2 watermark'
+        }
+
         var row = `<tr>
                 <td>${data[i].device_id}</td>
                 <td>${data[i].device_name}</td>
+                <td>${data[i].sensors_structure}</td>
           </tr>`
         table.innerHTML += row
     }
