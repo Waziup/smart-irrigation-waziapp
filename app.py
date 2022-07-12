@@ -10,8 +10,8 @@ active_device_filename = 'config/intel-irris-active-device.json'
 sensor_config_filename = 'config/intel-irris-conf.json'
 #-----------------------#
 
-#Waziup_BaseURL="https://api.waziup.io/api/v2/" # uncomment for WaziCloud
-Waziup_BaseURL = "http://localhost/"           # uncomment for WaziGate
+#BASE_URL="https://api.waziup.io/api/v2/" # uncomment for WaziCloud
+BASE_URL = "http://localhost/"           # uncomment for WaziGate
 
 #common header for requests
 WaziGate_headers = {
@@ -224,7 +224,7 @@ def intel_irris_device_manager():
                 while (not response_obtained):
                     #url = "http://localhost/devices/%s" % remove_device_id
                     #url = "https://api.waziup.io/api/v2/devices/%s" % remove_device_id
-                    url = Waziup_BaseURL + 'devices/' + remove_device_id
+                    url = BASE_URL + 'devices/' + remove_device_id
                     response = requests.get(url, headers=WaziGate_headers)
 
                     if response.status_code == 200:
@@ -339,7 +339,7 @@ def intel_irris_sensor_config():
             #-- GET last sensor data of the device --#
             #url = "http://localhost/devices/%s" % deviceID
             #url = "https://api.waziup.io/api/v2/devices/%s" % deviceID
-            url = Waziup_BaseURL + 'devices/' + deviceID
+            url = BASE_URL + 'devices/' + deviceID
             response = requests.get(url, headers=WaziGate_headers)
             sensors_data = response.json()
 
@@ -510,26 +510,11 @@ get_value_index_from_local_database = False
 obtained_value_index_from_local_database = False
 set_value_index_in_local_database = True
 
-global active_device_ID
-
-#common header for requests
-WaziGate_headers = {
-    'accept': 'application/json',
-    'content-type': 'application/json'
-}
-WaziGate_headers_auth = {
-    'accept': 'application/json',
-    'content-type': 'application/json',
-    'Authorization': 'Bearer **'
-}
-
 #global BG_deviceID  # BG -> Back Ground
 #global BG_sensorID
 number_of_configurations = 0
 fetch_last_value = False
-four_04 = False
 compute_humidityIndexValue = False
-
 
 def monitor_sensor_value():
 
@@ -589,15 +574,14 @@ def monitor_sensor_value():
     if (fetch_last_value):
         #url = "https://api.waziup.io/api/v2/devices/" + BG_deviceID + '/sensors/' + BG_sensorID
         #url = "http://localhost/devices/" + BG_deviceID + '/sensors/' + BG_sensorID
-        url = Waziup_BaseURL + 'devices/' + BG_deviceID + '/sensors/' + BG_sensorID
+        url = BASE_URL + 'devices/' + BG_deviceID + '/sensors/' + BG_sensorID
 
         response = requests.get(url, headers=WaziGate_headers)
 
         if (response.status_code == 404):
-            four_04 = True
             print("compute-index-service : Error 404! Check IDs of device and sensor of active device.")
         elif (response.status_code == 200):
-            four_04 = False
+
             sensor_DataResponse = response.json()
             #last_PostedSensorValue = sensor_DataResponse['value']['value']
             last_PostedSensorValue = sensor_DataResponse["value"]
@@ -615,6 +599,7 @@ def monitor_sensor_value():
                 get_capacitive_soil_condition(last_PostedSensorValue)
 
     if (compute_humidityIndexValue):
+        # check sensor type (capacitive/tensiometer and compute index value)
         get_capacitive_soil_condition(last_PostedSensorValue)
 
 
@@ -729,7 +714,7 @@ def get_capacitive_soil_condition(raw_value):
         print('=========================================')
 
 #---------------------#
-# periodically comppute humidity index value
+# periodically compute humidity index value
 import threading
 computing_interval_sec = 10  # seconds
 def foo():
@@ -788,13 +773,13 @@ def intel_irris_sensor_configurations():
 
 #---------------------#
 
-#---------------------# Route methods for making GET requests (JS fix)
+#---------------------# Route methods for making GET requests to localhost (*JS fix)
 @app.route("/request-gateway-devices", methods=['GET']) # returns data of gateway devices
 def request_gateway_devices():
     if request.method == 'GET':
         #url = "http://localhost/devices"
         #url = "https://api.waziup.io/api/v2/devices/"
-        url = Waziup_BaseURL + 'devices'
+        url = BASE_URL + 'devices'
 
         response = requests.get(url, headers=WaziGate_headers)
         data = response.json()
@@ -810,7 +795,7 @@ def check_sensor_id():
         
         #url = "https://api.waziup.io/api/v2/devices/" + device_id + '/sensors/' + sensor_id
         #url = "http://localhost/devices/" + device_id + '/sensors/' + sensor_id
-        url = Waziup_BaseURL + 'devices/' + device_id + '/sensors/' + sensor_id
+        url = BASE_URL + 'devices/' + device_id + '/sensors/' + sensor_id
 
         response = requests.get(url, headers=WaziGate_headers)
         if (response.status_code == 404):
@@ -827,7 +812,7 @@ def request_device_sensors():
         if device_id[0] != '[':
             #device_url = 'https://api.waziup.io/api/v2/devices/' + device_id + '/sensors'
             #device_url = 'http://localhost/devices/' + device_id + '/sensors'
-            device_url = Waziup_BaseURL + 'devices/' + device_id + '/sensors'
+            device_url = BASE_URL + 'devices/' + device_id + '/sensors'
 
             response = requests.get(device_url, headers=WaziGate_headers)
 
@@ -852,7 +837,7 @@ def request_sensor_values():
 
         #sensorValues_url = "https://api.waziup.io/api/v2/devices/" + device_id + "/sensors/" + sensor_id + "/values"
         #sensorValues_url = "http://localhost/devices/" +device_id + "/sensors/" + sensor_id + "/values"
-        sensorValues_url = Waziup_BaseURL + 'devices/' + device_id + "/sensors/" + sensor_id + "/values"
+        sensorValues_url = BASE_URL + 'devices/' + device_id + "/sensors/" + sensor_id + "/values"
         response = requests.get(sensorValues_url, headers=WaziGate_headers)
         data = response.json()
 
