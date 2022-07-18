@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Sensor Configuration Dashboard</title>
+    <title>IIWA Configuration</title>
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -15,17 +15,20 @@
 
 <body>
     <div class="topnav" id="myTopnav">
-        <a href="{{ url_for('dashboard') }}" class="active">Dashboard</a>
-        <div class="dropdown">
-            <button class="dropbtn">Menu
-                <i class="fa fa-caret-down"></i>
-            </button>
-            <div class="dropdown-content">
-                <a href="{{ url_for('intel_irris_device_manager') }}">Device Manager</a>
-                <a href="{{ url_for('intel_irris_sensor_config') }}">Sensor Configuration</a>
-            </div>
-        </div>
-        <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
+    <img src="{{ url_for('static', filename='images/intel-irris-logo.png') }}" height="40" style="vertical-align:middle;margin:4px 0px">
+    <a href="{{ url_for('dashboard') }}" class="active"><img src="{{ url_for('static', filename='images/dashboard.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"></a>
+    <a href="{{ url_for('intel_irris_device_manager') }}"><img src="{{ url_for('static', filename='images/device.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"></a>
+    <a href="{{ url_for('intel_irris_sensor_config') }}"><img src="{{ url_for('static', filename='images/config.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"></a>    
+    <div class="dropdown">
+      <button class="dropbtn">Menu
+        <i class="fa fa-caret-down"></i>
+      </button>     
+      <div class="dropdown-content">
+      	<a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('intel_irris_device_manager') }}">Device Manager</a>
+        <a href="{{ url_for('intel_irris_sensor_config') }}">Configuration</a>
+      </div>
+    </div>        <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
     </div>
     <script>
         function myFunction() {
@@ -46,10 +49,10 @@
         <p> {{no_device }}</p>
 
         {% else %}
-        <h1 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">Sensor Configuration</h1>
+        <h1 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">IIWA Sensor Configuration</h1>
         <p id="no_config_made"> No sensor configuration has been made!</p>
-        <p id="active_device">Active Device : {{ deviceID }}</p>
-        <br>
+        <p id="active_device">Active Device: {{ deviceID }}</p>
+        <p id="active_device">Active Sensor: {{ sensorID }}</p>
         <div class="preview_sensor_config">
             <h2 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">Settings for sensor
                 configuration</h2>
@@ -64,6 +67,7 @@
         <form action="{{ url_for('intel_irris_sensor_config') }}" method="post">
             <div class="accordion-body">
                 <div class="accordion">
+                		<hr>
                     <div class="container">
                         <div class="accordion-title">Sensor parameters</div>
                         <div class="accordion-content">
@@ -79,23 +83,25 @@
                                             required>
                                         <label for="capacitive">Capacitive</label>
                                     </li>
-                                    <li><input type="radio" id="tensiometer" name="sensor_type" value="tensiometer">
-                                        <label for="tensiometer">Tensiometer</label>
+                                    <li><input type="radio" id="tensiometer_cbar" name="sensor_type" value="tensiometer_cbar">
+                                        <label for="tensiometer_cbar">Tensiometer (cbar)</label>
                                     </li>
+                                    <li><input type="radio" id="tensiometer_raw" name="sensor_type" value="tensiometer_raw">
+                                        <label for="tensiometer_raw">Tensiometer (raw)</label>
+                                    </li>                                    
                                 </ul>
-                                <p>Enter Sensor age
+                                <p>Sensor age
                                     <input id="sensor_age" class="sensor_age" name="sensor_age" type="text"
                                         placeholder=" months " required>
                                 </p>
-                                <p>Enter sensor values</p>
-                                <p>
-                                    <input id="sensor_max" class="sensor_max" name="sensor_max" type="text"
-                                        placeholder=" max sensor value " required>
-                                </p>
-                                <p>
+                                <p>Min value
                                     <input id="sensor_min" class="sensor_min" name="sensor_min" type="text"
                                         placeholder=" min sensor value " required>
-                                </p>
+                                </p>        
+                                <p>Max value
+                                    <input id="sensor_max" class="sensor_max" name="sensor_max" type="text"
+                                        placeholder=" max sensor value " required>
+                                
                             </div>
                         </div>
                     </div>
@@ -106,7 +112,7 @@
                             <div class="soil_parameters">
                                 <p> Soil Type
                                     <select name="soil_type" id="soil_type" class="input">
-                                        <option>- Select one -</option>
+                                        <option value="undefined"> Undefined</option>
                                         <option value="clay"> Clay</option>
                                         <option value="sandy"> Sandy</option>
                                         <option value="silty"> Silty</option>
@@ -115,30 +121,30 @@
                                         <option value="loamy"> Loamy</option>
                                     </select>
                                 </p>
-                                <div class="irrigation_type">
-                                    <p> Irrigation Type </p>
+                                <div class="soil_irrigation_type">
+                                    <p> Soil Irrigation Type </p>
                                     <ul style="list-style-type:none;">
-                                        <li><input type="radio" id="undefined" name="irrigation_type" value="undefined"
+                                        <li><input type="radio" id="undefined" name="soil_irrigation_type" value="undefined"
                                                 required>
-                                            <label for="undefined">undefined</label>
+                                            <label for="undefined">Undefined</label>
                                         </li>
-                                        <li><input type="radio" id="furrow" name="irrigation_type" value="furrow">
+                                        <li><input type="radio" id="furrow" name="soil_irrigation_type" value="furrow">
                                             <label for="furrow">Furrow</label>
                                         </li>
-                                        <li><input type="radio" id="sprinkler" name="irrigation_type" value="sprinkler">
+                                        <li><input type="radio" id="sprinkler" name="soil_irrigation_type" value="sprinkler">
                                             <label for="sprinkler">Sprinkler</label>
                                         </li>
-                                        <li><input type="radio" id="drip" name="irrigation_type" value="drip">
+                                        <li><input type="radio" id="drip" name="soil_irrigation_type" value="drip">
                                             <label for="drip">Drip</label>
                                         </li>
                                     </ul>
                                 </div>
                                 <p>Soil Salinity
-                                    <input id="global_soil_salinity" class="soil_values" name="soil_salinity"
+                                    <input id="soil_salinity" class="soil_values" name="soil_salinity"
                                         type="text" placeholder=" empty or -1 for disabled ">
                                 </p>
                                 <p>Soil Bulk Density
-                                    <input id="global_soil_bulk_density" class="soil_values" name="soil_bulk_density"
+                                    <input id="soil_bulk_density" class="soil_values" name="soil_bulk_density"
                                         type="text" placeholder=" empty or -1 for disabled ">
                                 </p>
                                 <br>
@@ -170,12 +176,12 @@
                                             name="soil_temperature_value" type="text" placeholder=" enter temperature">
                                         <br>
                                         <div id="soil_temperature_source">
-                                            <p>Enter device id:
+                                            <p>Enter device id
                                                 <input id="soil_temperature_device_id" class="soil_values"
                                                     name="soil_temperature_device_id" type="text"
                                                     placeholder=" enter device id"></li>
                                             </p>
-                                            <p>Enter sensor id:
+                                            <p>Enter sensor id
                                                 <input id="soil_temperature_sensor_id" class="soil_values"
                                                     name="soil_temperature_sensor_id" type="text"
                                                     placeholder=" enter sensor id"></li>
@@ -192,8 +198,8 @@
                         <div class="accordion-content">
                             <div class="plant_parameters">
                                 <p> Plant/Crop
-                                    <select name="crop" id="crop" class="input">
-                                        <option>- Select one -</option>
+                                    <select name="plant_crop" id="plant_crop" class="input">
+                                        <option value="undefined"> Undefined</option>
                                         <option value="cassava"> Cassava</option>
                                         <option value="maize"> Maize</option>
                                         <option value="plantains"> Plantains</option>
@@ -208,7 +214,7 @@
                                 </p>
                                 <p> Plant Sub-Type
                                     <select name="plant_sub_type" id="plant_sub_type" class="input">
-                                        <option>- Select one -</option>
+                                        <option value="undefined">Undefined</option>
                                         <option value="sub_type_A">Sub-Type A</option>
                                         <option value="sub_type_B">Sub-Type B</option>
                                         <option value="sub_type_C">Sub-Type C</option>
@@ -216,8 +222,8 @@
                                     </select>
                                 </p>
                                 <p>
-                                    <label for="planting_date">Planting Date:</label>
-                                    <input type="date" id="planting_date" name="planting_date"
+                                    <label for="plant_planting_date">Planting Date</label>
+                                    <input type="date" id="plant_planting_date" name="plant_planting_date"
                                         style=" border: thin solid #f4b548; border-radius: 4px;height: 30px;">
                                 </p>
                             </div>
@@ -229,8 +235,8 @@
                         <div class="accordion-content">
                             <div class="weather-parameters">
                                 <p> Region
-                                    <select name="region" id="region" class="input">
-                                        <option>- Select one -</option>
+                                    <select name="weather_region" id="weather_region" class="input">
+                                        <option value="undefined"> Undefined</option>
                                         <option value="arid"> Arid</option>
                                         <option value="semi-arid"> Semi-Arid</option>
                                         <option value="dry"> Dry</option>
@@ -239,7 +245,8 @@
                             </div>
                         </div>
                     </div>
-
+ 										<hr>
+ 										
                     <br>
                     <button type="submit" value="submit" class="update_parameters">Update</button>
                 </div>

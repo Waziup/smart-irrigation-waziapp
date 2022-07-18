@@ -1,6 +1,6 @@
 var sensor_config_url = 'intel-irris-sensor-configurations';
-var active_url = 'intel-irris-active-device'
-var request_DeviceSensors_url = 'request-device-sensors'
+var active_url = 'intel-irris-active-device';
+var request_DeviceSensors_url = 'request-device-sensors';
 
 var active_device = document.getAnimations("active_device");
 var active_device_id = document.getElementById("active_device_id");
@@ -13,36 +13,40 @@ var selected_sensor_id;
 var selected_temperature_source;
 
 /* sensor configuration parameters */
-var global_soil_salinity;
-var global_soil_bulk_density;
 var sensor_id;
 var sensor_type;
 var sensor_age;
 var sensor_max;
 var sensor_min;
-var region;
 var soil_type;
-var irrigation_type;
-var crop;
-var plant_sub_type;
-var planting_date;
+var soil_irrigation_type;
+var soil_salinity;
+var soil_bulk_density;
 var soil_temperature_value;
 var soil_temperature_device_id;
 var soil_temperature_sensor_id;
+var plant_crop;
+var plant_sub_type;
+var plant_planting_date;
+var weather_region;
+
+var global_soil_salinity;
+var global_soil_bulk_density;
+
 /* *** */
 
 async function inform_on_configurations() {
     const response = await fetch(sensor_config_url);
-    //console.log(response);
+    console.log(response);
     sensor_config_data = await response.json();
-    configs = sensor_config_data['sensors']
+    configs = sensor_config_data['sensors'];
 
     number_of_configurations = Object.keys(configs).length;
-    //console.log('number_of_configurations made = ' + number_of_configurations);
+    console.log('number_of_configurations made = ' + number_of_configurations);
 
     var no_config_made = document.getElementById("no_config_made");
     if (number_of_configurations == 0) {
-        no_config_made.style.display = "block"
+        no_config_made.style.display = "block";
     }
     else if (number_of_configurations != 0) {
         no_config_made.style.display = "none";
@@ -84,6 +88,7 @@ async function getActiveID() {
 
     request_device_sensors(active_device_id);
 }
+
 async function request_device_sensors() {
     //device_url = `https://api.waziup.io/api/v2/devices/${active_device_id}/sensors`;
     //device_url = `http://localhost/devices/${active_device_id}/sensors`;
@@ -91,8 +96,8 @@ async function request_device_sensors() {
     const response = await fetch(request_DeviceSensors_url + '?deviceID=' +active_device_id);
     //console.log(response);
     sensors_configs_response = await response.json();
-    sensors_configs = sensors_configs_response
-    sensors_configs_response = JSON.stringify(sensors_configs_response)
+    sensors_configs = sensors_configs_response;
+    sensors_configs_response = JSON.stringify(sensors_configs_response);
     //console.log('device data : '+device_sensors);
 
     if (sensors_configs_response != '[{"status":"404"}]') { // show sensor ids if device ID exist
@@ -103,7 +108,7 @@ function update_sensor_select() {
     if (typeof (sensors_configs) != undefined) {
 
         no_sensors = sensors_configs.length;
-        //console.log("number of sensors = " + no_sensors)
+        //console.log("number of sensors = " + no_sensors);
 
         var sensor_radio = document.getElementById('select_sensor_radio');
         sensor_radio.innerHTML = "";
@@ -119,7 +124,7 @@ function update_sensor_select() {
             var t = document.createTextNode(sensor_id);
             newLabel.setAttribute("for", sensor_id);
             sensor_radio.appendChild(newRadio);
-            sensor_radio.appendChild(t)
+            sensor_radio.appendChild(t);
             sensor_radio.appendChild(document.createElement('br'));
 
             newRadio.addEventListener('click', function () {
@@ -136,9 +141,9 @@ function check_selected_sensor_id() {
         radioButton.addEventListener('change', showSelected);
     }
     function showSelected(e) {
-        //console.log(e);
+        console.log(e);
         if (this.checked) {
-            //console.log("you have checked "+ `${this.value}`)
+            console.log("you have checked "+ `${this.value}`);
             selected_sensor_id = this.value;
             get_configuration_data();
 
@@ -149,25 +154,28 @@ function check_selected_sensor_id() {
 /* functions that update parameters accordion with configuration of checked sensor */
 function get_configuration_data() { //obtain global variables and sensor configurations
     // reset variables
-    global_soil_salinity =''
-    global_soil_bulk_density = '';
     sensor_id = '';
     sensor_type = '';
-    sensor_age = '';
+    sensor_age = '0';
     sensor_max = '';
-    sensor_min = '';
-    region = '';
-    soil_type = '';
-    irrigation_type = '';
-    crop = '';
-    plant_sub_type = '';
-    planting_date = '';
+    sensor_min = '0';
+    soil_type = 'undefined';
+    soil_irrigation_type = 'undefined';
+    soil_salinity ='';
+    soil_bulk_density = '';
     soil_temperature_value = '';
     soil_temperature_device_id = '';
-    soil_temperature_sensor_id = '';
+    soil_temperature_sensor_id = '';        
+    plant_crop = 'undefined';
+    plant_sub_type = 'undefined';
+    plant_planting_date = 'undefined';
+    weather_region = 'undefined';
 
-    global_soil_salinity = sensor_config_data['globals']['global_soil_salinity']
-    global_soil_bulk_density = sensor_config_data['globals']['global_soil_bulk_density']
+		global_soil_salinity = '';
+		global_soil_bulk_density = '';
+		
+    global_soil_salinity = sensor_config_data['globals']['soil_salinity'];
+    global_soil_bulk_density = sensor_config_data['globals']['soil_bulk_density'];
 
     if (global_soil_salinity == 'disabled' || typeof(global_soil_salinity) == "undefined") {
         global_soil_salinity = '';
@@ -186,30 +194,30 @@ function get_configuration_data() { //obtain global variables and sensor configu
                 sensor_age = sensor_config_data['sensors'][x]['value']['sensor_age'];
                 sensor_max = sensor_config_data['sensors'][x]['value']['sensor_max'];
                 sensor_min = sensor_config_data['sensors'][x]['value']['sensor_min'];
-                region = sensor_config_data['sensors'][x]['value']['region'];
                 soil_type = sensor_config_data['sensors'][x]['value']['soil_type'];
-                irrigation_type = sensor_config_data['sensors'][x]['value']['irrigation_type'];
-                crop = sensor_config_data['sensors'][x]['value']['crop'];
-                plant_sub_type = sensor_config_data['sensors'][x]['value']['plant_sub_type'];
-                planting_date = sensor_config_data['sensors'][x]['value']['planting_date'];
-
+                soil_irrigation_type = sensor_config_data['sensors'][x]['value']['soil_irrigation_type'];
+    						soil_salinity = sensor_config_data['sensors'][x]['value']['soil_salinity'];
+    						soil_bulk_density = sensor_config_data['sensors'][x]['value']['soil_bulk_density'];                                
                 soil_temperature_value = sensor_config_data['sensors'][x]['soil_temperature_source']['soil_temperature_value'];
                 soil_temperature_device_id = sensor_config_data['sensors'][x]['soil_temperature_source']['soil_temperature_device_id'];
                 soil_temperature_sensor_id = sensor_config_data['sensors'][x]['soil_temperature_source']['soil_temperature_sensor_id'];
-                
+                plant_crop = sensor_config_data['sensors'][x]['value']['plant_crop'];
+                plant_sub_type = sensor_config_data['sensors'][x]['value']['plant_sub_type'];
+                plant_planting_date = sensor_config_data['sensors'][x]['value']['plant_planting_date'];
+                weather_region = sensor_config_data['sensors'][x]['value']['weather_region'];
                 break;
             }
         }
     }
     
     if (typeof(sensor_age) == "undefined" || sensor_age == "undefined") {
-        sensor_age = '';
+        sensor_age = '0';
     }
     if (typeof(sensor_max) == "undefined" || sensor_max == "undefined") {
         sensor_max = '';
     }
     if (typeof(sensor_min) == "undefined" || sensor_min == "undefined") {
-        sensor_min = '';
+        sensor_min = '0';
     }
     if (typeof(soil_temperature_value) == "undefined" || soil_temperature_value == "undefined") {
         soil_temperature_value = '';
@@ -223,24 +231,25 @@ function get_configuration_data() { //obtain global variables and sensor configu
 
     //console.log('sensor_id = ' + sensor_id);
     console.log('=================================');
-    console.log('device_id = ' +active_device_id);
+    console.log('device_id = ' + active_device_id);
     console.log('sensor_id = ' + sensor_id);
-    console.log('global_soil_salinity = ' + global_soil_salinity);
-    console.log('global_soil_bulk_density = ' + global_soil_bulk_density);
     console.log('sensor_type = ' + sensor_type);
     console.log('sensor_age = ' + sensor_age);
     console.log('sensor_max = ' + sensor_max);
-    console.log('sensor_min = ' + sensor_min);
-    console.log('region = ' + region);
+    console.log('sensor_min = ' + sensor_min);    
     console.log('soil_type = ' + soil_type);
-    console.log('irrigation_type = ' + irrigation_type);
-    console.log('crop = ' + crop);
-    console.log('plant_sub_type = ' + plant_sub_type);
-    console.log('planting_date = ' + planting_date);
+    console.log('soil_irrigation_type = ' + soil_irrigation_type);
+    console.log('soil_salinity = ' + soil_salinity);
+    console.log('soil_bulk_density = ' + soil_bulk_density);
     console.log('soil_temperature_value = ' + soil_temperature_value);
     console.log('soil_temperature_device_id = ' + soil_temperature_device_id);
-    console.log('soil_temperature_sensor_id = ' + soil_temperature_sensor_id);
+    console.log('soil_temperature_sensor_id = ' + soil_temperature_sensor_id);    
+    console.log('plant_crop = ' + plant_crop);
+    console.log('plant_sub_type = ' + plant_sub_type);
+    console.log('plant_planting_date = ' + plant_planting_date);
+    console.log('weather_region = ' + weather_region);    
     console.log('=================================');
+    
     update_accordion_parameters();
 }
 
@@ -268,12 +277,18 @@ function update_accordion_parameters() {
         if (sensor_type_radios[t].value == current_sensor_type) {
             sensor_type_radios[t].checked = true;
             // only one radio can be logically checked, don't check the rest
-            break;
+            //break;
         }
+        else
+        		sensor_type_radios[t].checked = false;
     }
-    if (current_sensor_type == ''){ // clear radio if no option is configured
+    
+    // clear radio if no option is configured
+    /*
+    if (current_sensor_type == ''){ 
         document.querySelector('input[name="sensor_type"]:checked').checked = false;
     }
+    */
     /* *** */
     /* show current sensor age (input)*/
     document.querySelector('input[name="sensor_age"]').value = sensor_age;
@@ -285,55 +300,51 @@ function update_accordion_parameters() {
     document.querySelector('input[name="sensor_min"]').value = sensor_min;
     /* *** */
     /* show current soil type (select)*/
-    if (soil_type != ''){
-        soil_type_select = document.getElementById('soil_type');
-        soil_type_select.value = soil_type;
-    }
+    soil_type_select = document.getElementById('soil_type');
+    soil_type_select.value = soil_type;
+        
     /* *** */
     /* show current irrigation type (radio)*/
-    let irrigation_type_radios = document.getElementsByName('irrigation_type');
-    let irrigationtype = irrigation_type;
+    let soil_irrigation_type_radios = document.getElementsByName('soil_irrigation_type');
+    let current_soil_irrigation_type = soil_irrigation_type;
 
-    for (let k = 0, length = irrigation_type_radios.length; k < length; k++) {
-        if (irrigation_type_radios[k].value == irrigationtype) {
-            irrigation_type_radios[k].checked = true;
+    for (let k = 0, length = soil_irrigation_type_radios.length; k < length; k++) {
+        if (soil_irrigation_type_radios[k].value == current_soil_irrigation_type) {
+            soil_irrigation_type_radios[k].checked = true;
             // only one radio can be logically checked, don't check the rest
             break;
         }
     }
-    if (irrigationtype == ''){ // clear radio if no option is configured
-        document.querySelector('input[name="irrigation_type"]:checked').checked = false;
+    if (current_soil_irrigation_type == ''){ // clear radio if no option is configured
+        document.querySelector('input[name="soil_irrigation_type"]:checked').checked = false;
     }
     /* *** */
     /* show current soil salinity (input)*/
-    document.querySelector('input[name="soil_salinity"]').value = global_soil_salinity;
+    document.querySelector('input[name="soil_salinity"]').value = soil_salinity;
     /* *** */
     /* show current soil bulk density (input)*/
-    document.querySelector('input[name="soil_bulk_density"]').value = global_soil_bulk_density;
+    document.querySelector('input[name="soil_bulk_density"]').value = soil_bulk_density;
     /* *** */
     /* show current plant/crop (select)*/
-    if (crop != ''){
-        let plant_crop = document.getElementById('crop');
-        plant_crop.value = crop;
-    }
+
+    let current_plant_crop = document.getElementById('plant_crop');
+    current_plant_crop.value = plant_crop;
+
     /* *** */
     /* show current plant sub type (select)*/
-    if (plant_sub_type != ''){
-        let sub_type = document.getElementById('plant_sub_type');
-        sub_type.value = plant_sub_type;
-    }
+    let current_plant_sub_type = document.getElementById('plant_sub_type');
+    current_plant_sub_type.value = plant_sub_type;
+
     /* *** */
     /* show current planting date (date input)*/
-    if (planting_date != ''){
-        let date = document.getElementById('planting_date');
-        date.value = planting_date;
-    }
+    let current_plant_planting_date = document.getElementById('plant_planting_date');
+    current_plant_planting_date.value = plant_planting_date;
+
     /* **** */
     /* show current weather parameters (select)*/
-    if (region != ''){
-        let weather_region = document.getElementById('region');
-        weather_region.value = region;
-    }
+    let current_weather_region = document.getElementById('weather_region');
+    current_weather_region.value = weather_region;
+
     /* *** */
     /* show current soil temperature value (radio)*/
     if (soil_temperature_value != '') {
@@ -341,6 +352,10 @@ function update_accordion_parameters() {
         document.getElementById('span_currentSource').innerHTML = "user input";
 
         selected_temperature_source = 'user';
+        
+        let temp_source_radios = document.getElementsByName('soil_temp_source');
+        temp_source_radios[0].checked = true;
+                
         show_temperature_source_fields();
     }
     /* **** */
@@ -353,6 +368,10 @@ function update_accordion_parameters() {
         document.getElementById('soil_temperature_sensor_id').value = soil_temperature_sensor_id;
 
         selected_temperature_source = 'sensor';
+        
+        let temp_source_radios = document.getElementsByName('soil_temp_source');
+        temp_source_radios[1].checked = true;
+                
         show_temperature_source_fields();
     }
     /* *** */
@@ -375,7 +394,9 @@ function check_selected_temperature_source() {
         }
     }
 }
-function show_temperature_source_fields() {// shows an input for sensor value or device_id && sensor_id
+
+// shows an input for sensor value or device_id && sensor_id
+function show_temperature_source_fields() {
 
     if (selected_temperature_source == 'user') {
         document.getElementById('show_sensor_field').style.display = "block";
@@ -406,7 +427,8 @@ function foo() {
         getDevice_SensorCase();
         getActiveID();
     }
-    sensorIDRadio_updated = true; // prevent refreshing dropdowns when an option is selected
+    // prevent refreshing dropdowns when an option is selected
+    sensorIDRadio_updated = true; 
 
     setTimeout(foo, 6000);
 }

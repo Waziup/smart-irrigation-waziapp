@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>Intel-Irris Devices</title>
+  <title>IIWA Devices</title>
   <meta name="description" content="" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,14 +14,18 @@
 
 <body>
   <div class="topnav" id="myTopnav">
-    <a href="{{ url_for('dashboard') }}" class="active">Dashboard</a>
+    <img src="{{ url_for('static', filename='images/intel-irris-logo.png') }}" height="40" style="vertical-align:middle;margin:4px 0px">
+    <a href="{{ url_for('dashboard') }}" class="active"><img src="{{ url_for('static', filename='images/dashboard.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"></a>
+    <a href="{{ url_for('intel_irris_device_manager') }}"><img src="{{ url_for('static', filename='images/device.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"></a>
+    <a href="{{ url_for('intel_irris_sensor_config') }}"><img src="{{ url_for('static', filename='images/config.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"></a>    
     <div class="dropdown">
       <button class="dropbtn">Menu
         <i class="fa fa-caret-down"></i>
-      </button>
+      </button>     
       <div class="dropdown-content">
+      	<a href="{{ url_for('dashboard') }}">Dashboard</a>
         <a href="{{ url_for('intel_irris_device_manager') }}">Device Manager</a>
-        <a href="{{ url_for('intel_irris_sensor_config') }}">Sensor Configuration</a>
+        <a href="{{ url_for('intel_irris_sensor_config') }}">Configuration</a>
       </div>
     </div>
     <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
@@ -38,13 +42,8 @@
   </script>
 
   <div style="padding-left:16px; padding-top:16px">
-    <h1 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">Device Manager</h1>
-    <br></br>
-    <p>Here is a list of Waziup devices added to Intel-Irris.</p>
-    <p>You can also add/remove a device using the form below.</p>
-    <p>An active device determines sensors values visualization and source for humidity index value computation.</p>
-
-    <br>
+    <h1 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">IIWA Device Manager</h1>
+    <p>List of devices added to IIWA.</p>
     <div class="table_container">
       <p style="text-align:center"><em>Devices added to IIWA</em></p><br>
       <div class="tbl-header">
@@ -73,7 +72,8 @@
         $('.tbl-header').css({ 'padding-right': scrollWidth });
       }).resize();
     </script>
-    <br></br>
+    <br>
+    <p>Add/Remove a device using the form below.</p>
     <div class="add_device">
       <p style="text-align:center"><em>Add a device to IIWA</em></p><br>
       <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
@@ -107,11 +107,11 @@
         </form>
       </div>
     </div>
-
     <br>
+    <p>Active device determines sensors values visualization and data source for humidity index value computation.</p>
     <div class="div_containers">
-      <p style="text-align: center;"><em>Select an active device and sensor</em></p><br>
-      <p>Use dashboard with device_ID :</p>
+      <p style="text-align: center;"><em>Select an active device and sensor</em></p>
+      <p id="deviceid">Active device: <span id="deviceid_id"></span>. Select from list</p>
       <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
         <label></label>
         <select name="device-id-select" class="device-id-select" id="device-id-select">
@@ -120,7 +120,7 @@
       </form>
       
       <br>
-      <p>Select sensor for Dashboard & index value computation:</p>
+      <p id="sensorid">Active sensor: <span id="sensorid_id"></span>. Select from list for Dashboard & humidity index value computation</p>
       <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
         <label></label>
         <select name="sensor-id-select" class="sensor-id-select" id="sensor-id-select">

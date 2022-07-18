@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>Intel-Irris Dashboard</title>
+  <title>IIWA Dashboard</title>
   <!-- <meta name="description" content="" /> -->
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -15,17 +15,21 @@
 
 <body>
   <div class="topnav" id="myTopnav">
-    <a href="{{ url_for('dashboard') }}" class="active">Dashboard</a>
+    <img src="{{ url_for('static', filename='images/intel-irris-logo.png') }}" height="40" style="vertical-align:middle;margin:4px 0px">
+    <a href="{{ url_for('dashboard') }}" class="active"><img src="{{ url_for('static', filename='images/dashboard.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"></a>
+    <a href="{{ url_for('intel_irris_device_manager') }}"><img src="{{ url_for('static', filename='images/device.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"></a>
+    <a href="{{ url_for('intel_irris_sensor_config') }}"><img src="{{ url_for('static', filename='images/config.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"></a>    
     <div class="dropdown">
       <button class="dropbtn">Menu
         <i class="fa fa-caret-down"></i>
-      </button>
+      </button>     
       <div class="dropdown-content">
+      	<a href="{{ url_for('dashboard') }}">Dashboard</a>
         <a href="{{ url_for('intel_irris_device_manager') }}">Device Manager</a>
-        <a href="{{ url_for('intel_irris_sensor_config') }}">Sensor Configuration</a>
+        <a href="{{ url_for('intel_irris_sensor_config') }}">Configuration</a>
       </div>
     </div>
-    <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
+    <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>    
   </div>
   <script>
     function myFunction() {
@@ -37,14 +41,15 @@
       }
     }
   </script>
+  
   <div style="padding-left:16px; padding-top:16px">
-    <h1 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">Intel-Irris Dashboard</h1>
-    <br></br>
+    <h1 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">INTEL-IRRIS Irrigation WaziApp (IIWA)</h1>
     {% if no_devices == True %}
     <p>{{ added_devices}}</p>
     {% elif no_devices == False %}
-    <p id="deviceid">Active Device ID : <span id="deviceid_id"></span></p>
-    <p id="lastvalue">Last Soil Moisture Value : <span id="lastvalue_value"></span></p>
+    <p id="deviceid">Active device: <span id="deviceid_id"></span></p>
+    <p id="sensorid">Active sensor: <span id="sensorid_id"></span></p>
+    <p id="lastvalue">Last soil moisture value : <span id="lastvalue_value"></span></p>
 
     <br>
     <div class="semi-circle" id="semi-circle"></div>

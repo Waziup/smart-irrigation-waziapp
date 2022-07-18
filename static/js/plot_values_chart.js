@@ -9,6 +9,8 @@ var four_04 = false;
 
 var deviceid = document.getElementById("deviceid")
 var deviceid_id = document.getElementById("deviceid_id")
+var sensorid = document.getElementById("sensorid")
+var sensorid_id = document.getElementById("sensorid_id")
 var lastvalue = document.getElementById("lastvalue")
 var lastvalue_value = document.getElementById("lastvalue_value")
 var semi_circle = document.getElementById("semi-circle")
@@ -42,6 +44,7 @@ async function getActiveIDs() {
 
     if (sensorID == null) {
         deviceid.style.display = "none";
+        sensorid.style.display = "none";
         lastvalue.style.display = "none";
         semi_circle.style.display = "none";
         last_value_insight.style.display = "none";
@@ -53,6 +56,8 @@ async function getActiveIDs() {
     else {
         deviceid_id.innerHTML = deviceID;
         deviceid.style.display = "block";
+        sensorid_id.innerHTML = sensorID;
+        sensorid.style.display = "block";        
         no_sensor_found.style.display = "none";
         check_DeviceSensorIDs();
     }
@@ -68,6 +73,7 @@ async function check_DeviceSensorIDs() {
         four_04 = true;
 
         deviceid.style.display = "none";
+        sensorid.style.display = "none";
         lastvalue.style.display = "none";
         semi_circle.style.display = "none";
         last_value_insight.style.display = "none";
@@ -92,12 +98,15 @@ async function plotData() {
 
         data = sensor_data;
         console.log("data : " + JSON.stringify(data));
-        length = Object.keys(data).length; // number of indices in the list
+        // number of indices in the list
+        length = Object.keys(data).length; 
 
-        datapoints = length; // used by set marker on last value
+				// used by set marker on last value
+        datapoints = length; 
         console.log("datapoints : " + length);
 
-        timestamps = []; // reset variables
+				// reset variables
+        timestamps = []; 
         values = [];
         x_y_values = {};
         values_min = 0;
@@ -187,7 +196,8 @@ async function plotData() {
                 yaxis: [
                     {
                         label: {
-                            text: "very wet" // set to " " for removing text
+                        		// set to " " for removing text
+                            text: "very wet" 
                         },
                         y: 0,
                         y2: 195,
@@ -226,7 +236,8 @@ async function plotData() {
             },
             chart: {
                 type: "line",
-                foreColor: "#6D6D6D" // set color of axes labels
+                foreColor: "#6D6D6D"
+                // set color of axes labels
                 //height: 200 // set the height of the chart
                 //width: "100%" // set the width of the chart
             },
@@ -292,7 +303,8 @@ async function plotData() {
         var chart = new ApexCharts(document.querySelector("#values_chart"), options);
         chart.render();
 
-        chart.updateSeries([{ // update the chart with the new values from response
+        chart.updateSeries([{ 
+        		// update the chart with the new values from response
             name: 'value',
             data: x_y_values
         }])
@@ -310,8 +322,10 @@ function parse_ISO8601(iso8601) {
 
     return DateTime;
 }
+
 function foo() {
     getActiveIDs();
     setTimeout(foo, 6000);
 }
+
 foo();

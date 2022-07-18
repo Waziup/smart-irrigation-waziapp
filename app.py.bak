@@ -34,52 +34,6 @@ WaziGate_headers_auth = {
 
 #---------------------#
 
-capacitive_default_sensor_config = {
-		"value": {
-				"sensor_type": "capacitive",
-				"sensor_age": "0",
-				"sensor_max": "800",
-				"sensor_min": "0",
-				"soil_type": "silty",
-				"soil_irrigation_type": "furrow",
-				"soil_salinity": "0",
-				"soil_bulk_density": "0",
-				"plant_crop": "wheat",
-				"plant_sub_type": "sub_type_A",
-				"plant_planting_date": "undefined",
-				"weather_region": "semi-arid",										
-				"last_value": 0.0
-		},
-		"soil_temperature_source": {
-				"soil_temperature_device_id": "undefined",
-				"soil_temperature_sensor_id": "undefined",
-				"soil_temperature_value": 28.0
-		}
-}
-
-tensiometer_default_sensor_config = {
-		"value": {
-				"sensor_type": "tensiometer_raw",
-				"sensor_age": "0",
-				"sensor_max": "8000",
-				"sensor_min": "0",
-				"soil_type": "silty",
-				"soil_irrigation_type": "furrow",
-				"soil_salinity": "0",
-				"soil_bulk_density": "0",
-				"plant_crop": "wheat",
-				"plant_sub_type": "sub_type_A",
-				"plant_planting_date": "undefined",
-				"weather_region": "semi-arid",										
-				"last_value": 0.0
-		},
-		"soil_temperature_source": {
-				"soil_temperature_device_id": "undefined",
-				"soil_temperature_sensor_id": "undefined",
-				"soil_temperature_value": 28.0
-		}
-}					
-
 @app.route("/")
 def dashboard():
 
@@ -128,14 +82,14 @@ def intel_irris_device_manager():
 		if request.method == 'POST':	# get selected device name
 				active_device = request.form.get('device-id-select')
 				active_sensor_id = request.form.get('sensor-id-select')
-				
-				# write device_id to json
-				if (active_device is not None):	 
+
+				if (active_device is not None):	 # write device_id to json
 						print("Selected active device: %s" % active_device)
 
 						active_device_dict = [{'device_id': active_device}]
-						# convert python dic to JSON string
-						jsString = json.dumps(active_device_dict)	 
+
+						jsString = json.dumps(
+								active_device_dict)	 # convert python dic to JSON string
 						jsFile = open(active_device_filename, "w")
 						jsFile.write(jsString)
 						jsFile.close()
@@ -155,8 +109,7 @@ def intel_irris_device_manager():
 								'sensor_id': active_sensor_id
 						}]
 
-						# convert python dict to JSON 
-						jsString = json.dumps(active_device_sensor_dict)
+						jsString = json.dumps(active_device_sensor_dict)	# convert python dict to JSON 
 						jsFile = open(active_device_filename, "w")
 						jsFile.write(jsString)
 						jsFile.close()
@@ -165,9 +118,7 @@ def intel_irris_device_manager():
 		#---------------------#
 
 		#-- Handle adding/removing a device_id from IIWA ---#
-		
-		# get form input and add to json
-		if request.method == 'POST':	
+		if request.method == 'POST':	# get form input and add to json
 				add_device_id = request.form.get('device_id')
 				add_device_name = request.form.get('device_name')
 				sensors_structure = request.form.get('sensors_structure')
@@ -177,14 +128,12 @@ def intel_irris_device_manager():
 				if (add_device_id is not None) and (add_device_name is not None) and (sensors_structure is not None):
 						# check if devices list has been updates
 
-						# device list not updated
-						if (length == 1):	
+						if (length == 1):	 # device list not updated
 								print("Added device list not updated! Updating..")
 
 								# write device_id as active one in json
 								active_device_Dict = [{'device_id': add_device_id}]
-								# convert python dic to JSON string
-								jsString = json.dumps(active_device_Dict)	 
+								jsString = json.dumps(active_device_Dict)	 # convert python dic to JSON string
 								jsFile = open(active_device_filename, "w")
 								jsFile.write(jsString)
 								jsFile.close()
@@ -252,22 +201,19 @@ def intel_irris_device_manager():
 								# check if active device matches requested removal and update active
 								if (deviceID == remove_device_id):
 										print("Device id to remove was active id..resolving this..")
-										# check if only one index is in list and empty active list
-										if (len(read_data) == 1):	 
-												# empty json file
-												open(active_device_filename, 'w').close()	 
+										if (len(read_data) == 1):	 # check if only one index is in list and empty active list
+												open(active_device_filename,
+														 'w').close()	 # empty json file
 												print("Found no other device id to use! No devices in IIWA :(")
 												request_removed_from_active = True
-										
-										# if there are added device IDs, pick first and set as active
-										elif (len(read_data) > 1):	
+
+										elif (len(read_data) > 1):	# if there are added device IDs, pick first and set as active
 												active_device_Dict = [{
 														'device_id':
 														read_data[1]['device_id']
 												}]
-												
-												# convert python dic to JSON string
-												jsString = json.dumps(active_device_Dict)	 
+
+												jsString = json.dumps(active_device_Dict)	 # convert python dic to JSON string
 												jsFile = open(active_device_filename, "w")
 												jsFile.write(jsString)
 												jsFile.close()
@@ -282,6 +228,8 @@ def intel_irris_device_manager():
 								deviceID_exists = False
 								while (not response_obtained):
 										url = BASE_URL+"devices/%s" % remove_device_id
+										#url = "http://localhost/devices/%s" % remove_device_id
+										#url = "https://api.waziup.io/api/v2/devices/%s" % remove_device_id
 										response = requests.get(url, headers=WaziGate_headers)
 
 										if response.status_code == 200:
@@ -294,14 +242,12 @@ def intel_irris_device_manager():
 												deviceID_exists = False
 												response_obtained = True
 
-								# if the device id exists, get its sensor and remove in sensor config file
-								if deviceID_exists: 
+								if deviceID_exists: # if the device id exists, get its sensor and remove in sensor config file
 										device_sensors_num = len(device_data['sensors'])
 										# print("The device has %s sensor(s)"%no_sensors)
 
 										sensor_ids = []
-										# store sensor IDs
-										for x in range(0, device_sensors_num):
+										for x in range(0, device_sensors_num):	# store sensor IDs
 												sensor_ids.append(device_data['sensors'][x]['id'])
 										#print("Sensors ids for the device are : %s"%sensor_ids)
 
@@ -350,10 +296,9 @@ def intel_irris_device_manager():
 
 @app.route("/intel-irris-sensor-config", methods=['POST', 'GET'])
 def intel_irris_sensor_config():
-		# check if an active device is set
 		no_active = True
-		# no device added to Intel-Irris
-		if (os.path.getsize(active_device_filename) == 0):	
+		# check if an active device is set
+		if (os.path.getsize(active_device_filename) == 0):	# no device added to Intel-Irris
 				no_active = True
 				no_sensor_config = True
 		else:
@@ -366,15 +311,13 @@ def intel_irris_sensor_config():
 				print(active_device)
 				deviceID = active_device[0]['device_id']
 				print("Active device_id: %s" % deviceID)
-				sensorID = active_device[0]['sensor_id']
 
 				#---------------------#
 				#-- Manage notifying user to add new config --#
 				current_config_file = open(sensor_config_filename, 'r')
 				current_config = json.loads(current_config_file.read())
 
-				# check if sensor config list empty
-				if (len(current_config['sensors']) == 0):	 
+				if (len(current_config['sensors']) == 0):	 # check if sensor config list empty
 						print("No sensor configurations made!")
 						no_sensor_config = True
 				else:
@@ -408,6 +351,8 @@ def intel_irris_sensor_config():
 						
 						#-- GET last sensor data of the device --#
 						url=BASE_URL+"devices/%s" % deviceID
+						#url = "http://localhost/devices/%s" % deviceID
+						#url = "https://api.waziup.io/api/v2/devices/%s" % deviceID
 						response = requests.get(url, headers=WaziGate_headers)
 						sensors_data = response.json()
 
@@ -421,17 +366,18 @@ def intel_irris_sensor_config():
 								# print("Sensor id: %s"%Id)
 						for i in range(0, sensor_len):
 								if (sensors_data['sensors'][i]['id'] == sensor_id):
+										#last_value = sensors_data['sensors'][i]['value']['value']
 										last_value = sensors_data['sensors'][i]['value']
 
-						#-- Check for empty values in submitted data --#
+						#-- Check for empty values in sumbitted data --#
 						if (soil_type == "hide"):
 								soil_type = "undefined"
 						if (soil_irrigation_type == "None"):
 								soil_irrigation_type = "undefined"
 						if (soil_salinity == "" or soil_salinity == '-1'):
-								soil_salinity = "disabled"	 
+								soil_salinity = "disabled"	 # means disabled
 						if (soil_bulk_density == "" or soil_bulk_density == '-1'):
-								soil_bulk_density = "disabled"
+								soil_bulk_density = "disabled"	 # means disabled
 						if (soil_temperature_value == ""):
 								soil_temperature_value = "undefined"
 						if (soil_temperature_sensor_id == ""):
@@ -473,7 +419,7 @@ def intel_irris_sensor_config():
 						#---------------------#
 						#-- add new config to the sensor-config.json --#
 
-						sensor_config_record = {
+						add_sensors = {
 								"value": {
 										"sensor_type": sensor_type,
 										"sensor_age": sensor_age,
@@ -507,27 +453,40 @@ def intel_irris_sensor_config():
 
 						updated = False
 						lenght_read_sensors = len(read_sensors)
-						
 						for x in range(0, lenght_read_sensors):
-								if (read_sensors[x]['device_id'] == deviceID and read_sensors[x]['sensor_id'] == sensor_id):
-										read_sensors[x] = sensor_config_record
+								if (read_sensors[x]['sensor_id'] == sensor_id):
+										read_sensors[x] = add_sensors
+
+										update_config = {
+												"globals": {
+														"soil_salinity": global_soil_salinity,
+														"soil_bulk_density": global_soil_bulk_density
+												},
+												"sensors": read_sensors
+										}
+										# update with the sensor config
+										jsString = json.dumps(update_config)
+										jsFile = open(sensor_config_filename, "w")
+										jsFile.write(jsString)
+										jsFile.close()
+
 										updated = True
 
 						if (updated == False):
-								read_sensors.append(sensor_config_record)
+								read_sensors.append(add_sensors)
 
-						update_config = {
-								"globals": {
-										"soil_salinity": global_soil_salinity,
-										"soil_bulk_density": global_soil_bulk_density
-								},
-								"sensors": read_sensors
-						}
-						# update config file with new values
-						jsString = json.dumps(update_config)
-						jsFile = open(sensor_config_filename, "w")
-						jsFile.write(jsString)
-						jsFile.close()
+								update_config = {
+										"globals": {
+												"soil_salinity": global_soil_salinity,
+												"soil_bulk_density": global_soil_bulk_density
+										},
+										"sensors": read_sensors
+								}
+								# update config file with new values
+								jsString = json.dumps(update_config)
+								jsFile = open(sensor_config_filename, "w")
+								jsFile.write(jsString)
+								jsFile.close()
 						#---------------------#
 
 				#---------------------#
@@ -539,8 +498,7 @@ def intel_irris_sensor_config():
 		else:
 				return render_template("intel-irris-sensor-config.html",
 															 no_active=no_active,
-															 deviceID=deviceID,
-															 sensorID=sensorID)
+															 deviceID=deviceID)
 #---------------------#
 
 #--------------------------------------------------------------------------
@@ -601,16 +559,20 @@ get_value_index_from_local_database = True
 #here we set in meta.value_index_iiwa
 set_value_index_in_local_database = True
 
+compute_humidityIndexValue = False
+
 def monitor_sensor_value():
 		
-		found_sensor_config={}		
 		sensor_type='undefined'
 		number_of_configurations = 0
 		fetch_last_value = False
 		four_04 = False		
 		
-		#check if there is a device added to IIWA
-		if os.path.getsize(active_device_filename) != 0:	
+		global compute_humidityIndexValue 
+		
+		compute_humidityIndexValue = False
+		
+		if os.path.getsize(active_device_filename) != 0:	#check if there is a device added to IIWA
 				f = open(active_device_filename, 'r')
 				read_devices = json.loads(f.read())
 				f.close()
@@ -619,13 +581,9 @@ def monitor_sensor_value():
 				sensorID_key = 'sensor_id'
 
 				if deviceID_key in read_devices[0] and sensorID_key in read_devices[0]:
-						#get active device and active sensor id
 						BG_deviceID = read_devices[0]['device_id']
 						BG_sensorID = read_devices[0]['sensor_id']
-						
-						#in all cases we will get the last value from the active sensor
-						fetch_last_value = True
-						
+
 						f = open(sensor_config_filename)
 						read_config = json.loads(f.read())
 						f.close()
@@ -636,44 +594,53 @@ def monitor_sensor_value():
 								for x in range(0, number_of_configurations):
 										if (read_config['sensors'][x]['sensor_id'] == BG_sensorID):
 												print("compute-index-service : current sensor id found in configuration")
-												#not needed, to be removed
-												#sensor_lastValue = read_config['sensors'][x]['value']['last_value']
-												#print("compute-index-service : last sensor value in config is : %s" %sensor_lastValue)
+												sensor_lastValue = read_config['sensors'][x]['value']['last_value']
+												print("compute-index-service : last sensor value in config is : %s" %sensor_lastValue)
+												fetch_last_value = True
 												sensor_type=read_config['sensors'][x]['value']['sensor_type']
-												found_sensor_config=read_config['sensors'][x]
-												print (found_sensor_config)
 												break
 										elif (read_config['sensors'][x]['sensor_id'] != BG_sensorID):
+												fetch_last_value = False
+												compute_humidityIndexValue = False
 												print("compute-index-service : no match, continue searching")
 										
-								if found_sensor_config == {}:					
-										print("compute-index-service : Current sensor id has not been found in sensors configuration")
+								if fetch_last_value == False:					
+										print("compute-index-service : Current sensor id has not been found in sensors configuration.")
+										print("compute-index-service : Goto to Sensor Configuration to configure the active sensor id.")
 
 						elif number_of_configurations == 0:
 								print("compute-index-service : No sensor configuration has been made")
+								print("compute-index-service : Sensor value will be requested for and index computation will be automatic")
+								fetch_last_value = True
 
 				elif deviceID_key not in read_devices[0] or sensorID_key not in read_devices[0]:
-						print("compute-index-service : Error in configuration file!")
-						print("compute-index-service : Go to the Device Manager to add a device or sensor id")
+						print("compute-index-service : Error! Cannot proceed to compute humidity index value!")
+						print("compute-index-service : Go to the Device Manager to add a device or sensor id.")
+						fetch_last_value = False
+						compute_humidityIndexValue = False
 
 		elif os.path.getsize(active_device_filename) == 0:
-				print("compute-index-service : No devices added to IIWA, go to the Device Manager to add one")
+				print("compute-index-service : No devices added to IIWA. Go to the Device Manager to add one.")
+				fetch_last_value = False
+				compute_humidityIndexValue = False
 
 		if (fetch_last_value):
 				url = BASE_URL+"devices/" + BG_deviceID + '/sensors/' + BG_sensorID
+				#url = "https://api.waziup.io/api/v2/devices/" + BG_deviceID + '/sensors/' + BG_sensorID
+				#url = "http://localhost/devices/" + BG_deviceID + '/sensors/' + BG_sensorID
 
 				response = requests.get(url, headers=WaziGate_headers)
 
 				if (response.status_code == 404):
 						four_04 = True
-						print("compute-index-service : Error 404! Check IDs of device and sensor of active device")
+						print("compute-index-service : Error 404! Check IDs of device and sensor of active device.")
 				elif (response.status_code == 200):
 						four_04 = False
 						sensor_DataResponse = response.json()
+						#last_PostedSensorValue = sensor_DataResponse['value']['value']
 						last_PostedSensorValue = sensor_DataResponse["value"]
-						print("compute-index-service : last posted sensor value was : %s" % last_PostedSensorValue)
+						print("compute-index-service : last posted sensor value was : %s" %last_PostedSensorValue)
 						
-						#if sensor type was not found in configuration file, try sensor's meta data
 						if sensor_type == 'undefined':
 							if 'capacitive' in response.text:
 								sensor_type = 'capacitive'
@@ -683,28 +650,30 @@ def monitor_sensor_value():
 						
 						#still undefined?
 						if sensor_type == 'undefined':
-							print("compute-index-service : Error! Sensor type is undefined, not computing humidity index value")	
+							print("compute-index-service : sensor type is undefined. Not computing humidity index value.")	
 						else:
 							print ('sensor_type =', sensor_type)
-							
-							if found_sensor_config == {}:
-							
-									print("compute-index-service : Index computation will use default configuration")
-									
+							if number_of_configurations != 0:
+									if (last_PostedSensorValue != sensor_lastValue):	# if sensor value has changed, compute index value
+											compute_humidityIndexValue = True
+											print("compute-index-service : Last posted sensor value has changed. Computing humidity index value.")
+									elif (last_PostedSensorValue == sensor_lastValue):
+											compute_humidityIndexValue = False
+											print("compute-index-service : Last posted sensor value has not changed. Not computing humidity index value.")
+							elif (number_of_configurations == 0):
+									print("compute-index-service : ... computing index value automatically.")
 									if sensor_type == 'capacitive':
-											sensor_config = capacitive_default_sensor_config
-											
-									if sensor_type == 'tensiometer':
-											sensor_config = tensiometer_default_sensor_config											
-							else:
-									print("compute-index-service : Computing humidity index value with sensor's configuration")
-									sensor_config = found_sensor_config				
-									
-							if sensor_type == 'capacitive':
-									get_capacitive_soil_condition(last_PostedSensorValue, sensor_config)
+											get_capacitive_soil_condition(last_PostedSensorValue)
 			
-							if sensor_type == 'tensiometer':	
-									get_tensiometer_soil_condition(last_PostedSensorValue, sensor_config)
+									if sensor_type == 'tensiometer':	
+											get_tensiometer_soil_condition(last_PostedSensorValue)
+
+		if (compute_humidityIndexValue):
+			if sensor_type == 'capacitive':
+				get_capacitive_soil_condition(last_PostedSensorValue)
+			
+			if sensor_type == 'tensiometer':	
+				get_tensiometer_soil_condition(last_PostedSensorValue)
 
 
 def get_ActiveDeviceID():
@@ -720,13 +689,15 @@ def get_ActiveDeviceID():
 #--------------------------------------------------------------------------
 
 ##TODO use BASE_URL and selected sensor id
-def get_capacitive_soil_condition(raw_value, sensor_config):
+def get_capacitive_soil_condition(raw_value):
 		device_id = get_ActiveDeviceID()
 		
 		if get_value_index_from_local_database:
 				WaziGate_url = 'http://localhost/devices/' + device_id + '/sensors/temperatureSensor_0'
 				try:
-						response = requests.get(WaziGate_url, headers=WaziGate_headers, timeout=30)
+						response = requests.get(WaziGate_url,
+																		headers=WaziGate_headers,
+																		timeout=30)
 						print('get-capacitive: returned msg from server is '),
 						print(response.status_code)
 						print(response.reason)
@@ -758,7 +729,7 @@ def get_capacitive_soil_condition(raw_value, sensor_config):
 		#so for capacitive we need to invert the index
 		value_index_capacitive = capacitive_sensor_n_interval - 1 - value_index_capacitive
 		
-		print('computed value_index (capacitive) =', value_index_capacitive)
+		print('computed value_index =', value_index_capacitive)
 		
 		global capacitive_soil_condition
 		capacitive_soil_condition=capacitive_sensor_soil_condition[value_index_capacitive]		
@@ -772,7 +743,10 @@ def get_capacitive_soil_condition(raw_value, sensor_config):
 				WaziGate_url = 'http://localhost/auth/token'
 				try:
 						pload = '{"username":"admin","password":"loragateway"}'
-						response = requests.post(WaziGate_url, headers=WaziGate_headers, data=pload, timeout=30)
+						response = requests.post(WaziGate_url,
+																		 headers=WaziGate_headers,
+																		 data=pload,
+																		 timeout=30)
 						print('get-capacitive: returned msg from server is '),
 						print(response.status_code)
 						print(response.reason)
@@ -795,7 +769,10 @@ def get_capacitive_soil_condition(raw_value, sensor_config):
 				try:
 						pload = '{"value_index_iiwa":' + str(value_index_capacitive) + '}'
 						WaziGate_headers_auth['Authorization'] = 'Bearer' + my_token[1:-2]
-						response = requests.post(WaziGate_url, headers=WaziGate_headers_auth, data=pload, timeout=30)
+						response = requests.post(WaziGate_url,
+																		 headers=WaziGate_headers_auth,
+																		 data=pload,
+																		 timeout=30)
 						print('get-capacitive: returned msg from server is '),
 						print(response.status_code)
 						print(response.reason)
@@ -818,15 +795,16 @@ def get_capacitive_soil_condition(raw_value, sensor_config):
 #determine the soil condition string indication for tensiometer
 #--------------------------------------------------------------------------
 
-##TODO use BASE_URL and selected sensor id
-##TODO use raw resistor value to compute centibar and link with soil temperature	
-def get_tensiometer_soil_condition(raw_value, sensor_config): 
+##TODO use BASE_URL and selected sensor id	
+def get_tensiometer_soil_condition(raw_value): 
 		device_id = get_ActiveDeviceID()
 		
 		if get_value_index_from_local_database:
 				WaziGate_url = 'http://localhost/devices/' + device_id + '/sensors/temperatureSensor_0'
 				try:
-						response = requests.get(WaziGate_url, headers=WaziGate_headers, timeout=30)
+						response = requests.get(WaziGate_url,
+																		headers=WaziGate_headers,
+																		timeout=30)
 						print('get-tensiometer: returned msg from server is '),
 						print(response.status_code)
 						print(response.reason)
@@ -883,7 +861,7 @@ def get_tensiometer_soil_condition(raw_value, sensor_config):
 				#so for tensiometer we need to invert the index
 				value_index_tensiometer=tensiometer_sensor_n_interval-1-value_index_tensiometer	
 		
-		print('computed value_index (tensiometer) =', value_index_tensiometer)
+		print('computed value_index =', value_index_tensiometer)
 
 		global tensiometer_soil_condition
 		if value_index_tensiometer==-1:
@@ -948,9 +926,7 @@ def get_tensiometer_soil_condition(raw_value, sensor_config):
 
 import threading
 
-# in seconds
-computing_interval_sec = 10
-
+computing_interval_sec = 10	 # seconds
 def foo():
 		monitor_sensor_value()
 		threading.Timer(computing_interval_sec, foo).start()
@@ -1010,26 +986,28 @@ def intel_irris_sensor_configurations():
 #---------------------#
 
 #---------------------# Route methods for making GET requests (JS fix)
-
-# returns data of gateway devices
-@app.route("/request-gateway-devices", methods=['GET']) 
+@app.route("/request-gateway-devices", methods=['GET']) # returns data of gateway devices
 def request_gateway_devices():
 		if request.method == 'GET':
 				url = BASE_URL+"devices"
+				#url = "http://localhost/devices"
+				#url = "https://api.waziup.io/api/v2/devices/"
 
 				response = requests.get(url, headers=WaziGate_headers)
 				data = response.json()
 
 				return jsonify(data)
 
-# returns 200 or 404 to indicate if sensor or device id is valid/invalid
-@app.route("/check-device-sensor-id", methods=['GET']) 
+
+@app.route("/check-device-sensor-id", methods=['GET']) # returns 200 or 404 to indicate if sensor or device id is valid/invalid
 def check_sensor_id():
 		if request.method == 'GET':
 				device_id = request.args.get('deviceID')
 				sensor_id = request.args.get('sensorID')
 				
 				url = BASE_URL+"devices/" + device_id + '/sensors/' + sensor_id
+				#url = "https://api.waziup.io/api/v2/devices/" + device_id + '/sensors/' + sensor_id
+				#url = "http://localhost/devices/" + device_id + '/sensors/' + sensor_id
 
 				response = requests.get(url, headers=WaziGate_headers)
 				if (response.status_code == 404):
@@ -1037,14 +1015,16 @@ def check_sensor_id():
 				elif (response.status_code == 200):
 						return jsonify([{"status": "200"}])
 
-# returns sensors data of a device ID
-@app.route("/request-device-sensors", methods=['GET']) 
+
+@app.route("/request-device-sensors", methods=['GET']) # returns sensors data of a device ID
 def request_device_sensors():
 		if request.method == 'GET':
 				device_id = request.args.get('deviceID')
 
 				if device_id[0] != '[':
 						device_url = BASE_URL+"devices/" + device_id + '/sensors'
+						#device_url = 'https://api.waziup.io/api/v2/devices/' + device_id + '/sensors'
+						#device_url = 'http://localhost/devices/' + device_id + '/sensors'
 
 						response = requests.get(device_url, headers=WaziGate_headers)
 
@@ -1055,20 +1035,21 @@ def request_device_sensors():
 						elif response.status_code == 404:
 								print("Device ID does not exist")
 								return jsonify([{'status':'404'}])
-								
-				# handle when empty device id
-				elif device_id[0] == '[': 
+
+				elif device_id[0] == '[': # handle when empty device id
 						print("no device id has been provided")
 						return jsonify([{'status':'404'}])
 
-# returns sensor values
-@app.route("/request-sensor-values", methods=['GET']) 
+
+@app.route("/request-sensor-values", methods=['GET']) # returns sensor values
 def request_sensor_values():
 		if request.method == 'GET':
 				device_id = request.args.get('deviceID')
 				sensor_id = request.args.get('sensorID')
 
 				sensorValues_url = BASE_URL+"devices/" + device_id + "/sensors/" + sensor_id + "/values"
+				#sensorValues_url = "https://api.waziup.io/api/v2/devices/" + device_id + "/sensors/" + sensor_id + "/values"
+				#sensorValues_url = "http://localhost/devices/" +device_id + "/sensors/" + sensor_id + "/values"
 
 				response = requests.get(sensorValues_url, headers=WaziGate_headers)
 				data = response.json()

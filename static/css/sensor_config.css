@@ -127,8 +127,7 @@ display: block;
 }
 .accordion .accordion-content {
   position: relative;
-display: none;
-
+  display: none;
 }
 
 /* Sensor parameters */
@@ -226,7 +225,7 @@ height: 30px;
   -webkit-appearance: none;
   -moz-appearance: none;
 }
-.weather-parameters select.region {
+.weather-parameters select.weather_region {
   background-image:
     linear-gradient(45deg, transparent 50%, gray 50%),
     linear-gradient(135deg, gray 50%, transparent 50%),
@@ -241,7 +240,7 @@ height: 30px;
     1px 1.5em;
   background-repeat: no-repeat;
 }
-.weather-parameters select.region:focus {
+.weather-parameters select.weather_region:focus {
   background-image:
     linear-gradient(45deg, green 50%, transparent 50%),
     linear-gradient(135deg, transparent 50%, green 50%),
@@ -264,7 +263,7 @@ height: 30px;
 }
 
 /* plant parameters */
-.irrigation_type select {
+.soil_irrigation_type select {
 
   /* styling */
   background-color: white;
@@ -304,7 +303,7 @@ box-sizing: border-box;
 -webkit-appearance: none;
 -moz-appearance: none;
 }
-.plant_parameters select.crop {
+.plant_parameters select.plant_crop {
   background-image:
     linear-gradient(45deg, transparent 50%, gray 50%),
     linear-gradient(135deg, gray 50%, transparent 50%),
@@ -319,7 +318,7 @@ box-sizing: border-box;
     1px 1.5em;
   background-repeat: no-repeat;
 }
-.plant_parameters select.crop:focus {
+.plant_parameters select.plant_crop:focus {
   background-image:
     linear-gradient(45deg, green 50%, transparent 50%),
     linear-gradient(135deg, transparent 50%, green 50%),
