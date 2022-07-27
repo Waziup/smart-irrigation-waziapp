@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import requests, json, os
 from os import path
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -40,7 +41,7 @@ capacitive_default_sensor_config = {
 				"sensor_age": "0",
 				"sensor_max": "800",
 				"sensor_min": "0",
-				"soil_type": "silty",
+				"soil_type": "sandy",
 				"soil_irrigation_type": "furrow",
 				"soil_salinity": "0",
 				"soil_bulk_density": "0",
@@ -63,7 +64,7 @@ tensiometer_default_sensor_config = {
 				"sensor_age": "0",
 				"sensor_max": "8000",
 				"sensor_min": "0",
-				"soil_type": "silty",
+				"soil_type": "sandy",
 				"soil_irrigation_type": "furrow",
 				"soil_salinity": "0",
 				"soil_bulk_density": "0",
@@ -546,7 +547,9 @@ def intel_irris_sensor_config():
 #--------------------------------------------------------------------------
 #determine the soil condition string indication for capacitive
 #--------------------------------------------------------------------------
-capacitive_sensor_dry_max = 800
+
+default_capacitive_sensor_dry_max = 800
+capacitive_sensor_dry_max = default_capacitive_sensor_dry_max
 capacitive_sensor_wet_max = 0
 capacitive_sensor_n_interval = 6
 capacitive_sensor_soil_condition = []
@@ -571,10 +574,11 @@ else:
 #determine the soil condition string indication for watermark tensiometer
 #--------------------------------------------------------------------------
 
-tensiometer_sensor_dry_max=120
-tensiometer_sensor_wet_max=0
-tensiometer_sensor_n_interval=6
-tensiometer_sensor_soil_condition=[]
+default_tensiometer_sensor_dry_max = 120
+tensiometer_sensor_dry_max = default_tensiometer_sensor_dry_max
+tensiometer_sensor_wet_max = 0
+tensiometer_sensor_n_interval = 6
+tensiometer_sensor_soil_condition = []
 #we adopt the following rule: 0:very dry; 1:dry; 2:dry-wet 3-wet-dry; 4-wet; 5-saturated
 
 use_irrometer_interval_for_tensiometer = True
@@ -593,23 +597,69 @@ else:
 	tensiometer_sensor_soil_condition.append('wet-dry')
 	tensiometer_sensor_soil_condition.append('wet')
 	tensiometer_sensor_soil_condition.append('saturated')	
-	
-#---------------------#
+
+#--------------------------------------------------------------------------
+#parameters for periodic monitor_sensor_value()
+#--------------------------------------------------------------------------
 
 #here we read from meta.value_index
 get_value_index_from_local_database = True
 #here we set in meta.value_index_iiwa
 set_value_index_in_local_database = True
+#set to True to compute value_index_iiwa for all configured device/sensor pairs, otherwise only the active one
+iterate_over_all_configured_devices = True
 
-def monitor_sensor_value():
+#---------------------#
+
+def monitor_all_configured_sensors():
+	
+		sensor_type='undefined'
+		number_of_configurations = 0
+		
+		if os.path.getsize(sensor_config_filename) != 0:
+				f = open(sensor_config_filename)
+				read_config = json.loads(f.read())
+				f.close()
+				
+				number_of_configurations = len(read_config['sensors'])
+				
+				if (number_of_configurations > 0):
+						for x in range(0, number_of_configurations):
+								deviceID = read_config['sensors'][x]['device_id']
+								sensorID = read_config['sensors'][x]['sensor_id']
+								
+								url = BASE_URL+"devices/" + deviceID + '/sensors/' + sensorID
+								
+								print('monitor_all_configured_sensors : checking for', deviceID, sensorID)
+								
+								response = requests.get(url, headers=WaziGate_headers)
+								
+								if (response.status_code == 404):
+										print("monitor_all_configured_sensors : Error 404! Check IDs of device and sensor of configured device")
+								elif (response.status_code == 200):
+										sensor_DataResponse = response.json()
+										last_PostedSensorValue = sensor_DataResponse["value"]
+
+										print("monitor_all_configured_sensors : last posted sensor value was %s" % last_PostedSensorValue)
+										
+										sensor_type=read_config['sensors'][x]['value']['sensor_type']
+									
+										if sensor_type == 'capacitive':
+												get_capacitive_soil_condition(last_PostedSensorValue, deviceID, sensorID, read_config['sensors'][x])
+			
+										if 'tensiometer' in sensor_type:	
+												get_tensiometer_soil_condition(last_PostedSensorValue, deviceID, sensorID, read_config['sensors'][x])
+		else:
+				print("monitor_all_configured_sensors : No sensor configuration has been made")
+
+def monitor_only_active_sensor():
 		
 		found_sensor_config={}		
 		sensor_type='undefined'
 		number_of_configurations = 0
 		fetch_last_value = False
-		four_04 = False		
 		
-		#check if there is a device added to IIWA
+		#check if there is an active device for IIWA
 		if os.path.getsize(active_device_filename) != 0:	
 				f = open(active_device_filename, 'r')
 				read_devices = json.loads(f.read())
@@ -620,8 +670,8 @@ def monitor_sensor_value():
 
 				if deviceID_key in read_devices[0] and sensorID_key in read_devices[0]:
 						#get active device and active sensor id
-						BG_deviceID = read_devices[0]['device_id']
-						BG_sensorID = read_devices[0]['sensor_id']
+						deviceID = read_devices[0]['device_id']
+						sensorID = read_devices[0]['sensor_id']
 						
 						#in all cases we will get the last value from the active sensor
 						fetch_last_value = True
@@ -634,8 +684,8 @@ def monitor_sensor_value():
 
 						if (number_of_configurations > 0):
 								for x in range(0, number_of_configurations):
-										if (read_config['sensors'][x]['sensor_id'] == BG_sensorID):
-												print("compute-index-service : current sensor id found in configuration")
+										if (read_config['sensors'][x]['device_id'] == deviceID and read_config['sensors'][x]['sensor_id'] == sensorID):
+												print("monitor_only_active_sensor : current device/sensor id found in configuration")
 												#not needed, to be removed
 												#sensor_lastValue = read_config['sensors'][x]['value']['last_value']
 												#print("compute-index-service : last sensor value in config is : %s" %sensor_lastValue)
@@ -643,35 +693,33 @@ def monitor_sensor_value():
 												found_sensor_config=read_config['sensors'][x]
 												print (found_sensor_config)
 												break
-										elif (read_config['sensors'][x]['sensor_id'] != BG_sensorID):
-												print("compute-index-service : no match, continue searching")
+										elif (read_config['sensors'][x]['device_id'] != deviceID):
+												print("monitor_only_active_sensor : no match, continue searching")
 										
 								if found_sensor_config == {}:					
-										print("compute-index-service : Current sensor id has not been found in sensors configuration")
+										print("monitor_only_active_sensor : Current sensor id has not been found in sensors configuration")
 
 						elif number_of_configurations == 0:
-								print("compute-index-service : No sensor configuration has been made")
+								print("monitor_only_active_sensor : No sensor configuration has been made")
 
 				elif deviceID_key not in read_devices[0] or sensorID_key not in read_devices[0]:
-						print("compute-index-service : Error in configuration file!")
-						print("compute-index-service : Go to the Device Manager to add a device or sensor id")
+						print("monitor_only_active_sensor : Error in configuration file!")
+						print("monitor_only_active_sensor : Go to the Device Manager to add a device or sensor id")
 
 		elif os.path.getsize(active_device_filename) == 0:
-				print("compute-index-service : No devices added to IIWA, go to the Device Manager to add one")
+				print("monitor_only_active_sensor : No devices added to IIWA, go to the Device Manager to add one")
 
 		if (fetch_last_value):
-				url = BASE_URL+"devices/" + BG_deviceID + '/sensors/' + BG_sensorID
+				url = BASE_URL+"devices/" + deviceID + '/sensors/' + sensorID
 
 				response = requests.get(url, headers=WaziGate_headers)
 
 				if (response.status_code == 404):
-						four_04 = True
-						print("compute-index-service : Error 404! Check IDs of device and sensor of active device")
+						print("monitor_only_active_sensor : Error 404! Check IDs of device and sensor of active device")
 				elif (response.status_code == 200):
-						four_04 = False
 						sensor_DataResponse = response.json()
 						last_PostedSensorValue = sensor_DataResponse["value"]
-						print("compute-index-service : last posted sensor value was : %s" % last_PostedSensorValue)
+						print("monitor_only_active_sensor : last posted sensor value was : %s" % last_PostedSensorValue)
 						
 						#if sensor type was not found in configuration file, try sensor's meta data
 						if sensor_type == 'undefined':
@@ -683,28 +731,28 @@ def monitor_sensor_value():
 						
 						#still undefined?
 						if sensor_type == 'undefined':
-							print("compute-index-service : Error! Sensor type is undefined, not computing humidity index value")	
+							print("monitor_only_active_sensor : Error! Sensor type is undefined, not computing humidity index value")	
 						else:
 							print ('sensor_type =', sensor_type)
 							
 							if found_sensor_config == {}:
 							
-									print("compute-index-service : Index computation will use default configuration")
+									print("monitor_only_active_sensor : Index computation will use default configuration")
 									
 									if sensor_type == 'capacitive':
 											sensor_config = capacitive_default_sensor_config
 											
-									if sensor_type == 'tensiometer':
+									if 'tensiometer' in sensor_type:
 											sensor_config = tensiometer_default_sensor_config											
 							else:
-									print("compute-index-service : Computing humidity index value with sensor's configuration")
+									print("monitor_only_active_sensor : Computing humidity index value with sensor's configuration")
 									sensor_config = found_sensor_config				
 									
 							if sensor_type == 'capacitive':
-									get_capacitive_soil_condition(last_PostedSensorValue, sensor_config)
+									get_capacitive_soil_condition(last_PostedSensorValue, deviceID, sensorID, sensor_config)
 			
-							if sensor_type == 'tensiometer':	
-									get_tensiometer_soil_condition(last_PostedSensorValue, sensor_config)
+							if 'tensiometer' in sensor_type:	
+									get_tensiometer_soil_condition(last_PostedSensorValue, deviceID, sensorID, sensor_config)
 
 
 def get_ActiveDeviceID():
@@ -719,12 +767,43 @@ def get_ActiveDeviceID():
 #determine the soil condition string indication for capacitive
 #--------------------------------------------------------------------------
 
-##TODO use BASE_URL and selected sensor id
-def get_capacitive_soil_condition(raw_value, sensor_config):
-		device_id = get_ActiveDeviceID()
+clay_capacitive_sensor_dry_max = 400
+sandy_capacitive_sensor_dry_max = 700
+silty_capacitive_sensor_dry_max = 500
+peaty_capacitive_sensor_dry_max = 500
+chalky_capacitive_sensor_dry_max = 500
+loamy_capacitive_sensor_dry_max = 500
+
+def get_capacitive_sensor_dry_max(sensor_config):
+
+	print("soil type is", sensor_config["value"]["soil_type"])
+	
+	if sensor_config["value"]["soil_type"]=="clay":
+		return clay_capacitive_sensor_dry_max
+		
+	if sensor_config["value"]["soil_type"]=="sandy":
+		return sandy_capacitive_sensor_dry_max
+		
+	if sensor_config["value"]["soil_type"]=="silty":
+		return silty_capacitive_sensor_dry_max
+
+	if sensor_config["value"]["soil_type"]=="peaty":
+		return peaty_capacitive_sensor_dry_max
+		
+	if sensor_config["value"]["soil_type"]=="chalky":
+		return chalky_capacitive_sensor_dry_max
+		
+	if sensor_config["value"]["soil_type"]=="loamy":
+		return loamy_capacitive_sensor_dry_max		
+				
+	return default_capacitive_sensor_dry_max
+
+##TODO use BASE_URL
+def get_capacitive_soil_condition(raw_value, device_id, sensor_id, sensor_config):
+		#device_id = get_ActiveDeviceID()
 		
 		if get_value_index_from_local_database:
-				WaziGate_url = 'http://localhost/devices/' + device_id + '/sensors/temperatureSensor_0'
+				WaziGate_url = 'http://localhost/devices/' + device_id + '/sensors/' + sensor_id
 				try:
 						response = requests.get(WaziGate_url, headers=WaziGate_headers, timeout=30)
 						print('get-capacitive: returned msg from server is '),
@@ -736,7 +815,7 @@ def get_capacitive_soil_condition(raw_value, sensor_config):
 								print(response.text)
 								device_json = json.loads(response.text)
 								value_index_capacitive = device_json["meta"]["value_index"]
-								print(value_index_capacitive)
+								print(".meta.value_index=", value_index_capacitive)
 						else:
 								print('get-capacitive: bad request')
 								print(response.text)
@@ -748,7 +827,7 @@ def get_capacitive_soil_condition(raw_value, sensor_config):
 				print('=========================================')
 
 		#now we compute
-		value_interval = int(capacitive_sensor_dry_max / capacitive_sensor_n_interval)
+		value_interval = int(get_capacitive_sensor_dry_max(sensor_config) / capacitive_sensor_n_interval)
 		value_index_capacitive = int(raw_value / value_interval)
 		#in case the sensed value is greater than the maximum value defined
 		if value_index_capacitive >= capacitive_sensor_n_interval:
@@ -791,9 +870,10 @@ def get_capacitive_soil_condition(raw_value, sensor_config):
 
 				print('=========================================')
 
-				WaziGate_url = 'http://localhost/devices/' + device_id + '/sensors/temperatureSensor_0/meta'
+				WaziGate_url = 'http://localhost/devices/' + device_id + '/sensors/' + sensor_id + '/meta'
 				try:
-						pload = '{"value_index_iiwa":' + str(value_index_capacitive) + '}'
+						timestr=datetime.utcnow().isoformat()[:-3]+'Z'
+						pload = '{"value_index_iiwa":' + str(value_index_capacitive) +', "value_index_iiwa_time":"' + timestr + '"'+ '}'
 						WaziGate_headers_auth['Authorization'] = 'Bearer' + my_token[1:-2]
 						response = requests.post(WaziGate_url, headers=WaziGate_headers_auth, data=pload, timeout=30)
 						print('get-capacitive: returned msg from server is '),
@@ -818,13 +898,19 @@ def get_capacitive_soil_condition(raw_value, sensor_config):
 #determine the soil condition string indication for tensiometer
 #--------------------------------------------------------------------------
 
-##TODO use BASE_URL and selected sensor id
+def get_tensiometer_sensor_dry_max(sensor_config):
+	
+	print("soil type is", sensor_config["value"]["soil_type"])
+	
+	return default_tensiometer_sensor_dry_max
+	
+##TODO use BASE_URL
 ##TODO use raw resistor value to compute centibar and link with soil temperature	
-def get_tensiometer_soil_condition(raw_value, sensor_config): 
-		device_id = get_ActiveDeviceID()
+def get_tensiometer_soil_condition(raw_value, device_id, sensor_id, sensor_config): 
+		#device_id = get_ActiveDeviceID()
 		
 		if get_value_index_from_local_database:
-				WaziGate_url = 'http://localhost/devices/' + device_id + '/sensors/temperatureSensor_0'
+				WaziGate_url = 'http://localhost/devices/' + device_id + '/sensors/' + sensor_id
 				try:
 						response = requests.get(WaziGate_url, headers=WaziGate_headers, timeout=30)
 						print('get-tensiometer: returned msg from server is '),
@@ -836,7 +922,7 @@ def get_tensiometer_soil_condition(raw_value, sensor_config):
 								print(response.text)
 								device_json = json.loads(response.text)
 								value_index_tensiometer = device_json["meta"]["value_index"]
-								print(value_index_tensiometer)
+								print(".meta.value_index=", value_index_tensiometer)
 						else:
 								print('get-tensiometer: bad request')
 								print(response.text)
@@ -857,6 +943,8 @@ def get_tensiometer_soil_condition(raw_value, sensor_config):
 				#100-200 Centibars = Soil is becoming dangerously dry- proceed with caution!
 				#	
 				#we adopt the following rule: 0:very dry; 1:dry; 2:dry-wet 3-wet-dry; 4-wet; 5-very wet/saturated
+
+				print("soil type is", sensor_config["value"]["soil_type"])
 		
 				if raw_value == 255:
 					value_index_tensiometer=-1
@@ -873,7 +961,7 @@ def get_tensiometer_soil_condition(raw_value, sensor_config):
 				else:
 					value_index_tensiometer=5												
 		else:
-				value_interval=int(tensiometer_sensor_dry_max/tensiometer_sensor_n_interval)
+				value_interval=int(get_tensiometer_sensor_dry_max(sensor_config)/tensiometer_sensor_n_interval)
 				value_index_tensiometer=int(raw_value/value_interval)
 				#in case the sensed value is greater than the maximum value defined
 				if value_index_tensiometer >= tensiometer_sensor_n_interval:
@@ -921,9 +1009,10 @@ def get_tensiometer_soil_condition(raw_value, sensor_config):
 		
 				print ('=========================================')	
 				
-				WaziGate_url='http://localhost/devices/'+device_id+'/sensors/temperatureSensor_0/meta'
+				WaziGate_url='http://localhost/devices/' + device_id + '/sensors/' + sensor_id + '/meta'
 				try:
-					pload = '{"value_index_iiwa":' + str(value_index_tensiometer)+'}'
+					timestr=datetime.utcnow().isoformat()[:-3]+'Z'
+					pload = '{"value_index_iiwa":' + str(value_index_tensiometer) +', "value_index_iiwa_time":"' + timestr + '"'+ '}'
 					WaziGate_headers_auth['Authorization']='Bearer'+my_token[1:-2]
 					response = requests.post(WaziGate_url, headers=WaziGate_headers_auth, data=pload, timeout=30)
 					print ('get-tensiometer: returned msg from server is '),
@@ -952,7 +1041,11 @@ import threading
 computing_interval_sec = 10
 
 def foo():
-		monitor_sensor_value()
+		if iterate_over_all_configured_devices == True:
+			monitor_all_configured_sensors()
+		else:
+			monitor_only_active_sensor()
+			
 		threading.Timer(computing_interval_sec, foo).start()
 		
 foo()
