@@ -13,9 +13,9 @@ var sensorid = document.getElementById("sensorid")
 var sensorid_id = document.getElementById("sensorid_id")
 var lastvalue = document.getElementById("lastvalue")
 var lastvalue_value = document.getElementById("lastvalue_value")
-var semi_circle = document.getElementById("semi-circle")
-var last_value_insight = document.getElementById("last_value_insight")
-var insight = document.getElementById("insight");
+//var semi_circle = document.getElementById("semi-circle")
+//var last_value_insight = document.getElementById("last_value_insight")
+//var insight = document.getElementById("insight");
 var no_sensor_found = document.getElementById("no_sensor_error")
 var chart = document.getElementById("values_chart")
 var sensor_id_error = document.getElementById("sensor_id_error")
@@ -46,8 +46,8 @@ async function getActiveIDs() {
         deviceid.style.display = "none";
         sensorid.style.display = "none";
         lastvalue.style.display = "none";
-        semi_circle.style.display = "none";
-        last_value_insight.style.display = "none";
+        //semi_circle.style.display = "none";
+        //last_value_insight.style.display = "none";
         no_sensor_found.style.display = "block";
         sensor_id_error.style.display = "none";
         sensor_id_error_p2.style.display = "none";
@@ -75,8 +75,8 @@ async function check_DeviceSensorIDs() {
         deviceid.style.display = "none";
         sensorid.style.display = "none";
         lastvalue.style.display = "none";
-        semi_circle.style.display = "none";
-        last_value_insight.style.display = "none";
+        //semi_circle.style.display = "none";
+        //last_value_insight.style.display = "none";
         no_sensor_found.style.display = "none";
         sensor_id_error_id.innerHTML = sensorID;
         sensor_id_error.style.display = "block";
@@ -127,43 +127,43 @@ async function plotData() {
         if (length == 1) {
             lastvalue_value.innerHTML = values[0];
             lastvalue.style.display = "block";
-            fill_circle(values[0])
+            //fill_circle(values[0])
         }
         else if (length > 1) {
             lastvalue_value.innerHTML = values[length - 1];
             lastvalue.style.display = "block";
-            fill_circle(values[length - 1])
+            //fill_circle(values[length - 1])
         }
         /* filling semi-circle with color based on last sensor value */
         function fill_circle(last_value) {
             soil_moisture = last_value
             if (soil_moisture >= 0 && soil_moisture <= 196) {
-                semi_circle.style.borderColor = "lightblue";
-                semi_circle.style.display = "block";
+                //semi_circle.style.borderColor = "lightblue";
+                //semi_circle.style.display = "block";
 
-                insight.innerHTML = 'very wet';
-                insight.style.display = "block";
+                //insight.innerHTML = 'very wet';
+                //insight.style.display = "block";
             }
             else if (soil_moisture >= 196 && soil_moisture <= 390) {
-                semi_circle.style.borderColor = "green";
-                semi_circle.style.display = "block";
+                //semi_circle.style.borderColor = "green";
+                //semi_circle.style.display = "block";
 
-                insight.innerHTML = 'wet';
-                insight.style.display = "block";
+                //insight.innerHTML = 'wet';
+                //insight.style.display = "block";
             }
             else if (soil_moisture >= 391 && soil_moisture <= 585) {
-                semi_circle.style.borderColor = "orange";
-                semi_circle.style.display = "block";
+                //semi_circle.style.borderColor = "orange";
+                //semi_circle.style.display = "block";
 
-                insight.innerHTML = 'dry';
-                insight.style.display = "block";
+                //insight.innerHTML = 'dry';
+                //insight.style.display = "block";
             }
             else if (soil_moisture >= 586 && soil_moisture <= 780) {
-                semi_circle.style.borderColor = "red";
-                semi_circle.style.display = "block";
+                //semi_circle.style.borderColor = "red";
+                //semi_circle.style.display = "block";
 
-                insight.innerHTML = 'very dry';
-                insight.style.display = "block";
+                //insight.innerHTML = 'very dry';
+                //insight.style.display = "block";
             }
         }
 
@@ -197,7 +197,8 @@ async function plotData() {
                     {
                         label: {
                         		// set to " " for removing text
-                            text: "very wet" 
+                            //text: "very wet"
+                            text: ""
                         },
                         y: 0,
                         y2: 195,
@@ -205,7 +206,8 @@ async function plotData() {
                     },
                     {
                         label: {
-                            text: "wet"
+                            //text: "wet"
+                            text: ""
                         },
                         y: 196,
                         y2: 390,
@@ -213,7 +215,8 @@ async function plotData() {
                     },
                     {
                         label: {
-                            text: "dry"
+                            //text: "dry"
+                            text: ""
                         },
                         y: 391,
                         y2: 585,
@@ -221,7 +224,8 @@ async function plotData() {
                     },
                     {
                         label: {
-                            text: "very dry"
+                            //text: "very dry"
+                            text: ""
                         },
                         y: 586,
                         y2: 780,

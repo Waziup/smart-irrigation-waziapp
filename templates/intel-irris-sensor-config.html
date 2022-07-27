@@ -61,12 +61,12 @@
             <form action="" id="select_sensor_radio">
             </form>
         </div>
-        <br>
         <h3 class="MuiTypography-h1">Update configurations </h3>
 
         <form action="{{ url_for('intel_irris_sensor_config') }}" method="post">
             <div class="accordion-body">
                 <div class="accordion">
+                		<p>Sensor Type is the only mandatory parameter to be filled, other parameters can be left undefined</p>
                 		<hr>
                     <div class="container">
                         <div class="accordion-title">Sensor parameters</div>

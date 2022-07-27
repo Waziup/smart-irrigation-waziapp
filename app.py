@@ -81,6 +81,10 @@ tensiometer_default_sensor_config = {
 		}
 }					
 
+active_device_id = "undefined" 
+active_sensor_id = "undefined"
+active_device_soil_condition = "undefined"
+
 @app.route("/")
 def dashboard():
 
@@ -112,7 +116,8 @@ def dashboard():
 															 no_devices=no_devices)
 		elif (no_devices == False):
 				return render_template("intel-irris-dashboard.html",
-															 no_devices=no_devices)
+															 no_devices=no_devices,
+															 soil_condition=active_device_soil_condition)
 #---------------------#
 
 
@@ -616,6 +621,11 @@ def monitor_all_configured_sensors():
 		sensor_type='undefined'
 		number_of_configurations = 0
 		
+		get_ActiveDeviceSensorID()
+		
+		global active_device_soil_condition
+		active_device_soil_condition = "undefined"
+		
 		if os.path.getsize(sensor_config_filename) != 0:
 				f = open(sensor_config_filename)
 				read_config = json.loads(f.read())
@@ -646,11 +656,18 @@ def monitor_all_configured_sensors():
 									
 										if sensor_type == 'capacitive':
 												get_capacitive_soil_condition(last_PostedSensorValue, deviceID, sensorID, read_config['sensors'][x])
-			
+												if deviceID == active_device_id and sensorID == active_sensor_id:
+														active_device_soil_condition = capacitive_soil_condition	
+														
 										if 'tensiometer' in sensor_type:	
 												get_tensiometer_soil_condition(last_PostedSensorValue, deviceID, sensorID, read_config['sensors'][x])
+												if deviceID == active_device_id and sensorID == active_sensor_id:
+														active_device_soil_condition = tensiometer_soil_condition												
 		else:
 				print("monitor_all_configured_sensors : No sensor configuration has been made")
+				
+				
+active_device_soil_condition				
 
 def monitor_only_active_sensor():
 		
@@ -755,13 +772,14 @@ def monitor_only_active_sensor():
 									get_tensiometer_soil_condition(last_PostedSensorValue, deviceID, sensorID, sensor_config)
 
 
-def get_ActiveDeviceID():
+def get_ActiveDeviceSensorID():
 		f = open(active_device_filename, 'r')
 		read_devices = json.loads(f.read())
 		f.close()
-		active_deviceID = read_devices[0]['device_id']
-
-		return active_deviceID
+		global active_device_id 
+		global active_sensor_id
+		active_device_id = read_devices[0]['device_id']
+		active_sensor_id = read_devices[0]['sensor_id']
 
 #--------------------------------------------------------------------------
 #determine the soil condition string indication for capacitive
@@ -800,7 +818,6 @@ def get_capacitive_sensor_dry_max(sensor_config):
 
 ##TODO use BASE_URL
 def get_capacitive_soil_condition(raw_value, device_id, sensor_id, sensor_config):
-		#device_id = get_ActiveDeviceID()
 		
 		if get_value_index_from_local_database:
 				WaziGate_url = 'http://localhost/devices/' + device_id + '/sensors/' + sensor_id
@@ -907,7 +924,6 @@ def get_tensiometer_sensor_dry_max(sensor_config):
 ##TODO use BASE_URL
 ##TODO use raw resistor value to compute centibar and link with soil temperature	
 def get_tensiometer_soil_condition(raw_value, device_id, sensor_id, sensor_config): 
-		#device_id = get_ActiveDeviceID()
 		
 		if get_value_index_from_local_database:
 				WaziGate_url = 'http://localhost/devices/' + device_id + '/sensors/' + sensor_id
