@@ -84,22 +84,25 @@ tensiometer_default_sensor_config = {
 active_device_id = "undefined" 
 active_sensor_id = "undefined"
 active_device_soil_condition = "undefined"
+active_device_configuration = {}
 
 @app.route("/")
 def dashboard():
 
-		f = open(added_devices_filename, 'r')
-		read_devices = json.loads(f.read())
-		f.close()
-		length = len(read_devices)
-
-		no_devices = True
-		added_devices = ""
 		# check if there are devices in devices JSON
 		if path.isfile(added_devices_filename) is False:	# Check if data.json file exists
 				added_devices = "Config file for active device ID not found!"
+				no_devices = True
 		else:
 				print("Config file for active device ID is found!")
+				
+				f = open(added_devices_filename, 'r')
+				read_devices = json.loads(f.read())
+				f.close()
+		
+				length = len(read_devices)
+
+				added_devices = ""
 
 				# check if the json list is updated
 				if (length == 1):
@@ -108,6 +111,8 @@ def dashboard():
 						added_devices = "No devices added to IIWA. Go to the Device Manager to add one."
 				else:
 						no_devices = False
+						monitor_all_configured_sensors()
+						
 				#---------------------#
 
 		if (no_devices == True):
@@ -115,8 +120,18 @@ def dashboard():
 															 added_devices=added_devices,
 															 no_devices=no_devices)
 		elif (no_devices == False):
+		
+				if active_device_id == "undefined" or active_device_configuration=={}: 
+						active_sensor_type = "undefined"
+						active_soil_type = "undefined"
+				else:
+						active_sensor_type = active_device_configuration['value']['sensor_type']
+						active_soil_type = active_device_configuration['value']['soil_type']
+								
 				return render_template("intel-irris-dashboard.html",
 															 no_devices=no_devices,
+															 sensor_type=active_sensor_type,
+															 soil_type=active_soil_type,
 															 soil_condition=active_device_soil_condition)
 #---------------------#
 
@@ -184,7 +199,7 @@ def intel_irris_device_manager():
 						# check if devices list has been updates
 
 						# device list not updated
-						if (length == 1):	
+						if (length == 1): 
 								print("Added device list not updated! Updating..")
 
 								# write device_id as active one in json
@@ -358,21 +373,15 @@ def intel_irris_device_manager():
 def intel_irris_sensor_config():
 		# check if an active device is set
 		no_active = True
-		# no device added to Intel-Irris
-		if (os.path.getsize(active_device_filename) == 0):	
-				no_active = True
-				no_sensor_config = True
-		else:
-				no_active = False
-
-				#---------------------#
-				# get the active device id
-				active = open(active_device_filename, 'r')
-				active_device = json.loads(active.read())
-				print(active_device)
-				deviceID = active_device[0]['device_id']
+		
+		get_ActiveDeviceSensorID()
+		
+		#check if there is an active device for IIWA
+		if active_device_id != "undefined":
+				no_active = False	
+				deviceID = active_device_id
 				print("Active device_id: %s" % deviceID)
-				sensorID = active_device[0]['sensor_id']
+				sensorID = active_sensor_id
 
 				#---------------------#
 				#-- Manage notifying user to add new config --#
@@ -466,7 +475,7 @@ def intel_irris_sensor_config():
 						print("Soil Type : %s" % soil_type)
 						print("Soil Irrigation Type : %s" % soil_irrigation_type)
 						print("Soil Salinity : %s" % soil_salinity)
-						print("Soil Bulk Density : %s" % soil_bulk_density)	
+						print("Soil Bulk Density : %s" % soil_bulk_density) 
 						print("Soil temperature value : %s" % soil_temperature_value)
 						print("Soil temperature source device id : %s" % soil_temperature_device_id)
 						print("Soil temperature source sensor id : %s" % soil_temperature_sensor_id)											
@@ -534,9 +543,11 @@ def intel_irris_sensor_config():
 						jsFile = open(sensor_config_filename, "w")
 						jsFile.write(jsString)
 						jsFile.close()
+						
+						#we start value_index computation as parameters may have changed
+						monitor_all_configured_sensors()
 						#---------------------#
 
-				#---------------------#
 		if (no_active):
 				no_device = "No Devices added to IIWA. Go to the Device Manager to add one."
 				return render_template("intel-irris-sensor-config.html",
@@ -601,7 +612,7 @@ else:
 	tensiometer_sensor_soil_condition.append('dry-wet')
 	tensiometer_sensor_soil_condition.append('wet-dry')
 	tensiometer_sensor_soil_condition.append('wet')
-	tensiometer_sensor_soil_condition.append('saturated')	
+	tensiometer_sensor_soil_condition.append('saturated') 
 
 #--------------------------------------------------------------------------
 #parameters for periodic monitor_sensor_value()
@@ -625,6 +636,9 @@ def monitor_all_configured_sensors():
 		
 		global active_device_soil_condition
 		active_device_soil_condition = "undefined"
+		
+		global active_device_configuration
+		active_device_configuration = {}
 		
 		if os.path.getsize(sensor_config_filename) != 0:
 				f = open(sensor_config_filename)
@@ -657,17 +671,16 @@ def monitor_all_configured_sensors():
 										if sensor_type == 'capacitive':
 												get_capacitive_soil_condition(last_PostedSensorValue, deviceID, sensorID, read_config['sensors'][x])
 												if deviceID == active_device_id and sensorID == active_sensor_id:
-														active_device_soil_condition = capacitive_soil_condition	
+														active_device_soil_condition = capacitive_soil_condition
+														active_device_configuration = read_config['sensors'][x] 
 														
 										if 'tensiometer' in sensor_type:	
 												get_tensiometer_soil_condition(last_PostedSensorValue, deviceID, sensorID, read_config['sensors'][x])
 												if deviceID == active_device_id and sensorID == active_sensor_id:
-														active_device_soil_condition = tensiometer_soil_condition												
+														active_device_soil_condition = tensiometer_soil_condition
+														active_device_configuration = read_config['sensors'][x]												
 		else:
-				print("monitor_all_configured_sensors : No sensor configuration has been made")
-				
-				
-active_device_soil_condition				
+				print("monitor_all_configured_sensors : No sensor configuration has been made")				
 
 def monitor_only_active_sensor():
 		
@@ -676,55 +689,40 @@ def monitor_only_active_sensor():
 		number_of_configurations = 0
 		fetch_last_value = False
 		
+		get_ActiveDeviceSensorID()
+		
 		#check if there is an active device for IIWA
-		if os.path.getsize(active_device_filename) != 0:	
-				f = open(active_device_filename, 'r')
-				read_devices = json.loads(f.read())
+		if active_device_id == "undefined":
+				print("monitor_only_active_sensor : No devices added to IIWA, go to the Device Manager to add one")
+		else:		
+				#in all cases we will get the last value from the active sensor
+				fetch_last_value = True
+				
+				f = open(sensor_config_filename)
+				read_config = json.loads(f.read())
 				f.close()
 
-				deviceID_key = 'device_id'
-				sensorID_key = 'sensor_id'
+				number_of_configurations = len(read_config['sensors'])
 
-				if deviceID_key in read_devices[0] and sensorID_key in read_devices[0]:
-						#get active device and active sensor id
-						deviceID = read_devices[0]['device_id']
-						sensorID = read_devices[0]['sensor_id']
-						
-						#in all cases we will get the last value from the active sensor
-						fetch_last_value = True
-						
-						f = open(sensor_config_filename)
-						read_config = json.loads(f.read())
-						f.close()
+				if (number_of_configurations > 0):
+						for x in range(0, number_of_configurations):
+								if (read_config['sensors'][x]['device_id'] == deviceID and read_config['sensors'][x]['sensor_id'] == sensorID):
+										print("monitor_only_active_sensor : current device/sensor id found in configuration")
+										#not needed, to be removed
+										#sensor_lastValue = read_config['sensors'][x]['value']['last_value']
+										#print("compute-index-service : last sensor value in config is : %s" %sensor_lastValue)
+										sensor_type=read_config['sensors'][x]['value']['sensor_type']
+										found_sensor_config=read_config['sensors'][x]
+										print (found_sensor_config)
+										break
+								elif (read_config['sensors'][x]['device_id'] != deviceID):
+										print("monitor_only_active_sensor : no match, continue searching")
+								
+						if found_sensor_config == {}:					
+								print("monitor_only_active_sensor : Current sensor id has not been found in sensors configuration")
 
-						number_of_configurations = len(read_config['sensors'])
-
-						if (number_of_configurations > 0):
-								for x in range(0, number_of_configurations):
-										if (read_config['sensors'][x]['device_id'] == deviceID and read_config['sensors'][x]['sensor_id'] == sensorID):
-												print("monitor_only_active_sensor : current device/sensor id found in configuration")
-												#not needed, to be removed
-												#sensor_lastValue = read_config['sensors'][x]['value']['last_value']
-												#print("compute-index-service : last sensor value in config is : %s" %sensor_lastValue)
-												sensor_type=read_config['sensors'][x]['value']['sensor_type']
-												found_sensor_config=read_config['sensors'][x]
-												print (found_sensor_config)
-												break
-										elif (read_config['sensors'][x]['device_id'] != deviceID):
-												print("monitor_only_active_sensor : no match, continue searching")
-										
-								if found_sensor_config == {}:					
-										print("monitor_only_active_sensor : Current sensor id has not been found in sensors configuration")
-
-						elif number_of_configurations == 0:
-								print("monitor_only_active_sensor : No sensor configuration has been made")
-
-				elif deviceID_key not in read_devices[0] or sensorID_key not in read_devices[0]:
-						print("monitor_only_active_sensor : Error in configuration file!")
-						print("monitor_only_active_sensor : Go to the Device Manager to add a device or sensor id")
-
-		elif os.path.getsize(active_device_filename) == 0:
-				print("monitor_only_active_sensor : No devices added to IIWA, go to the Device Manager to add one")
+				elif number_of_configurations == 0:
+						print("monitor_only_active_sensor : No sensor configuration has been made")
 
 		if (fetch_last_value):
 				url = BASE_URL+"devices/" + deviceID + '/sensors/' + sensorID
@@ -748,7 +746,7 @@ def monitor_only_active_sensor():
 						
 						#still undefined?
 						if sensor_type == 'undefined':
-							print("monitor_only_active_sensor : Error! Sensor type is undefined, not computing humidity index value")	
+							print("monitor_only_active_sensor : Error! Sensor type is undefined, not computing humidity index value") 
 						else:
 							print ('sensor_type =', sensor_type)
 							
@@ -773,14 +771,34 @@ def monitor_only_active_sensor():
 
 
 def get_ActiveDeviceSensorID():
-		f = open(active_device_filename, 'r')
-		read_devices = json.loads(f.read())
-		f.close()
+
 		global active_device_id 
 		global active_sensor_id
-		active_device_id = read_devices[0]['device_id']
-		active_sensor_id = read_devices[0]['sensor_id']
 
+		active_device_id = "undefined" 
+		active_sensor_id = "undefined"
+
+		deviceID_key = 'device_id'
+		sensorID_key = 'sensor_id'						
+
+		#check if there is an active device for IIWA
+		if os.path.getsize(active_device_filename) != 0:					
+				f = open(active_device_filename, 'r')
+				
+				try:
+						read_devices = json.loads(f.read())
+						if deviceID_key in read_devices[0] and sensorID_key in read_devices[0]:
+								#get active device and active sensor id
+								active_device_id = read_devices[0]['device_id']
+								active_sensor_id = read_devices[0]['sensor_id']
+						elif deviceID_key not in read_devices[0] or sensorID_key not in read_devices[0]:
+								print("get_ActiveDeviceSensorID : Error in configuration file!")
+								print("get_ActiveDeviceSensorID : Go to the Device Manager to add a device or sensor id")					
+				except ValueError as e:
+						print("get_ActiveDeviceSensorID : Error in configuration file!")
+					
+				f.close()				
+				
 #--------------------------------------------------------------------------
 #determine the soil condition string indication for capacitive
 #--------------------------------------------------------------------------
@@ -957,7 +975,7 @@ def get_tensiometer_soil_condition(raw_value, device_id, sensor_id, sensor_confi
 				#30-60 Centibars = Usual range for irrigation (most soils)
 				#60-100 Centibars = Usual range for irrigation in heavy clay
 				#100-200 Centibars = Soil is becoming dangerously dry- proceed with caution!
-				#	
+				# 
 				#we adopt the following rule: 0:very dry; 1:dry; 2:dry-wet 3-wet-dry; 4-wet; 5-very wet/saturated
 
 				print("soil type is", sensor_config["value"]["soil_type"])
@@ -965,15 +983,15 @@ def get_tensiometer_soil_condition(raw_value, device_id, sensor_id, sensor_confi
 				if raw_value == 255:
 					value_index_tensiometer=-1
 				elif raw_value == 240:
-					value_index_tensiometer=-2		 			
+					value_index_tensiometer=-2					
 				elif raw_value > 100:
 					value_index_tensiometer=0	 
 				elif raw_value > 60:
-					value_index_tensiometer=1	
+					value_index_tensiometer=1 
 				elif raw_value > 30:
-					value_index_tensiometer=2	
+					value_index_tensiometer=2 
 				elif raw_value > 10:
-					value_index_tensiometer=4	
+					value_index_tensiometer=4 
 				else:
 					value_index_tensiometer=5												
 		else:
@@ -985,7 +1003,7 @@ def get_tensiometer_soil_condition(raw_value, device_id, sensor_id, sensor_confi
 		
 				#we adopt the following rule: 0:very dry; 1:dry; 2:dry-wet 3-wet-dry; 4-wet; 5-very wet/saturated
 				#so for tensiometer we need to invert the index
-				value_index_tensiometer=tensiometer_sensor_n_interval-1-value_index_tensiometer	
+				value_index_tensiometer=tensiometer_sensor_n_interval-1-value_index_tensiometer 
 		
 		print('computed value_index (tensiometer) =', value_index_tensiometer)
 
@@ -997,7 +1015,7 @@ def get_tensiometer_soil_condition(raw_value, device_id, sensor_id, sensor_confi
 		else:			
 				tensiometer_soil_condition=tensiometer_sensor_soil_condition[value_index_tensiometer]		
 			
-		print('soil condition =', tensiometer_soil_condition)	
+		print('soil condition =', tensiometer_soil_condition) 
 		print('=========================================')
 		
 		if set_value_index_in_local_database:
@@ -1023,7 +1041,7 @@ def get_tensiometer_soil_condition(raw_value, device_id, sensor_id, sensor_confi
 					print (e)
 					print ('get-tensiometer: requests command failed')
 		
-				print ('=========================================')	
+				print ('=========================================') 
 				
 				WaziGate_url='http://localhost/devices/' + device_id + '/sensors/' + sensor_id + '/meta'
 				try:
@@ -1046,7 +1064,7 @@ def get_tensiometer_soil_condition(raw_value, device_id, sensor_id, sensor_confi
 					print (e)
 					print ('get-tensiometer: requests command failed')
 			
-				print ('=========================================')	
+				print ('=========================================') 
 						
 #---------------------#
 # periodically compute humidity index value
@@ -1084,28 +1102,27 @@ def intel_irris_active_device():
 		if request.method == 'GET':
 				if os.path.getsize(active_device_filename) != 0:
 						f = open(active_device_filename, 'r')
-						active_device_id = json.loads(f.read())
-						active_device_id = active_device_id[0]['device_id']
-						f.close()
-
-						return jsonify(active_device_id)
-
-				elif os.path.getsize(active_device_filename) == 0:
-						return jsonify('[]')
-
-
+						try:
+								active_device_id = json.loads(f.read())
+								f.close()
+								active_device_id = active_device_id[0]['device_id']
+								return jsonify(active_device_id)				
+						except ValueError as e:
+								f.close()
+								return jsonify('[]')
+						
 @app.route("/intel-irris-active-device-sensor", methods=['GET'])	 # returns data in active device config
 def intel_irris_active_device_sensor():
 		if request.method == 'GET':
 				if os.path.getsize(active_device_filename) != 0:
 						f = open(active_device_filename, 'r')
-						active_device_id = json.loads(f.read())
-						f.close()
-
-						return jsonify(active_device_id)
-
-				elif os.path.getsize(active_device_filename) == 0:
-						return jsonify('[]')
+						try:
+								active_device_id = json.loads(f.read())
+								f.close()
+								return jsonify(active_device_id)
+						except ValueError as e:
+								f.close()
+								return jsonify('[]')												
 
 @app.route("/intel-irris-sensor-configurations", methods=['GET'])	 # returns data in sensor configurations
 def intel_irris_sensor_configurations():

@@ -49,11 +49,15 @@
     {% elif no_devices == False %}
     <p id="deviceid">Active device: <span id="deviceid_id"></span></p>
     <p id="sensorid">Active sensor: <span id="sensorid_id"></span></p>
-    <p id="lastvalue">Last soil moisture value : <span id="lastvalue_value"></span></p>
-
+    <p id="sensor_type">Sensor Type: {{ sensor_type }}</p>
+    <p id="lastvalue">Last soil moisture value: <span id="lastvalue_value"></span></p>
+		
     <br>
     <!-- <div class="semi-circle" id="semi-circle"></div> -->
-		<p id="soil_condition" style="text-align:center; white-space: nowrap">Soil condition is {{ soil_condition }}</p>
+    <div id="soil_parameters" class="plot_center">
+		<p id="soil_type" style="text-align:center; white-space: nowrap"><b>Soil type is {{ soil_type }}</b></p>
+		<p id="soil_condition" style="text-align:center; white-space: nowrap"><b>Soil condition is {{ soil_condition }}</b></p>
+		</div>
     <!-- <p id="last_value_insight" style="text-align:center; white-space: nowrap"><span id="insight"></span></p> -->
     <br><br>
     <p id="no_sensor_error">Oops! Select a sensor id of the current device to see its data and compute the index value

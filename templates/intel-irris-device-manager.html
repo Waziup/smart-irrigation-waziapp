@@ -72,6 +72,29 @@
         $('.tbl-header').css({ 'padding-right': scrollWidth });
       }).resize();
     </script>
+    
+    <br>
+    <p>Active device determines sensors values visualization and data source for humidity index value computation.</p>
+    <div class="div_containers">
+      <p style="text-align: center;"><em>Select an active device and sensor</em></p>
+      <p id="deviceid">Active device: <span id="deviceid_id" style="color: red;"></span>. Select from list</p>
+      <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
+        <label></label>
+        <select name="device-id-select" class="device-id-select" id="device-id-select">
+        </select>
+        <button type="submit" value="submit" class="device-id-select-button">Select</button>
+      </form>
+      
+      <br>
+      <p id="sensorid">Active sensor: <span id="sensorid_id" style="color: red;"></span>. Select from list for Dashboard & humidity index value computation</p>
+      <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
+        <label></label>
+        <select name="sensor-id-select" class="sensor-id-select" id="sensor-id-select">
+        </select>
+        <button type="submit" value="submit" class="sensor-id-select-button">Select</button>
+      </form>
+    </div>
+        
     <br>
     <p>Add/Remove a device using the form below.</p>
     <div class="add_device">
@@ -96,6 +119,7 @@
       </form>
     </div>
     <br>
+    
     <div class="div_containers">
       <div class="remove_device">
         <p style="text-align: center;"><em>Remove a device from IIWA</em></p><br>
@@ -107,29 +131,7 @@
         </form>
       </div>
     </div>
-    <br>
-    <p>Active device determines sensors values visualization and data source for humidity index value computation.</p>
-    <div class="div_containers">
-      <p style="text-align: center;"><em>Select an active device and sensor</em></p>
-      <p id="deviceid">Active device: <span id="deviceid_id"></span>. Select from list</p>
-      <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
-        <label></label>
-        <select name="device-id-select" class="device-id-select" id="device-id-select">
-        </select>
-        <button type="submit" value="submit" class="device-id-select-button">Select</button>
-      </form>
-      
-      <br>
-      <p id="sensorid">Active sensor: <span id="sensorid_id"></span>. Select from list for Dashboard & humidity index value computation</p>
-      <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
-        <label></label>
-        <select name="sensor-id-select" class="sensor-id-select" id="sensor-id-select">
-        </select>
-        <button type="submit" value="submit" class="sensor-id-select-button">Select</button>
-      </form>
-    </div>
   </div>
   <br>
 </body>
-
 </html>
