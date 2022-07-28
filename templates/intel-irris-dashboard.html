@@ -55,8 +55,19 @@
     <br>
     <!-- <div class="semi-circle" id="semi-circle"></div> -->
     <div id="soil_parameters" class="plot_center">
-		<p id="soil_type" style="text-align:center; white-space: nowrap"><b>Soil type is {{ soil_type }}</b></p>
-		<p id="soil_condition" style="text-align:center; white-space: nowrap"><b>Soil condition is {{ soil_condition }}</b></p>
+		<table class="tg">
+		<thead>
+			<tr>
+				<td class="tg-c3ow" rowspan="2"><img src="{{ url_for('static', filename=level_file) }}" height="60"></td>
+				<td class="tg-0pky"><b>Soil type is {{ soil_type }}</b></td>
+			</tr>
+			<tr>
+				<td class="tg-0pky"><b>Soil condition is {{ soil_condition }}</b></td>
+			</tr>
+		</thead>
+		</table>
+		<!-- <p id="soil_type" style="text-align:center; white-space: nowrap"><b>Soil type is {{ soil_type }}</b></p> -->
+		<!-- <p id="soil_condition" style="text-align:center; white-space: nowrap"><b>Soil condition is {{ soil_condition }}</b></p> -->
 		</div>
     <!-- <p id="last_value_insight" style="text-align:center; white-space: nowrap"><span id="insight"></span></p> -->
     <br><br>

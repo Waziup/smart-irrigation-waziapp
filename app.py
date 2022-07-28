@@ -84,6 +84,7 @@ tensiometer_default_sensor_config = {
 active_device_id = "undefined" 
 active_sensor_id = "undefined"
 active_device_soil_condition = "undefined"
+active_device_value_index = 0
 active_device_configuration = {}
 
 @app.route("/")
@@ -127,12 +128,15 @@ def dashboard():
 				else:
 						active_sensor_type = active_device_configuration['value']['sensor_type']
 						active_soil_type = active_device_configuration['value']['soil_type']
-								
+				
+				active_level_file='images/level'+str(active_device_value_index)+'.png'
+						
 				return render_template("intel-irris-dashboard.html",
 															 no_devices=no_devices,
 															 sensor_type=active_sensor_type,
 															 soil_type=active_soil_type,
-															 soil_condition=active_device_soil_condition)
+															 soil_condition=active_device_soil_condition,
+															 level_file=active_level_file)
 #---------------------#
 
 
@@ -640,6 +644,8 @@ def monitor_all_configured_sensors():
 		global active_device_configuration
 		active_device_configuration = {}
 		
+		global active_device_value_index
+		
 		if os.path.getsize(sensor_config_filename) != 0:
 				f = open(sensor_config_filename)
 				read_config = json.loads(f.read())
@@ -669,16 +675,19 @@ def monitor_all_configured_sensors():
 										sensor_type=read_config['sensors'][x]['value']['sensor_type']
 									
 										if sensor_type == 'capacitive':
-												get_capacitive_soil_condition(last_PostedSensorValue, deviceID, sensorID, read_config['sensors'][x])
+												value_index=get_capacitive_soil_condition(last_PostedSensorValue, deviceID, sensorID, read_config['sensors'][x])
 												if deviceID == active_device_id and sensorID == active_sensor_id:
 														active_device_soil_condition = capacitive_soil_condition
 														active_device_configuration = read_config['sensors'][x] 
+														active_device_value_index = value_index
 														
 										if 'tensiometer' in sensor_type:	
-												get_tensiometer_soil_condition(last_PostedSensorValue, deviceID, sensorID, read_config['sensors'][x])
+												value_index=get_tensiometer_soil_condition(last_PostedSensorValue, deviceID, sensorID, read_config['sensors'][x])
 												if deviceID == active_device_id and sensorID == active_sensor_id:
 														active_device_soil_condition = tensiometer_soil_condition
-														active_device_configuration = read_config['sensors'][x]												
+														active_device_configuration = read_config['sensors'][x]
+														active_device_value_index = value_index
+																								
 		else:
 				print("monitor_all_configured_sensors : No sensor configuration has been made")				
 
@@ -928,6 +937,8 @@ def get_capacitive_soil_condition(raw_value, device_id, sensor_id, sensor_config
 						print('get-capacitive: requests command failed')
 
 				print('=========================================')
+		
+		return value_index_capacitive		
 				
 #--------------------------------------------------------------------------
 #determine the soil condition string indication for tensiometer
@@ -1065,7 +1076,8 @@ def get_tensiometer_soil_condition(raw_value, device_id, sensor_id, sensor_confi
 					print ('get-tensiometer: requests command failed')
 			
 				print ('=========================================') 
-						
+		return value_index_tensiometer
+								
 #---------------------#
 # periodically compute humidity index value
 
