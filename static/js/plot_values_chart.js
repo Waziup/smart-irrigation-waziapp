@@ -30,6 +30,9 @@ var datapoints = 0;  // used by set marker on last value
 var values_min;
 var values_max;
 
+var sensor_max = 800
+var nb_intervals = 6
+
 //let TIME_length = 0;
 async function getActiveIDs() {
     const response = await fetch(active_url);
@@ -137,34 +140,48 @@ async function plotData() {
         /* filling semi-circle with color based on last sensor value */
         function fill_circle(last_value) {
             soil_moisture = last_value
-            if (soil_moisture >= 0 && soil_moisture <= 196) {
+            if (soil_moisture >= 0 && soil_moisture <= (sensor_max/nb_intervals)) {
                 //semi_circle.style.borderColor = "lightblue";
                 //semi_circle.style.display = "block";
 
                 //insight.innerHTML = 'very wet';
                 //insight.style.display = "block";
             }
-            else if (soil_moisture >= 196 && soil_moisture <= 390) {
+            else if (soil_moisture > (sensor_max/nb_intervals) && soil_moisture <= (sensor_max/nb_intervals)*2) {
                 //semi_circle.style.borderColor = "green";
                 //semi_circle.style.display = "block";
 
                 //insight.innerHTML = 'wet';
                 //insight.style.display = "block";
             }
-            else if (soil_moisture >= 391 && soil_moisture <= 585) {
+            else if (soil_moisture > (sensor_max/nb_intervals)*2 && soil_moisture <= (sensor_max/nb_intervals)*3) {
                 //semi_circle.style.borderColor = "orange";
                 //semi_circle.style.display = "block";
 
                 //insight.innerHTML = 'dry';
                 //insight.style.display = "block";
             }
-            else if (soil_moisture >= 586 && soil_moisture <= 780) {
+            else if (soil_moisture >= (sensor_max/nb_intervals)*3 && soil_moisture <= (sensor_max/nb_intervals)*4) {
                 //semi_circle.style.borderColor = "red";
                 //semi_circle.style.display = "block";
 
                 //insight.innerHTML = 'very dry';
                 //insight.style.display = "block";
             }
+            else if (soil_moisture > (sensor_max/nb_intervals)*4 && soil_moisture <= (sensor_max/nb_intervals)*5) {
+                //semi_circle.style.borderColor = "red";
+                //semi_circle.style.display = "block";
+
+                //insight.innerHTML = 'very dry';
+                //insight.style.display = "block";
+            }  
+            else if (soil_moisture > (sensor_max/nb_intervals)*5) {
+                //semi_circle.style.borderColor = "red";
+                //semi_circle.style.display = "block";
+
+                //insight.innerHTML = 'very dry';
+                //insight.style.display = "block";
+            }                       
         }
 
         /* *** */
@@ -201,36 +218,54 @@ async function plotData() {
                             text: ""
                         },
                         y: 0,
-                        y2: 195,
-                        fillColor: "#00E396"
+                        y2: (sensor_max/nb_intervals),
+                        fillColor: "#139FEB"
                     },
                     {
                         label: {
                             //text: "wet"
                             text: ""
                         },
-                        y: 196,
-                        y2: 390,
-                        fillColor: "#90EE7E"
+                        y: (sensor_max/nb_intervals)+1,
+                        y2: (sensor_max/nb_intervals)*2,
+                        fillColor: "#15A43E"
                     },
                     {
                         label: {
                             //text: "dry"
                             text: ""
                         },
-                        y: 391,
-                        y2: 585,
-                        fillColor: "#FF9800"
+                        y: (sensor_max/nb_intervals)*2+1,
+                        y2: (sensor_max/nb_intervals)*3,
+                        fillColor: "#9AC97B"
                     },
                     {
                         label: {
                             //text: "very dry"
                             text: ""
                         },
-                        y: 586,
-                        y2: 780,
-                        fillColor: "#FF4560"
-                    }
+                        y: (sensor_max/nb_intervals)*3+1,
+                        y2: (sensor_max/nb_intervals)*4,
+                        fillColor: "#FDC009"
+                    },
+                    {
+                        label: {
+                            //text: "very dry"
+                            text: ""
+                        },
+                        y: (sensor_max/nb_intervals)*4+1,
+                        y2: (sensor_max/nb_intervals)*5,
+                        fillColor: "#FB2041"
+                    },
+                    {
+                        label: {
+                            //text: "very dry"
+                            text: ""
+                        },
+                        y: (sensor_max/nb_intervals)*5+1,
+                        y2: sensor_max,
+                        fillColor: "#D1000F"
+                    }                                        
                 ]
             },
             stroke: {
@@ -249,7 +284,7 @@ async function plotData() {
                 show: true
             },
             title: {
-                text: "Soil Moisture Values",
+                text: "Sensor values",
                 align: "left"
             },
             series: [

@@ -70,15 +70,15 @@
 		<!-- <p id="soil_condition" style="text-align:center; white-space: nowrap"><b>Soil condition is {{ soil_condition }}</b></p> -->
 		</div>
     <!-- <p id="last_value_insight" style="text-align:center; white-space: nowrap"><span id="insight"></span></p> -->
-    <br><br>
+
     <p id="no_sensor_error">Oops! Select a sensor id of the current device to see its data and compute the index value
     </p>
     <p id="sensor_id_error">Oops! The sensor id <span id="sensor_id"></span> seems to no longer be in the device.</p>
     <p id="sensor_id_error_p2">Select a new sensor id from the Device Manager</p>
+    <p style="text-align: center;">Colors on graph are only indicative</p>
     <div id="values_chart" class="plot_center">
       <script type="text/javascript" src="{{ url_for('static', filename='js/plot_values_chart.js') }}"></script>
     </div>
-    <br>
     {% endif %}
   </div>
 </body>
