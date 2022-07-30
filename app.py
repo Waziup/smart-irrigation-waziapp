@@ -443,6 +443,14 @@ def intel_irris_sensor_config():
 										last_value = sensors_data['sensors'][i]['value']
 
 						#-- Check for empty values in submitted data --#
+						if (sensor_max == ""): # prefill max sensor value based on sensor type
+							if (sensor_type == "capacitive"):
+								sensor_max = 800
+							elif (sensor_type == "tensiometer_cbar"):
+								sensor_max = 255
+							elif (sensor_type == "tensiometer_raw"):
+								sensor_max = 8000
+
 						if (soil_type == "hide"):
 								soil_type = "undefined"
 						if (soil_irrigation_type == "None"):
