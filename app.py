@@ -35,11 +35,13 @@ WaziGate_headers_auth = {
 
 #---------------------#
 
+sensor_max_capacitive = "800"
+
 capacitive_default_sensor_config = {
 		"value": {
 				"sensor_type": "capacitive",
 				"sensor_age": "0",
-				"sensor_max": "800",
+				"sensor_max": sensor_max_capacitive,
 				"sensor_min": "0",
 				"soil_type": "sandy",
 				"soil_irrigation_type": "furrow",
@@ -58,11 +60,14 @@ capacitive_default_sensor_config = {
 		}
 }
 
+sensor_max_tensiometer_cbar = "124"
+sensor_max_tensiometer_raw = "18000"
+
 tensiometer_default_sensor_config = {
 		"value": {
 				"sensor_type": "tensiometer_raw",
 				"sensor_age": "0",
-				"sensor_max": "8000",
+				"sensor_max": sensor_max_tensiometer_raw,
 				"sensor_min": "0",
 				"soil_type": "sandy",
 				"soil_irrigation_type": "furrow",
@@ -445,11 +450,11 @@ def intel_irris_sensor_config():
 						#-- Check for empty values in submitted data --#
 						if (sensor_max == ""): # prefill max sensor value based on sensor type
 							if (sensor_type == "capacitive"):
-								sensor_max = 800
+								sensor_max = sensor_max_capacitive
 							elif (sensor_type == "tensiometer_cbar"):
-								sensor_max = 255
+								sensor_max = sensor_max_tensiometer_cbar
 							elif (sensor_type == "tensiometer_raw"):
-								sensor_max = 8000
+								sensor_max = sensor_max_tensiometer_raw
 
 						if (soil_type == "hide"):
 								soil_type = "undefined"
