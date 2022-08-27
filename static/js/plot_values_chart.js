@@ -1,5 +1,7 @@
 active_url = 'intel-irris-active-device-sensor'
 check_valid_DeviceSensor_id_url = 'check-device-sensor-id'
+get_device_data_url = 'request-device-data'
+get_sensor_data_url = 'request-sensor-data'
 get_sensor_values_url = 'request-sensor-values'
 
 var deviceID;
@@ -45,6 +47,19 @@ async function getActiveIDs() {
     //console.log("Device id " + deviceID);
     //console.log("Sensor id " + sensorID);
 
+    const response1 = await fetch(get_device_data_url + '?deviceID=' + deviceID);
+    console.log(response1);
+    var device_data = await response1.json();
+    
+    deviceName = device_data['name']
+
+    const response2 = await fetch(get_sensor_data_url + '?deviceID=' + deviceID + '&sensorID=' + sensorID);
+    console.log(response2);
+    var sensor_data = await response2.json();
+    
+    sensorName = sensor_data['name']
+    sensorKind = sensor_data['meta']['kind']
+    
     if (sensorID == null) {
         deviceid.style.display = "none";
         sensorid.style.display = "none";
@@ -57,9 +72,12 @@ async function getActiveIDs() {
         chart.style.display = "none";
     }
     else {
-        deviceid_id.innerHTML = deviceID;
+        //deviceid_id.innerHTML = deviceID;
+        deviceid_id.innerHTML = deviceName + ' (' + deviceID + ')';
         deviceid.style.display = "block";
-        sensorid_id.innerHTML = sensorID;
+        //sensorid_id.innerHTML = sensorID;
+        //sensorid_id.innerHTML = sensorName + '/' + sensorKind + ' (' + sensorID + ')';
+        sensorid_id.innerHTML = sensorName + '/' + sensorKind;
         sensorid.style.display = "block";        
         no_sensor_found.style.display = "none";
         check_DeviceSensorIDs();

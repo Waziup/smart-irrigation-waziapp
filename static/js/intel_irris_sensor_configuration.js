@@ -104,6 +104,7 @@ async function request_device_sensors() {
         update_sensor_select();
     }
 }
+
 function update_sensor_select() {
     if (typeof (sensors_configs) != undefined) {
 

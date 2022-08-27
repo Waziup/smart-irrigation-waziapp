@@ -391,7 +391,20 @@ def intel_irris_sensor_config():
 				deviceID = active_device_id
 				print("Active device_id: %s" % deviceID)
 				sensorID = active_sensor_id
+				
+				#-- GET device data --#
+				url=BASE_URL+"devices/%s" % deviceID
+				response = requests.get(url, headers=WaziGate_headers)
+				device_data = response.json()
+				deviceName = device_data['name']
 
+				#-- GET sensor data --#
+				url=BASE_URL+"devices/%s/sensors/%s" % (deviceID, sensorID)
+				response = requests.get(url, headers=WaziGate_headers)
+				sensor_data = response.json()
+				sensorName = sensor_data['name']
+				sensorKind = sensor_data['meta']['kind']
+				
 				#---------------------#
 				#-- Manage notifying user to add new config --#
 				current_config_file = open(sensor_config_filename, 'r')
@@ -571,10 +584,12 @@ def intel_irris_sensor_config():
 															 no_active=no_active,
 															 no_device=no_device)
 		else:
+				deviceID_str=deviceName + ' (' + deviceID + ')'
+				sensorID_str=sensorName + '/' + sensorKind
 				return render_template("intel-irris-sensor-config.html",
 															 no_active=no_active,
-															 deviceID=deviceID,
-															 sensorID=sensorID)
+															 deviceID=deviceID_str,
+															 sensorID=sensorID_str)
 #---------------------#
 
 #--------------------------------------------------------------------------
@@ -1188,6 +1203,31 @@ def check_sensor_id():
 				elif (response.status_code == 200):
 						return jsonify([{"status": "200"}])
 
+# returns all device data of a device ID
+@app.route("/request-device-data", methods=['GET']) 
+def request_device_data():
+		if request.method == 'GET':
+				device_id = request.args.get('deviceID')
+
+				if device_id[0] != '[':
+						device_url = BASE_URL+"devices/" + device_id
+
+						response = requests.get(device_url, headers=WaziGate_headers)
+
+						if response.status_code == 200:
+								data = response.json()
+								print("Device ID exists")
+								return jsonify(data)
+						elif response.status_code == 404:
+								print("Device ID does not exist")
+								return jsonify([{'status':'404'}])
+								
+				# handle when empty device id
+				elif device_id[0] == '[': 
+						print("no device id has been provided")
+						return jsonify([{'status':'404'}])
+
+
 # returns sensors data of a device ID
 @app.route("/request-device-sensors", methods=['GET']) 
 def request_device_sensors():
@@ -1212,6 +1252,20 @@ def request_device_sensors():
 						print("no device id has been provided")
 						return jsonify([{'status':'404'}])
 
+# returns sensor data
+@app.route("/request-sensor-data", methods=['GET']) 
+def request_sensor_data():
+		if request.method == 'GET':
+				device_id = request.args.get('deviceID')
+				sensor_id = request.args.get('sensorID')
+
+				sensorData_url = BASE_URL+"devices/" + device_id + "/sensors/" + sensor_id
+
+				response = requests.get(sensorData_url, headers=WaziGate_headers)
+				data = response.json()
+
+				return jsonify(data)
+				
 # returns sensor values
 @app.route("/request-sensor-values", methods=['GET']) 
 def request_sensor_values():
