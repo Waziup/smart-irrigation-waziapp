@@ -115,18 +115,23 @@ function update_sensor_select() {
         sensor_radio.innerHTML = "";
 
         for (j = 0; j <= no_sensors; j++) {
-            var sensor_id = sensors_configs[j]['id'];
-            var newRadio = document.createElement('input');
-            newRadio.type = 'radio';
-            newRadio.id = sensor_id;
-            newRadio.name = "select_sensor_radio";
-            newRadio.value = sensor_id;
-            var newLabel = document.createElement('label');
-            var t = document.createTextNode(sensor_id);
-            newLabel.setAttribute("for", sensor_id);
-            sensor_radio.appendChild(newRadio);
-            sensor_radio.appendChild(t);
-            sensor_radio.appendChild(document.createElement('br'));
+        		var sensor_name = sensors_configs[j]['name']
+        		
+        		if (sensor_name.match(/humidity/i)) {
+            		var sensor_id = sensors_configs[j]['id'];
+            		var newRadio = document.createElement('input');
+            		newRadio.type = 'radio';
+            		newRadio.id = sensor_id;
+            		newRadio.name = "select_sensor_radio";
+            		newRadio.value = sensor_id;
+            		var newLabel = document.createElement('label');
+            		//var t = document.createTextNode(sensor_id);
+            		var t = document.createTextNode(sensors_configs[j]['name']+'/'+sensors_configs[j]['meta']['kind']+' ('+sensor_id+')');
+            		newLabel.setAttribute("for", sensor_id);
+            		sensor_radio.appendChild(newRadio);
+            		sensor_radio.appendChild(t);
+            		sensor_radio.appendChild(document.createElement('br'));
+            }
 
             newRadio.addEventListener('click', function () {
                 document.getElementById('soil_temperatureForm').style.display = 'block';

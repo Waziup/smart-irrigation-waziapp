@@ -29,36 +29,37 @@ async function getGatewayDevices(){
 		}
 		console.log("Gateway Device IDs : " + gateway_devices_IDs);
 		console.log("Gateway Device names : " + gateway_devices_names);
-		update_newDeviceSelect();
+		update_newDeviceSelect_byName();		
 }
 
-function update_newDeviceSelect(){
-		var select = document.getElementById("new_deviceID_select")
+function update_newDeviceSelect_byName(){
+		var select = document.getElementById("new_deviceName_select")
 		select.innerHTML = "";
 
-		select.options[select.options.length] = new Option('Select a Device ID');
-		for (var x = 0; x < gateway_devices_IDs.length; x++) {
+		select.options[select.options.length] = new Option('Select a device by name');
+		for (var x = 0; x < gateway_devices_names.length; x++) {
 																												//option text								//option value
-				select.options[select.options.length] = new Option(gateway_devices_IDs[x], gateway_devices_IDs[x]);
+				select.options[select.options.length] = new Option(gateway_devices_names[x], gateway_devices_names[x]);
 		
 		}
 }
 
-function showName(evt) {
+function showID(evt) {
 		selected_value = evt.target.value;
 		selected_index = evt.target.selectedIndex
-		// update device name select with name of selected device id
-		update_newDeviceNameSelect(); 
+		// update device name select with ID of selected device
+		update_newDeviceIDSelect(); 
 }
 
-function update_newDeviceNameSelect(){
+function update_newDeviceIDSelect(){
 		//console.log("selected device : " + selected_value);
 		//console.log("selected index :" + selected_index);
-		let set_deviceName = document.getElementById('new_deviceName_select');
-		set_deviceName.innerHTML = "";
+		let set_deviceID = document.getElementById('new_deviceID_select');
+		set_deviceID.innerHTML = "";
 																																				//option text														//option value
-		set_deviceName.options[set_deviceName.options.length] = new Option(gateway_devices_names[selected_index -1], gateway_devices_names[selected_index -1]);
+		set_deviceID.options[set_deviceID.options.length] = new Option(gateway_devices_IDs[selected_index -1], gateway_devices_IDs[selected_index -1]);
 }
+
 /* *** */
 
 /* functions that get list of added devices and update the table */
@@ -124,26 +125,40 @@ function update_device_select() {
 /* functions that GET sensor IDs of active device and display in sensor SELECT */
 active_url = 'intel-irris-active-device'
 active_device_url = 'intel-irris-active-device-sensor'
+get_device_data_url = 'request-device-data'
+get_sensor_data_url = 'request-sensor-data'
 
-var active_device_id;
+var deviceID;
+var sensorID;
 var device_sensors;
 var no_sensors;
 var sensor_ids;
 
-async function getActiveID() {
-		const response = await fetch(active_url);
+async function getActiveID() {		
+		const response = await fetch(active_device_url);
 		console.log(response);
-		active_device_id = await response.json();
-		
-		request_device_sensors(active_device_id);
-		
-		const response1 = await fetch(active_device_url);
-		console.log(response1);
-		active_device_sensor_id = await response1.json();		 
+		var active_device_sensor_id = await response.json();		 
 			
-		var deviceID = active_device_sensor_id[0]['device_id'];
-		var sensorID = active_device_sensor_id[0]['sensor_id'];
+		deviceID = active_device_sensor_id[0]['device_id'];
+		sensorID = active_device_sensor_id[0]['sensor_id'];
+		
+		request_device_sensors(deviceID);
+		
+    const response1 = await fetch(get_device_data_url + '?deviceID=' + deviceID);
+    console.log(response1);
+    var device_data = await response1.json();
+    
+    var deviceName = device_data['name']
 
+		if (sensorID != null) {
+    		const response2 = await fetch(get_sensor_data_url + '?deviceID=' + deviceID + '&sensorID=' + sensorID);
+    		console.log(response2);
+    		var sensor_data = await response2.json();
+    
+    		var sensorName = sensor_data['name']
+    		var sensorKind = sensor_data['meta']['kind']		
+		}
+		
 		var deviceid = document.getElementById("deviceid")
 		var deviceid_id = document.getElementById("deviceid_id")
 		var sensorid = document.getElementById("sensorid")
@@ -157,7 +172,8 @@ async function getActiveID() {
 				sensorid_id.innerHTML = "none";
 		}
 		else {
-				deviceid_id.innerHTML = deviceID;
+				//deviceid_id.innerHTML = deviceID;
+				deviceid_id.innerHTML = deviceName + ' (' + deviceID + ')';
 				sensorid_id.innerHTML = "none";
 		}			
 
@@ -165,13 +181,13 @@ async function getActiveID() {
 				sensorid_id.innerHTML = "none";
 		}
 		else {
-				sensorid_id.innerHTML = sensorID;
+				//sensorid_id.innerHTML = sensorID;
+				sensorid_id.innerHTML = sensorName + '/' + sensorKind + ' (' + sensorID + ')';
 		}
 }
 
-async function request_device_sensors() {
-
-		const response = await fetch(request_sensors_url + '?deviceID=' + active_device_id);
+async function request_device_sensors(deviceID) {
+		const response = await fetch(request_sensors_url + '?deviceID=' + deviceID);
 		var device_sensors_response = await response.json();
 		device_sensors = device_sensors_response
 		device_sensors_response = JSON.stringify(device_sensors_response)
@@ -182,6 +198,7 @@ async function request_device_sensors() {
 				update_sensor_select();
 		}
 }
+
 function update_sensor_select() {
 		if (typeof (device_sensors) != undefined || device_sensors != null) {
 				no_sensors = device_sensors.length;
@@ -192,6 +209,7 @@ function update_sensor_select() {
 
 				device_sensors.forEach(function (item, index) {
 						select.options[select.options.length] = new Option(device_sensors[index]['id'])
+						//select.options[select.options.length] = new Option(device_sensors[index]['name']+'/'+device_sensors[index]['meta']['kind'])
 				})
 		}
 }

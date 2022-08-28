@@ -51,14 +51,14 @@ async function getActiveIDs() {
     console.log(response1);
     var device_data = await response1.json();
     
-    deviceName = device_data['name']
+    var deviceName = device_data['name']
 
     const response2 = await fetch(get_sensor_data_url + '?deviceID=' + deviceID + '&sensorID=' + sensorID);
     console.log(response2);
     var sensor_data = await response2.json();
     
-    sensorName = sensor_data['name']
-    sensorKind = sensor_data['meta']['kind']
+    var sensorName = sensor_data['name']
+    var sensorKind = sensor_data['meta']['kind']
     
     if (sensorID == null) {
         deviceid.style.display = "none";
@@ -76,8 +76,7 @@ async function getActiveIDs() {
         deviceid_id.innerHTML = deviceName + ' (' + deviceID + ')';
         deviceid.style.display = "block";
         //sensorid_id.innerHTML = sensorID;
-        //sensorid_id.innerHTML = sensorName + '/' + sensorKind + ' (' + sensorID + ')';
-        sensorid_id.innerHTML = sensorName + '/' + sensorKind;
+        sensorid_id.innerHTML = sensorName + '/' + sensorKind + ' (' + sensorID + ')';
         sensorid.style.display = "block";        
         no_sensor_found.style.display = "none";
         check_DeviceSensorIDs();

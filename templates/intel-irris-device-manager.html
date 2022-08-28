@@ -100,12 +100,12 @@
     <div class="add_device">
       <p style="text-align:center"><em>Add a device to IIWA</em></p><br>
       <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
-        <select name="device_id" class="new_deviceID_select" id="new_deviceID_select"
-          onchange="showName(event)"
+        <select name="device_name" class="new_deviceName_select" id="new_deviceName_select"
+          onchange="showID(event)"
           required>
         </select>
         <br><br>
-        <select name="device_name" class="new_deviceName_select" id="new_deviceName_select">
+        <select name="device_id" class="new_deviceID_select" id="new_deviceID_select">
         </select>
         <br><br>
         <select name="sensors_structure" class="sensors_structure" required>

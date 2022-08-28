@@ -585,7 +585,7 @@ def intel_irris_sensor_config():
 															 no_device=no_device)
 		else:
 				deviceID_str=deviceName + ' (' + deviceID + ')'
-				sensorID_str=sensorName + '/' + sensorKind
+				sensorID_str=sensorName + '/' + sensorKind + ' (' + sensorID + ')'
 				return render_template("intel-irris-sensor-config.html",
 															 no_active=no_active,
 															 deviceID=deviceID_str,
