@@ -17,15 +17,20 @@ async function getGatewayDevices(){
 		//console.log(response);
 		var gateway_devices = await response.json();
 		//console.log("Gateway devices : " + gateway_devices);
-		gateway_devices = gateway_devices.slice(1); // remove 'Gateway' device
+		//remove 'Gateway' device
+		//gateway_devices = gateway_devices.slice(1); 
 		length = Object.keys(gateway_devices).length;
 
 		console.log("Number of devices in gateway = "+length);
 
 		// push device IDs and names to list
-		for (i=0; i<length; i++){
-				gateway_devices_IDs.push(gateway_devices[i]['id'])
-				gateway_devices_names.push(gateway_devices[i]['name'])
+		for (i=0; i<length; i++) {
+				var device_name=gateway_devices[i]['name']
+				
+				if (!device_name.match(/gateway/i)) {
+						gateway_devices_IDs.push(gateway_devices[i]['id'])
+						gateway_devices_names.push(gateway_devices[i]['name'])
+				}
 		}
 		console.log("Gateway Device IDs : " + gateway_devices_IDs);
 		console.log("Gateway Device names : " + gateway_devices_names);
