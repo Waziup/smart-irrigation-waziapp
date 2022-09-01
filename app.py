@@ -97,10 +97,10 @@ def dashboard():
 
 		# check if there are devices in devices JSON
 		if path.isfile(added_devices_filename) is False:	# Check if data.json file exists
-				added_devices = "Config file for active device ID not found!"
+				added_devices = "List of added devices not found!"
 				no_devices = True
 		else:
-				print("Config file for active device ID is found!")
+				print("Found list of added devices!")
 				
 				f = open(added_devices_filename, 'r')
 				read_devices = json.loads(f.read())
@@ -114,11 +114,13 @@ def dashboard():
 				if (length == 1):
 						# instruct user to add a device
 						no_devices = True
-						added_devices = "No devices added to IIWA. Go to the Device Manager to add one."
+						added_devices = "No devices added to IIWA. Go to Device Manager."
 				else:
 						no_devices = False
 						monitor_all_configured_sensors()
-						
+
+				
+										
 				#---------------------#
 
 		if (no_devices == True):
@@ -385,6 +387,8 @@ def intel_irris_sensor_config():
 		
 		get_ActiveDeviceSensorID()
 		
+		check_ActiveDeviceSensorID()
+		
 		#check if there is an active device for IIWA
 		if active_device_id != "undefined":
 				no_active = False	
@@ -579,7 +583,7 @@ def intel_irris_sensor_config():
 						#---------------------#
 
 		if (no_active):
-				no_device = "No Devices added to IIWA. Go to the Device Manager to add one."
+				no_device = "No devices added to IIWA or active device no longer exists. Go to Device Manager."
 				return render_template("intel-irris-sensor-config.html",
 															 no_active=no_active,
 															 no_device=no_device)
@@ -730,7 +734,7 @@ def monitor_only_active_sensor():
 		
 		#check if there is an active device for IIWA
 		if active_device_id == "undefined":
-				print("monitor_only_active_sensor : No devices added to IIWA, go to the Device Manager to add one")
+				print("monitor_only_active_sensor : No devices added to IIWA. Go to Device Manager.")
 		else:		
 				#in all cases we will get the last value from the active sensor
 				fetch_last_value = True
@@ -830,11 +834,24 @@ def get_ActiveDeviceSensorID():
 								active_sensor_id = read_devices[0]['sensor_id']
 						elif deviceID_key not in read_devices[0] or sensorID_key not in read_devices[0]:
 								print("get_ActiveDeviceSensorID : Error in configuration file!")
-								print("get_ActiveDeviceSensorID : Go to the Device Manager to add a device or sensor id")					
+								print("get_ActiveDeviceSensorID : Go to Device Manager to add a device or sensor id")					
 				except ValueError as e:
 						print("get_ActiveDeviceSensorID : Error in configuration file!")
 					
-				f.close()				
+				f.close()
+				
+def check_ActiveDeviceSensorID():
+
+		global active_device_id 
+		global active_sensor_id
+				
+		url = BASE_URL+"devices/" + active_device_id + '/sensors/' + active_sensor_id
+
+		response = requests.get(url, headers=WaziGate_headers)
+		
+		if (response.status_code == 404):
+				active_device_id = "undefined"
+				active_sensor_id = "undefined"								
 				
 #--------------------------------------------------------------------------
 #determine the soil condition string indication for capacitive
@@ -1189,8 +1206,8 @@ def request_gateway_devices():
 				return jsonify(data)
 
 # returns 200 or 404 to indicate if sensor or device id is valid/invalid
-@app.route("/check-device-sensor-id", methods=['GET']) 
-def check_sensor_id():
+@app.route("/request-check-device-sensor-id", methods=['GET']) 
+def request_check_device_sensor_id():
 		if request.method == 'GET':
 				device_id = request.args.get('deviceID')
 				sensor_id = request.args.get('sensorID')

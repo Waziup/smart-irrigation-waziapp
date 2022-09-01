@@ -1,8 +1,8 @@
-active_url = 'intel-irris-active-device-sensor'
-check_valid_DeviceSensor_id_url = 'check-device-sensor-id'
-get_device_data_url = 'request-device-data'
-get_sensor_data_url = 'request-sensor-data'
-get_sensor_values_url = 'request-sensor-values'
+intel_irris_active_device_sensor_url = 'intel-irris-active-device-sensor'
+request_check_device_sensor_id_url = 'request-check-device-sensor-id'
+request_device_data_url = 'request-device-data'
+request_sensor_data_url = 'request-sensor-data'
+request_sensor_values_url = 'request-sensor-values'
 
 var deviceID;
 var sensorID;
@@ -37,7 +37,7 @@ var nb_intervals = 6
 
 //let TIME_length = 0;
 async function getActiveIDs() {
-    const response = await fetch(active_url);
+    const response = await fetch(intel_irris_active_device_sensor_url);
     //console.log(response);
     var active_ids = await response.json();
 
@@ -47,13 +47,13 @@ async function getActiveIDs() {
     //console.log("Device id " + deviceID);
     //console.log("Sensor id " + sensorID);
 
-    const response1 = await fetch(get_device_data_url + '?deviceID=' + deviceID);
+    const response1 = await fetch(request_device_data_url + '?deviceID=' + deviceID);
     console.log(response1);
     var device_data = await response1.json();
     
     var deviceName = device_data['name']
 
-    const response2 = await fetch(get_sensor_data_url + '?deviceID=' + deviceID + '&sensorID=' + sensorID);
+    const response2 = await fetch(request_sensor_data_url + '?deviceID=' + deviceID + '&sensorID=' + sensorID);
     console.log(response2);
     var sensor_data = await response2.json();
     
@@ -84,7 +84,7 @@ async function getActiveIDs() {
 }
 
 async function check_DeviceSensorIDs() {
-    const response = await fetch(check_valid_DeviceSensor_id_url + '?deviceID=' + deviceID + '&sensorID=' + sensorID);
+    const response = await fetch(request_check_device_sensor_id_url + '?deviceID=' + deviceID + '&sensorID=' + sensorID);
     //console.log(response);
     active_device_id = await response.json();
     response_status = active_device_id[0]['status']
@@ -112,7 +112,7 @@ async function check_DeviceSensorIDs() {
 }
 async function plotData() {
     if (!four_04) {
-        const data_response = await fetch(get_sensor_values_url + '?deviceID=' + deviceID + '&sensorID=' + sensorID);
+        const data_response = await fetch(request_sensor_values_url + '?deviceID=' + deviceID + '&sensorID=' + sensorID);
 
         const sensor_data = await data_response.json()
 

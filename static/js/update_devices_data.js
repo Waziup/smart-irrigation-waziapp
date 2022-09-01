@@ -1,7 +1,7 @@
 /* Functions to generate devices table */
 request_gateway_devices_url = '/request-gateway-devices';
-devices_url = '/intel-irris-added-devices';
-request_sensors_url = '/request-device-sensors';
+intel_irris_added_devices_url = '/intel-irris-added-devices';
+request_device_sensors_url = '/request-device-sensors';
 
 var gateway_devices;
 var gateway_devices_IDs = []
@@ -69,7 +69,7 @@ function update_newDeviceIDSelect(){
 
 /* functions that get list of added devices and update the table */
 async function getTableData() {
-		const response = await fetch(devices_url);
+		const response = await fetch(intel_irris_added_devices_url);
 		//console.log(response);
 		data = await response.json();
 		// remove 'defaults'
@@ -128,10 +128,9 @@ function update_device_select() {
 /* *** */
 
 /* functions that GET sensor IDs of active device and display in sensor SELECT */
-active_url = 'intel-irris-active-device'
-active_device_url = 'intel-irris-active-device-sensor'
-get_device_data_url = 'request-device-data'
-get_sensor_data_url = 'request-sensor-data'
+intel_irris_active_device_sensor_url = 'intel-irris-active-device-sensor'
+request_device_data_url = 'request-device-data'
+request_sensor_data_url = 'request-sensor-data'
 
 var deviceID;
 var sensorID;
@@ -140,7 +139,7 @@ var no_sensors;
 var sensor_ids;
 
 async function getActiveID() {		
-		const response = await fetch(active_device_url);
+		const response = await fetch(intel_irris_active_device_sensor_url);
 		console.log(response);
 		var active_device_sensor_id = await response.json();		 
 			
@@ -149,14 +148,14 @@ async function getActiveID() {
 		
 		request_device_sensors(deviceID);
 		
-    const response1 = await fetch(get_device_data_url + '?deviceID=' + deviceID);
+    const response1 = await fetch(request_device_data_url + '?deviceID=' + deviceID);
     console.log(response1);
     var device_data = await response1.json();
     
     var deviceName = device_data['name']
 
 		if (sensorID != null) {
-    		const response2 = await fetch(get_sensor_data_url + '?deviceID=' + deviceID + '&sensorID=' + sensorID);
+    		const response2 = await fetch(request_sensor_data_url + '?deviceID=' + deviceID + '&sensorID=' + sensorID);
     		console.log(response2);
     		var sensor_data = await response2.json();
     
@@ -192,7 +191,7 @@ async function getActiveID() {
 }
 
 async function request_device_sensors(deviceID) {
-		const response = await fetch(request_sensors_url + '?deviceID=' + deviceID);
+		const response = await fetch(request_device_sensors_url + '?deviceID=' + deviceID);
 		var device_sensors_response = await response.json();
 		device_sensors = device_sensors_response
 		device_sensors_response = JSON.stringify(device_sensors_response)

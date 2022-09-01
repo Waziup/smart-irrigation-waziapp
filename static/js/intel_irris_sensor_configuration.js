@@ -1,6 +1,6 @@
-var sensor_config_url = 'intel-irris-sensor-configurations';
-var active_url = 'intel-irris-active-device';
-var request_DeviceSensors_url = 'request-device-sensors';
+var intel_irris_sensor_configurations_url = 'intel-irris-sensor-configurations';
+var intel_irris_active_device_url = 'intel-irris-active-device';
+var request_device_sensors_url = 'request-device-sensors';
 
 var active_device = document.getAnimations("active_device");
 var active_device_id = document.getElementById("active_device_id");
@@ -36,7 +36,7 @@ var global_soil_bulk_density;
 /* *** */
 
 async function inform_on_configurations() {
-    const response = await fetch(sensor_config_url);
+    const response = await fetch(intel_irris_sensor_configurations_url);
     console.log(response);
     sensor_config_data = await response.json();
     configs = sensor_config_data['sensors'];
@@ -82,7 +82,7 @@ var no_sensors;
 var sensor_ids;
 
 async function getActiveID() {
-    const response = await fetch(active_url);
+    const response = await fetch(intel_irris_active_device_url);
     //console.log(response);
     active_device_id = await response.json();
 
@@ -90,15 +90,11 @@ async function getActiveID() {
 }
 
 async function request_device_sensors() {
-    //device_url = `https://api.waziup.io/api/v2/devices/${active_device_id}/sensors`;
-    //device_url = `http://localhost/devices/${active_device_id}/sensors`;
-
-    const response = await fetch(request_DeviceSensors_url + '?deviceID=' +active_device_id);
+    const response = await fetch(request_device_sensors_url + '?deviceID=' +active_device_id);
     //console.log(response);
     sensors_configs_response = await response.json();
     sensors_configs = sensors_configs_response;
     sensors_configs_response = JSON.stringify(sensors_configs_response);
-    //console.log('device data : '+device_sensors);
 
     if (sensors_configs_response != '[{"status":"404"}]') { // show sensor ids if device ID exist
         update_sensor_select();
@@ -427,6 +423,7 @@ function show_temperature_source_fields() {
 }
 /* *** */
 var sensorIDRadio_updated = false;
+
 function foo() {
     if (!sensorIDRadio_updated) {
         inform_on_configurations();
@@ -438,4 +435,5 @@ function foo() {
 
     setTimeout(foo, 6000);
 }
+
 foo();
