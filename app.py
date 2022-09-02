@@ -1167,6 +1167,8 @@ def intel_irris_active_device():
 						except ValueError as e:
 								f.close()
 								return jsonify('[]')
+				else:
+						return jsonify('[]')								
 						
 @app.route("/intel-irris-active-device-sensor", methods=['GET'])	 # returns data in active device config
 def intel_irris_active_device_sensor():
@@ -1179,7 +1181,9 @@ def intel_irris_active_device_sensor():
 								return jsonify(active_device_id)
 						except ValueError as e:
 								f.close()
-								return jsonify('[]')												
+								return jsonify('[]')
+				else:
+						return jsonify('[]')																
 
 @app.route("/intel-irris-sensor-configurations", methods=['GET'])	 # returns data in sensor configurations
 def intel_irris_sensor_configurations():
