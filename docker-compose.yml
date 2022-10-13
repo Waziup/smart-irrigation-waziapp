@@ -7,7 +7,10 @@ services:
     build:
       context: ./
     volumes:
-      - /var/lib/wazigate/apps/intel-irris-waziapp:/app/intel-irris-waziapp
+      #- /home/pi/waziup-gateway/apps/waziup/intel-irris-waziapp:/app/intel-irris-waziapp
+      #- /var/lib/wazigate/apps/intel-irris-waziapp:/app/intel-irris-waziapp
+      #- ./:/root/src/ # Uncomment for development
+      - ./:/root/app # The unix socket has to have this name and be in ./ : proxy.sock
     ports:
       - "5000:5000"
     privileged: false
@@ -18,8 +21,6 @@ services:
       test: curl --fail --unix-socket /var/lib/waziup/proxy.sock http://localhost/ || exit 1 #curl --fail http://localhost:5000/ || exit 1
       interval: 30s
       retries: 10 # Will try for 5 minutes
-    restart: "always"
-
     network_mode: "host" # run app on {WaziGate IP}:5000/
 
 networks:

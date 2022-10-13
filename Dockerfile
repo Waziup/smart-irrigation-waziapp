@@ -1,19 +1,21 @@
 FROM python:slim-buster
 
-#WORKDIR /app/intel-irris-waziapp
-WORKDIR /
+# Copy whole folder to container
+COPY . /root/src
+
+WORKDIR /root/src
 
 RUN pip3 install --upgrade pip
-RUN pip install requests
-RUN pip install flask
 
+RUN pip install -r requirements.txt
 
-#----------------------------#
-# Copy whole folder to container
-#COPY . .
-COPY . /app/intel-irris-waziapp
-WORKDIR /app/intel-irris-waziapp
-#----------------------------#
+RUN apt-get update \
+    && apt-get install -y \
+    zip
+
+RUN cd /root/src/ \
+    && zip /index.zip docker-compose.yml package.json
+
 
 # Make port available
 EXPOSE 5000/tcp
@@ -23,5 +25,4 @@ EXPOSE 5000/tcp
 # ENTRYPOINT ["tail", "-f", "/dev/null"]
 
 # Uncomment For production
-ENTRYPOINT ["python3"]
-CMD ["app.py"]
+ENTRYPOINT ["python3","/root/src/app.py"]

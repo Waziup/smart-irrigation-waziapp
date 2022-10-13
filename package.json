@@ -3,18 +3,16 @@
 	"version": "1.0.0",
 	"description": "Intelligent Irrigation System for Low-cost Autonomous Water Control",
 	"private": false,
-	"author": {
-		"name": "Waziup"
-	},
+	"author": "Waziup",
 	"license": "NA",
 	"waziapp": {
-		"icon": "ui/waziapp.svg",
-		"menu": {
-			"IntelIrrisWaziApp": {
-				"primary": "Intel-Irris WaziApp",
-				"icon": "ui/menu-icon.svg",
-				"href": "#/apps/waziup.intel-irris-waziapp/"
+			"icon": "ui/waziapp.svg",
+			"menu": {
+					"IntelIrrisWaziApp": {
+							"primary": "Intel-Irris WaziApp",
+							"icon": "ui/menu-icon.svg",
+							"href": "#/apps/waziup.intel-irris-waziapp/"
+					}
 			}
-		}
 	}
 }
