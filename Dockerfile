@@ -11,7 +11,8 @@ RUN pip install -r requirements.txt
 
 RUN apt-get update \
     && apt-get install -y \
-    zip
+    zip \
+    curl
 
 RUN cd /root/src/ \
     && zip /index.zip docker-compose.yml package.json

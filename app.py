@@ -3,6 +3,8 @@ import requests, json, os
 from os import path
 from datetime import datetime
 
+from werkzeug.serving import run_simple
+
 app = Flask(__name__)
 
 #--- config filepaths ---#
@@ -1306,6 +1308,10 @@ def request_sensor_values():
 #---------------------#
 
 if __name__ == "__main__":
-		app.run(host='0.0.0.0', debug=True, use_reloader=False)
+		# Run locally
+		#app.run(host='0.0.0.0', debug=True, use_reloader=False)
 		#app.run(host='unix:///app/intel-irris-waziapp/proxy.sock',use_reloader=False,debug=True)
+		
+		# Run as waziapp via sockets
+    	run_simple('unix:///var/lib/waziapp/proxy.sock', 0, app, threaded=True)
 			
