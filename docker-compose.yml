@@ -7,7 +7,7 @@ services:
     build:
       context: ./
     volumes:
-      - /var/lib/wazigate/apps/intel-irris-waziapp:/var/lib/waziapp/
+      - /var/lib/wazigate/apps/waziup.intel-irris-waziapp:/var/lib/waziapp/
     restart: unless-stopped
     environment:
       - TEST_VAR=1
