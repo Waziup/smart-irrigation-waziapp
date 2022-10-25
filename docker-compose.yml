@@ -15,6 +15,9 @@ services:
       test: curl --fail --unix-socket /var/lib/waziapp/proxy.sock http://localhost/ || exit 1 
       interval: 30s
       retries: 10 # Will try for 5 minutes
+    ports: #comment to run on unix
+      - "5000:5000" #comment to run on unix
+    network_mode: "host" # run app on {WaziGate IP}:5000, comment to run on unix
 
 networks:
   default:

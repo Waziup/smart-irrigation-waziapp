@@ -1308,10 +1308,8 @@ def request_sensor_values():
 #---------------------#
 
 if __name__ == "__main__":
-		# Run locally
-		#app.run(host='0.0.0.0', debug=True, use_reloader=False)
-		#app.run(host='unix:///app/intel-irris-waziapp/proxy.sock',use_reloader=False,debug=True)
-		
+		# Run on Pi's IP address at Port 5000
+		app.run(host='0.0.0.0', debug=True, use_reloader=False)
+	
 		# Run as waziapp via sockets
-    	run_simple('unix:///var/lib/waziapp/proxy.sock', 0, app, threaded=True)
-			
+    	#run_simple('unix:///var/lib/waziapp/proxy.sock', 0, app, threaded=True)
