@@ -409,8 +409,8 @@ def intel_irris_sensor_config():
 				response = requests.get(url, headers=WaziGate_headers)
 				sensor_data = response.json()
 				sensorName = sensor_data['name']
-				#sensorKind = sensor_data['meta']['kind']
-				sensorKind = sensor_data['kind']
+				sensorKind = sensor_data['meta']['kind']
+				#sensorKind = sensor_data['kind']
 				
 				#---------------------#
 				#-- Manage notifying user to add new config --#
