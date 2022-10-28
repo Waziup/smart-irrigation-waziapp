@@ -1,5 +1,8 @@
 FROM python:slim-buster
 
+# Custom cache invalidation
+ARG CACHEBUST=1
+
 # Copy whole folder to container
 COPY . /root/src
 

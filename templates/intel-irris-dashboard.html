@@ -7,26 +7,26 @@
   <!-- <meta name="description" content="" /> -->
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/menu_bar.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+  <link rel="stylesheet" href="./static/css/menu_bar.css" />
+  <link rel="stylesheet" href="./static/css/dashboard.css" />
 
-  <script type="text/javascript" src="{{ url_for('static', filename='js/apexcharts.js') }}"></script>
+  <script type="text/javascript" src="./static/js/apexcharts.js"></script>
 </head>
 
 <body>
   <div class="topnav" id="myTopnav">
-    <img src="{{ url_for('static', filename='images/intel-irris-logo.png') }}" height="40" style="vertical-align:middle;margin:4px 0px">
-    <a href="{{ url_for('dashboard') }}" class="active"><img src="{{ url_for('static', filename='images/dashboard.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"></a>
-    <a href="{{ url_for('intel_irris_device_manager') }}"><img src="{{ url_for('static', filename='images/device.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"></a>
-    <a href="{{ url_for('intel_irris_sensor_config') }}"><img src="{{ url_for('static', filename='images/config.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"></a>    
+    <img src="./static/images/intel-irris-logo.png" height="40" style="vertical-align:middle;margin:4px 0px">
+    <a href="{{ url_for('dashboard') }}" class="active"><img src="./static/images/dashboard.png" height="40" style="vertical-align:middle;margin:-14px 0px"></a>
+    <a href="./intel_irris_device_manager"><img src="./static/images/device.png" height="40" style="vertical-align:middle;margin:-14px 0px"></a>
+    <a href="./intel_irris_sensor_config"><img src="./static/images/config.png" height="40" style="vertical-align:middle;margin:-14px 0px"></a>    
     <div class="dropdown">
       <button class="dropbtn">Menu
         <i class="fa fa-caret-down"></i>
       </button>     
       <div class="dropdown-content">
       	<a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('intel_irris_device_manager') }}">Device Manager</a>
-        <a href="{{ url_for('intel_irris_sensor_config') }}">Configuration</a>
+        <a href="./intel_irris_device_manager">Device Manager</a>
+        <a href="./intel_irris_sensor_config">Configuration</a>
       </div>
     </div>
     <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>    
@@ -77,7 +77,7 @@
     <p id="sensor_id_error_p2">Select a new sensor id from the Device Manager</p>
     <p style="text-align: center;">Colors on graph are only indicative</p>
     <div id="values_chart" class="plot_center">
-      <script type="text/javascript" src="{{ url_for('static', filename='js/plot_values_chart.js') }}"></script>
+      <script type="text/javascript" src="./static/js/plot_values_chart.js"></script>
     </div>
     {% endif %}
   </div>

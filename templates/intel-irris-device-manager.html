@@ -7,25 +7,25 @@
   <meta name="description" content="" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/menu_bar.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/device_manager.css') }}" />
+  <link rel="stylesheet" href="./static/css/menu_bar.css" />
+  <link rel="stylesheet" href="./static/css/device_manager.css" />
 
 </head>
 
 <body>
   <div class="topnav" id="myTopnav">
-    <img src="{{ url_for('static', filename='images/intel-irris-logo.png') }}" height="40" style="vertical-align:middle;margin:4px 0px">
-    <a href="{{ url_for('dashboard') }}" class="active"><img src="{{ url_for('static', filename='images/dashboard.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"></a>
-    <a href="{{ url_for('intel_irris_device_manager') }}"><img src="{{ url_for('static', filename='images/device.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"></a>
-    <a href="{{ url_for('intel_irris_sensor_config') }}"><img src="{{ url_for('static', filename='images/config.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"></a>    
+    <img src="./static/images/intel-irris-logo.png" height="40" style="vertical-align:middle;margin:4px 0px">
+    <a href="{{ url_for('dashboard') }}" class="active"><img src="./static/images/dashboard.png" height="40" style="vertical-align:middle;margin:-14px 0px"></a>
+    <a href="./intel_irris_device_manager"><img src="./static/images/device.png" height="40" style="vertical-align:middle;margin:-14px 0px"></a>
+    <a href="./intel_irris_sensor_config"><img src="./static/images/config.png" height="40" style="vertical-align:middle;margin:-14px 0px"></a>    
     <div class="dropdown">
       <button class="dropbtn">Menu
         <i class="fa fa-caret-down"></i>
       </button>     
       <div class="dropdown-content">
       	<a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('intel_irris_device_manager') }}">Device Manager</a>
-        <a href="{{ url_for('intel_irris_sensor_config') }}">Configuration</a>
+        <a href="./intel_irris_device_manager">Device Manager</a>
+        <a href="./intel_irris_sensor_config">Configuration</a>
       </div>
     </div>
     <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
@@ -61,7 +61,7 @@
         <table cellpadding="0" cellspacing="0" border="0">
           <tbody id="devices">
             <script type="text/javascript"
-              src="{{ url_for('static', filename='js/update_devices_data.js') }}"></script>
+              src="./static/js/update_devices_data.js"></script>
           </tbody>
         </table>
       </div>
@@ -78,7 +78,7 @@
     <div class="div_containers">
       <p style="text-align: center;"><em>Select an active device and sensor</em></p>
       <p id="deviceid">Active device: <span id="deviceid_id" style="color: red;"></span>. Select from list</p>
-      <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
+      <form action="./intel_irris_device_manager" method="post">
         <label></label>
         <select name="device-id-select" class="device-id-select" id="device-id-select">
         </select>
@@ -87,7 +87,7 @@
       
       <br>
       <p id="sensorid">Active sensor: <span id="sensorid_id" style="color: red;"></span>. Select from list for Dashboard & humidity index value computation</p>
-      <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
+      <form action="./intel_irris_device_manager" method="post">
         <label></label>
         <select name="sensor-id-select" class="sensor-id-select" id="sensor-id-select">
         </select>
@@ -99,7 +99,7 @@
     <p>Add/Remove a device using the form below.</p>
     <div class="add_device">
       <p style="text-align:center"><em>Add a device to IIWA</em></p><br>
-      <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
+      <form action="./intel_irris_device_manager" method="post">
         <select name="device_name" class="new_deviceName_select" id="new_deviceName_select"
           onchange="showID(event)"
           required>
@@ -123,7 +123,7 @@
     <div class="div_containers">
       <div class="remove_device">
         <p style="text-align: center;"><em>Remove a device from IIWA</em></p><br>
-        <form action="{{ url_for('intel_irris_device_manager') }}" method="post">
+        <form action="./intel_irris_device_manager" method="post">
           <label for="device_id_remove">Remove : </label>
           <select name="device_id_remove" class="device-id-select" id="remove-device-id-select" required>
           </select>
