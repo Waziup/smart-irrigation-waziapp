@@ -16,7 +16,7 @@
 <body>
     <div class="topnav" id="myTopnav">
     <img src="./static/images/intel-irris-logo.png" height="40" style="vertical-align:middle;margin:4px 0px">
-    <a href="./" class="active"><img src="./static/images/dashboard.png" height="40" style="vertical-align:middle;margin:-14px 0px"></a>
+    <a href="./dashboard" class="active"><img src="./static/images/dashboard.png" height="40" style="vertical-align:middle;margin:-14px 0px"></a>
     <a href="./intel-irris-devices"><img src="./static/images/device.png" height="40" style="vertical-align:middle;margin:-14px 0px"></a>
     <a href="./intel-irris-sensor-config"><img src="./static/images/config.png" height="40" style="vertical-align:middle;margin:-14px 0px"></a>    
     <div class="dropdown">
@@ -44,7 +44,7 @@
     <div style="padding-left:16px; padding-top:16px">
         <script type="text/javascript">no_active = {{ no_active | tojson | safe }}</script>
         <script type="text/javascript"
-            src="./static/js/intel_irris_sensor_configuration.js"></script>
+            src="./static/js/intel-irris-sensor-configuration.js"></script>
         {% if no_active == True %}
         <p> {{no_device }}</p>
 
@@ -63,7 +63,7 @@
         </div>
         <h3 class="MuiTypography-h1">Update configurations </h3>
 
-        <form action="./intel_irris_sensor_config" method="post">
+        <form action="./intel-irris-sensor-config" method="post">
             <div class="accordion-body">
                 <div class="accordion">
                 		<p>Sensor Type is the only mandatory parameter to be filled, other parameters can be left undefined</p>

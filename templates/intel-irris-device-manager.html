@@ -78,7 +78,7 @@
     <div class="div_containers">
       <p style="text-align: center;"><em>Select an active device and sensor</em></p>
       <p id="deviceid">Active device: <span id="deviceid_id" style="color: red;"></span>. Select from list</p>
-      <form action="./intel_irris_device_manager" method="post">
+      <form action="./intel-irris-devices" method="post">
         <label></label>
         <select name="device-id-select" class="device-id-select" id="device-id-select">
         </select>
@@ -87,7 +87,7 @@
       
       <br>
       <p id="sensorid">Active sensor: <span id="sensorid_id" style="color: red;"></span>. Select from list for Dashboard & humidity index value computation</p>
-      <form action="./intel_irris_device_manager" method="post">
+      <form action="./intel-irris-devices" method="post">
         <label></label>
         <select name="sensor-id-select" class="sensor-id-select" id="sensor-id-select">
         </select>
@@ -99,7 +99,7 @@
     <p>Add/Remove a device using the form below.</p>
     <div class="add_device">
       <p style="text-align:center"><em>Add a device to IIWA</em></p><br>
-      <form action="./intel_irris_device_manager" method="post">
+      <form action="./intel-irris-devices" method="post">
         <select name="device_name" class="new_deviceName_select" id="new_deviceName_select"
           onchange="showID(event)"
           required>
@@ -123,7 +123,7 @@
     <div class="div_containers">
       <div class="remove_device">
         <p style="text-align: center;"><em>Remove a device from IIWA</em></p><br>
-        <form action="./intel_irris_device_manager" method="post">
+        <form action="./intel-irris-devices" method="post">
           <label for="device_id_remove">Remove : </label>
           <select name="device_id_remove" class="device-id-select" id="remove-device-id-select" required>
           </select>
