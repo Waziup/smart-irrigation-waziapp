@@ -1,8 +1,8 @@
-intel_irris_active_device_sensor_url = 'intel-irris-active-device-sensor'
-request_check_device_sensor_id_url = 'request-check-device-sensor-id'
-request_device_data_url = 'request-device-data'
-request_sensor_data_url = 'request-sensor-data'
-request_sensor_values_url = 'request-sensor-values'
+intel_irris_active_device_sensor_url = './intel-irris-active-device-sensor'
+request_check_device_sensor_id_url = './request-check-device-sensor-id'
+request_device_data_url = './request-device-data'
+request_sensor_data_url = './request-sensor-data'
+request_sensor_values_url = './request-sensor-values'
 
 var deviceID;
 var sensorID;

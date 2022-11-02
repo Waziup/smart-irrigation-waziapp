@@ -1,6 +1,6 @@
-var intel_irris_sensor_configurations_url = 'intel-irris-sensor-configurations';
-var intel_irris_active_device_url = 'intel-irris-active-device';
-var request_device_sensors_url = 'request-device-sensors';
+var intel_irris_sensor_configurations_url = './intel-irris-sensor-configurations';
+var intel_irris_active_device_url = './intel-irris-active-device';
+var request_device_sensors_url = './request-device-sensors';
 
 var active_device = document.getAnimations("active_device");
 var active_device_id = document.getElementById("active_device_id");

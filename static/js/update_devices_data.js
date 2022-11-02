@@ -1,7 +1,7 @@
 /* Functions to generate devices table */
-request_gateway_devices_url = '/request-gateway-devices';
-intel_irris_added_devices_url = '/intel-irris-added-devices';
-request_device_sensors_url = '/request-device-sensors';
+request_gateway_devices_url = './request-gateway-devices';
+intel_irris_added_devices_url = './intel-irris-added-devices';
+request_device_sensors_url = './request-device-sensors';
 
 var gateway_devices;
 var gateway_devices_IDs = []
@@ -128,9 +128,9 @@ function update_device_select() {
 /* *** */
 
 /* functions that GET sensor IDs of active device and display in sensor SELECT */
-intel_irris_active_device_sensor_url = 'intel-irris-active-device-sensor'
-request_device_data_url = 'request-device-data'
-request_sensor_data_url = 'request-sensor-data'
+intel_irris_active_device_sensor_url = './intel-irris-active-device-sensor'
+request_device_data_url = './request-device-data'
+request_sensor_data_url = './request-sensor-data'
 
 var deviceID;
 var sensorID;
