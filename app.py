@@ -16,8 +16,8 @@ sensor_config_filename = 'config/intel-irris-conf.json'
 #only for soil condition, 'fr' or 'en'
 iiwa_lang='en'
 
-#BASE_URL="https://api.waziup.io/api/v2/" # uncomment for WaziCloud
-#avoid to change manually the next line as a script will do this task
+# BASE_URL="https://api.waziup.io/api/v2/" # uncomment for WaziCloud
+# avoid to change manually the next line as a script will do this task
 BASE_URL="http://localhost/"
 
 headers = {
@@ -1125,7 +1125,56 @@ def get_tensiometer_soil_condition(raw_value, device_id, sensor_id, sensor_confi
 			
 				print ('=========================================') 
 		return value_index_tensiometer
-								
+
+# returns the soil temperature value from the selected source
+def get_linked_soil_temperature(device_id, sensor_id):
+	device_ID = device_id
+	sensor_ID = sensor_id
+	f = open(sensor_config_filename)
+	read_config = json.loads(f.read())
+	f.close()
+	print("=========================================")
+	print("getting linked temperature value :")
+	
+	number_of_sensor_configs = len(read_config['sensors'])
+	
+	for x in range(0, number_of_sensor_configs):
+		# first get the index of the target sensor
+		if  read_config['sensors'][x]['device_id'] == device_ID and read_config['sensors'][x]['sensor_id'] == sensor_ID:
+
+			# get a defined soil temperature value
+			if read_config['sensors'][x]['soil_temperature_source']['soil_temperature_value'] != 'undefined':
+				temperature_value = float(read_config['sensors'][x]['soil_temperature_source']['soil_temperature_value'])
+				print("OK! Read soil temperature value")
+				print(temperature_value)
+				print("=========================================")
+				
+				return temperature_value
+
+			# get a defined soil temperature value from the active sensor
+			elif read_config['sensors'][x]['soil_temperature_source']['soil_temperature_device_id'] == device_ID and read_config['sensors'][x]['soil_temperature_source']['soil_temperature_sensor_id'] == sensor_ID:
+				sensorValue_url = BASE_URL+"devices/" + device_ID + "/sensors/" + sensor_ID + "/value"
+				response = requests.get(sensorValue_url, headers=WaziGate_headers)
+
+				if response.status_code == 200:
+					print("OK! Fetched soil temperature value from active sensor")
+					temperature_value = float(response.json())
+					print(temperature_value)
+					print("=========================================")
+
+					return temperature_value
+
+				else:
+					print("Unable to fetch soil temperature value! Check the device/sensor ID(s)")
+					print("=========================================")
+
+			else:
+				print("Unable to find soil temperature source from sensor configuration")
+				print("=========================================")
+		else:
+			print("sensor ID not found in the IIWA configuration!")
+			print("=========================================")
+
 #---------------------#
 # periodically compute humidity index value
 
