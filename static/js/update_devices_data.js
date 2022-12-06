@@ -212,8 +212,9 @@ function update_sensor_select() {
 				select.innerHTML = "";
 
 				device_sensors.forEach(function (item, index) {
-						//select.options[select.options.length] = new Option(device_sensors[index]['id'])
-						select.options[select.options.length] = new Option(device_sensors[index]['name']+'/'+device_sensors[index]['meta']['kind'])
+					//	new Option parameters (option_to_set, value_of_the_option_to_set)
+					//select.options[select.options.length] = new Option(device_sensors[index]['id'])
+					select.options[select.options.length] = new Option(device_sensors[index]['name']+'/'+device_sensors[index]['meta']['kind'] , device_sensors[index]['id'])
 				})
 		}
 }
