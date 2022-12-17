@@ -45,12 +45,12 @@ capacitive_default_sensor_config = {
 				"sensor_age": "0",
 				"sensor_max": sensor_max_capacitive,
 				"sensor_min": "0",
-				"soil_type": "sandy",
-				"soil_irrigation_type": "furrow",
-				"soil_salinity": "0",
-				"soil_bulk_density": "0",
-				"plant_crop": "wheat",
-				"plant_sub_type": "sub_type_A",
+				"soil_type": "silty",
+				"soil_irrigation_type": "undefined",
+				"soil_salinity": "disabled",
+				"soil_bulk_density": "disabled",
+				"plant_crop": "undefined",
+				"plant_sub_type": "undefined",
 				"plant_planting_date": "undefined",
 				"weather_region": "semi-arid",										
 				"last_value": 0.0
@@ -67,16 +67,16 @@ sensor_max_tensiometer_raw = "18000"
 
 tensiometer_default_sensor_config = {
 		"value": {
-				"sensor_type": "tensiometer_raw",
+				"sensor_type": "tensiometer_cbar",
 				"sensor_age": "0",
-				"sensor_max": sensor_max_tensiometer_raw,
+				"sensor_max": sensor_max_tensiometer_cbar,
 				"sensor_min": "0",
-				"soil_type": "sandy",
-				"soil_irrigation_type": "furrow",
-				"soil_salinity": "0",
-				"soil_bulk_density": "0",
-				"plant_crop": "wheat",
-				"plant_sub_type": "sub_type_A",
+				"soil_type": "silty",
+				"soil_irrigation_type": "undefined",
+				"soil_salinity": "disabled",
+				"soil_bulk_density": "disabled",
+				"plant_crop": "undefined",
+				"plant_sub_type": "undefined",
 				"plant_planting_date": "undefined",
 				"weather_region": "semi-arid",										
 				"last_value": 0.0
@@ -919,20 +919,26 @@ def get_capacitive_soil_condition(raw_value, device_id, sensor_id, sensor_config
 				print('=========================================')
 
 		#now we compute
-		value_interval = int(get_capacitive_sensor_dry_max(sensor_config) / capacitive_sensor_n_interval)
-		value_index_capacitive = int(raw_value / value_interval)
-		#in case the sensed value is greater than the maximum value defined
-		if value_index_capacitive >= capacitive_sensor_n_interval:
-				value_index_capacitive = capacitive_sensor_n_interval - 1
+		if raw_value == -1:
+			value_index_capacitive=-1
+		else:
+			value_interval = int(get_capacitive_sensor_dry_max(sensor_config) / capacitive_sensor_n_interval)
+			value_index_capacitive = int(raw_value / value_interval)
+			#in case the sensed value is greater than the maximum value defined
+			if value_index_capacitive >= capacitive_sensor_n_interval:
+					value_index_capacitive = capacitive_sensor_n_interval - 1
 
-		#we adopt the following rule: 0:very dry; 1:dry; 2:dry-wet 3-wet-dry; 4-wet; 5-saturated
-		#so for capacitive we need to invert the index
-		value_index_capacitive = capacitive_sensor_n_interval - 1 - value_index_capacitive
+			#we adopt the following rule: 0:very dry; 1:dry; 2:dry-wet 3-wet-dry; 4-wet; 5-saturated
+			#so for capacitive we need to invert the index
+			value_index_capacitive = capacitive_sensor_n_interval - 1 - value_index_capacitive
 		
 		print('computed value_index (capacitive) =', value_index_capacitive)
 		
 		global capacitive_soil_condition
-		capacitive_soil_condition=capacitive_sensor_soil_condition[value_index_capacitive]		
+		if value_index_capacitive==-1:
+			capacitive_soil_condition='no sensor'
+		else:			
+			capacitive_soil_condition=capacitive_sensor_soil_condition[value_index_capacitive]				
 		
 		print('soil condition =', capacitive_soil_condition)	
 		print('=========================================')		

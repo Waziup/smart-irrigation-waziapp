@@ -213,7 +213,7 @@ function update_sensor_select() {
 
 				device_sensors.forEach(function (item, index) {
 						//select.options[select.options.length] = new Option(device_sensors[index]['id'])
-						select.options[select.options.length] = new Option(device_sensors[index]['name']+'/'+device_sensors[index]['meta']['kind'])
+						select.options[select.options.length] = new Option(device_sensors[index]['name']+'/'+device_sensors[index]['meta']['kind'], device_sensors[index]['id'])
 				})
 		}
 }
