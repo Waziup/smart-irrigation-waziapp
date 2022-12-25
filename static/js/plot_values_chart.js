@@ -3,6 +3,7 @@ request_check_device_sensor_id_url = 'request-check-device-sensor-id'
 request_device_data_url = 'request-device-data'
 request_sensor_data_url = 'request-sensor-data'
 request_sensor_values_url = 'request-sensor-values'
+request_sensor_last_value_url = 'request-sensor-last-value'
 
 var deviceID;
 var sensorID;
@@ -106,10 +107,32 @@ async function check_DeviceSensorIDs() {
     else if (response_status == '200') {
         sensor_id_error.style.display = "none";
         sensor_id_error_p2.style.display = "none";
-        plotData();
-    }
+        //we decide to display the graphs only on click, and, if possible, use the generic display of the WaziGate
+        //plotData();
+        
+        const data_response = await fetch(request_sensor_values_url + '?deviceID=' + deviceID + '&sensorID=' + sensorID);
+        const sensor_data = await data_response.json()
 
+        data = sensor_data;
+        console.log("data : " + JSON.stringify(data));
+        // number of indices in the list
+        length = Object.keys(data).length; 
+
+				// used by set marker on last value
+        datapoints = length; 
+        console.log("datapoints : " + length);
+
+        if (length == 1) {
+            lastvalue_value.innerHTML = data[0]["value"];
+            lastvalue.style.display = "block";
+        }
+        else if (length > 1) {
+            lastvalue_value.innerHTML = data[length - 1]["value"];
+            lastvalue.style.display = "block";
+        }
+    }
 }
+
 async function plotData() {
     if (!four_04) {
         const data_response = await fetch(request_sensor_values_url + '?deviceID=' + deviceID + '&sensorID=' + sensorID);
@@ -132,7 +155,6 @@ async function plotData() {
         values_min = 0;
         values_max = 0;
 
-
         // push time and sensor values to lists
         for (i = 0; i < length; i++) {
             //timestamps.push(data[i].timestamp);
@@ -154,6 +176,7 @@ async function plotData() {
             lastvalue.style.display = "block";
             //fill_circle(values[length - 1])
         }
+        
         /* filling semi-circle with color based on last sensor value */
         function fill_circle(last_value) {
             soil_moisture = last_value

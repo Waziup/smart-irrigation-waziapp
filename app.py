@@ -1359,7 +1359,20 @@ def request_sensor_values():
 
 				return jsonify(data)
 
+# returns last sensor value
+@app.route("/request-sensor-last-value", methods=['GET']) 
+def request_sensor_last_value():
+		if request.method == 'GET':
+				device_id = request.args.get('deviceID')
+				sensor_id = request.args.get('sensorID')
 
+				sensorValues_url = BASE_URL+"devices/" + device_id + "/sensors/" + sensor_id + "/value"
+
+				response = requests.get(sensorValues_url, headers=WaziGate_headers)
+				data = response.json()
+
+				return jsonify(data)
+				
 #---------------------#
 
 if __name__ == "__main__":
