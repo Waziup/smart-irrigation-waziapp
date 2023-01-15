@@ -11,7 +11,7 @@ fi
 
 #create capacitive SOIL-AREA-1 and device with address 26011DAA
 echo "--> calling create_full_capacitive_device.sh" >> ./intel-irris-auto-config.log
-./create_full_capacitive_device_with_dev_addr.sh 1 AA
+./create_full_capacitive_device.sh
 
 #add the voltage monitor sensor
 DEVICE=`cat ./LAST_CREATED_DEVICE.txt`
@@ -20,24 +20,17 @@ echo "--> calling create_only_voltage_monitor_sensor.sh $DEVICE" >> ./intel-irri
 ./create_only_voltage_monitor_sensor.sh $DEVICE
 
 #IIWA, first, duplicate the template files
-echo "--> copy empty IIWA configuration files from /home/pi/intel-irris-waziapp/config/empty" >> ./intel-irris-auto-config.log
-cp ../../config/empty/*.json .
-#echo "--> copy template IIWA configuration files from /home/pi/intel-irris-waziapp/config/template" >> ./intel-irris-auto-config.log
-#cp ../../config/templates/starter-kit/intel-irris-active-device.json .
+echo "--> copy template IIWA configuration files from /home/pi/intel-irris-waziapp/config/templates/starter-kit" >> ./intel-irris-auto-config.log
+cp ../../config/templates/starter-kit/*.json .
 
-#IIWA, add first capacitive device
+#IIWA, replace first capacitive device id
 echo "--> add $DEVICE to IIWA" >> ./intel-irris-auto-config.log
-./add_to_iiwa_devices.sh $DEVICE 1 capacitive
+sed -i .bak "s/XXX1/$DEVICE/g" intel-irris-devices.json
 echo "--> set default configuration for $DEVICE in IIWA" >> ./intel-irris-auto-config.log
-./add_to_iiwa_config.sh $DEVICE capacitive
-
+sed -i .bak "s/XXX1/$DEVICE/g" intel-irris-conf.json
 #and make it the active device
 echo "--> make $DEVICE the active device for IIWA" >> ./intel-irris-auto-config.log
-echo "[]" >> intel-irris-active-device.json
-tmpfile=$(mktemp)
-jq ". += [{\"device_id\":\"${DEVICE}\",\"sensor_id\":\"temperatureSensor_0\"}]" intel-irris-active-device.json > "$tmpfile" && mv -- "$tmpfile" intel-irris-active-device.json
-
-#sed -i .bak "s/XXX1/$DEVICE/g" intel-irris-active-device.json
+sed -i .bak "s/XXX1/$DEVICE/g" intel-irris-active-device.json
 
 #create tensiometer SOIL-AREA-2 and device with address 26011DB2
 echo "--> calling create_full_tensiometer_device_with_dev_addr.sh 2 B1" >> ./intel-irris-auto-config.log
@@ -45,7 +38,6 @@ echo "--> calling create_full_tensiometer_device_with_dev_addr.sh 2 B1" >> ./int
 
 DEVICE=`cat ./LAST_CREATED_DEVICE.txt`
 echo "--> created device is $DEVICE" >> ./intel-irris-auto-config.log
-
 #add the temperature sensor
 echo "--> calling create_only_temperature_sensor.sh $DEVICE" >> ./intel-irris-auto-config.log
 ./create_only_temperature_sensor.sh $DEVICE
@@ -53,11 +45,12 @@ echo "--> calling create_only_temperature_sensor.sh $DEVICE" >> ./intel-irris-au
 echo "--> calling create_only_voltage_monitor_sensor.sh $DEVICE" >> ./intel-irris-auto-config.log
 ./create_only_voltage_monitor_sensor.sh $DEVICE
 
-#IIWA, then add second tensiometer device id
+#IIWA, then replace second tensiometer device id
+
 echo "--> add $DEVICE to IIWA" >> ./intel-irris-auto-config.log
-./add_to_iiwa_devices.sh $DEVICE 2 tensiometer
+sed -i .bak "s/XXX2/$DEVICE/g" intel-irris-devices.json
 echo "--> set default configuration for $DEVICE in IIWA" >> ./intel-irris-auto-config.log
-./add_to_iiwa_config.sh $DEVICE tensiometer
+sed -i .bak "s/XXX2/$DEVICE/g" intel-irris-conf.json
 
 #remove LAST_CREATED_DEVICE.txt
 rm ./LAST_CREATED_DEVICE.txt
@@ -66,5 +59,5 @@ rm ./LAST_CREATED_DEVICE.txt
 echo "--> copy new IIWA configuration files to IIWA config folder" >> ./intel-irris-auto-config.log
 cp *.json ../../config
 
-  
+
 

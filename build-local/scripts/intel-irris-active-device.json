@@ -1,1 +1,6 @@
-[{"device_id": "63bfeddd6e45da24473eca6e", "sensor_id": "temperatureSensor_0"}]
+[
+  {
+    "device_id": "63c33a52ca473daad0814d46",
+    "sensor_id": "temperatureSensor_0"
+  }
+]
