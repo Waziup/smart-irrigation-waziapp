@@ -28,7 +28,7 @@ jq ".sensors += \
       },\
       \"device_id\": \"${1}\",\
       \"sensor_id\": \"temperatureSensor_0\"\
-    }]" intel-irris-conf.json > "$tmpfile" && mv -- "$tmpfile" intel-irris-conf.json 
+    }]" intel_irris_sensors_configurations.json > "$tmpfile" && mv -- "$tmpfile" intel_irris_sensors_configurations.json 
 fi
 
 if [ $2 == 'tensiometer' ]
@@ -57,5 +57,5 @@ jq ".sensors += \
       },\
       \"device_id\": \"${1}\",\
       \"sensor_id\": \"temperatureSensor_0\"\
-    }]" intel-irris-conf.json > "$tmpfile" && mv -- "$tmpfile" intel-irris-conf.json 
+    }]" intel_irris_sensors_configurations.json > "$tmpfile" && mv -- "$tmpfile" intel_irris_sensors_configurations.json
 fi

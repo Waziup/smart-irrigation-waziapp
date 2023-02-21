@@ -1,0 +1,17 @@
+[
+  {
+    "device_id": "63f530e5d56f075113f2f09e",
+    "device_name": "SOIL-AREA-1",
+    "sensors_structure": "1_capacitive"
+  },
+  {
+    "device_id": "63f530e6d56f075113f2f0a2",
+    "device_name": "SOIL-AREA-2",
+    "sensors_structure": "1_watermark"
+  },
+  {
+    "device_id": "63f5378ad56f075113f2f0ac",
+    "device_name": "SOIL-AREA-3",
+    "sensors_structure": "1_capacitive"
+  }
+]
