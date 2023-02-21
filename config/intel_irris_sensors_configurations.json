@@ -1,0 +1,8 @@
+{
+    "globals": {
+        "soil_salinity": "undefined",
+        "soil_bulk_density": "undefined",
+        "region": "undefined"
+    },
+    "sensors": []
+}

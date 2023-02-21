@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>IIWA Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/menu_bar.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+
+  <script type="text/javascript"
+    src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+
+  <script type="text/javascript"
+    src="{{ url_for('static', filename='js/intel_irris_dashboard.js') }}"></script>
+    
+</head>
+
+<body>
+  <div class="topnav" id="myTopnav">
+    <img src="{{ url_for('static', filename='images/intel-irris-logo.png') }}" height="40" style="vertical-align:middle;margin:4px 0px">
+    <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='images/dashboard.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"> Dashboard</a>
+    <a href="{{ url_for('intel_irris_device_manager') }}"><img src="{{ url_for('static', filename='images/device_manager.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"> Device Manager</a>
+    <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
+    <hr color="#f4b548">
+  </div>
+  <script>
+    function myFunction() {
+      var x = document.getElementById("myTopnav");
+      if (x.className === "topnav") {
+        x.className += " responsive";
+      } else {
+        x.className = "topnav";
+      }
+    }
+  </script>
+  
+  <div style="padding-left:16px; padding-top:16px">
+    <h1>Intel-Irris Irrigation WaziApp (IIWA)</h1>
+    {% if no_iiwa_devices == True %}
+      <p>{{ added_devices}}</p>
+    {% elif no_iiwa_devices == False %}
+    <!--
+      <div class="dashboard_summary">
+        <p>Data summary</p>
+        <br>
+        <p>some text here?</p>
+      </div>
+    -->
+      <div class="dashboard_devices_data_summary">
+        <ul class="dashboard_cards_ul" id="dashboard_cards_ul">
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,160 @@
+body {
+    background-color: #ffffff;
+    height: max-content;
+}
+
+h1 {
+    text-align: center;
+}
+
+/* table styling */
+.table_container {
+    width: 80%;
+    border-radius: 25px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    margin: auto;
+}
+
+table {
+    width: 100%;
+    table-layout: fixed;
+    background-color: #ffffff;
+}
+
+th {
+    padding: 20px 15px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 12px;
+    color: rgb(0, 0, 0);
+    text-transform: uppercase;
+    background-color: #e0ebeb;
+}
+
+td {
+    padding: 15px;
+    text-align: left;
+    vertical-align: middle;
+    font-weight: 300;
+    font-size: 12px;
+    color: rgb(0, 0, 0);
+    border-bottom: solid 1px rgba(255, 255, 255, 0.1);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 0px;
+}
+
+.tbl-content tr:nth-child(even) {
+    background-color: #eff5f5;
+}
+
+.tbl-content tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+/* *** */
+
+.div_containers, .add_device, .remove_device{
+    width: 80%;
+    padding: 20px;
+    border-radius: 25px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    margin: auto;
+}
+
+/* styling form sections using flex */
+.add_deviceContainer, .remove_device_deviceNameSelect {
+    text-align: center;
+}
+.add_deviceContainer_nameSelect{
+    padding: 0.5rem;
+
+}
+.add_deviceContainer_deviceNameSelect{
+    padding: 0.5rem;
+}
+.add_deviceContainer_sensorStructureSelect{
+    padding: 0.5rem;
+}
+/* *** */
+
+/* select dropdowns styling */
+.new_deviceID_select, .new_deviceName_select, .sensors_structure, .remove_deviceName_select, .sensor-id-select {
+    background-color: white;
+    border: thin solid #f4b548;
+    border-radius: 4px;
+    display: inline-block;
+    font: inherit;
+    line-height: 1.5em;
+    padding: 0.5em 3.5em 0.5em 1em;
+
+    margin: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-image:
+    linear-gradient(45deg, transparent 50%, gray 50%),
+    linear-gradient(135deg, gray 50%, transparent 50%),
+    linear-gradient(to right, #ccc, #ccc);
+    background-position:
+        calc(100% - 20px) calc(1em + 2px),
+        calc(100% - 15px) calc(1em + 2px),
+        calc(100% - 2.5em) 0.5em;
+    background-size:
+        5px 5px,
+        5px 5px,
+        1px 1.5em;
+    background-repeat: no-repeat;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.remove_deviceName_select:focus {
+    background-image:
+        linear-gradient(45deg, red 50%, transparent 50%),
+        linear-gradient(135deg, transparent 50%, red 50%),
+        linear-gradient(to right, #ccc, #ccc);
+    background-position:
+        calc(100% - 15px) 1em,
+        calc(100% - 20px) 1em,
+        calc(100% - 2.5em) 0.5em;
+    background-size:
+        5px 5px,
+        5px 5px,
+        1px 1.5em;
+    background-repeat: no-repeat;
+    border-color: red;
+    outline: 0;
+}
+
+select:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 #000;
+}
+/* *** */
+
+
+/* select forms button styling*/
+button {
+    padding: 0.8rem;
+    font-size: 14px;
+    text-transform: uppercase;
+    border-radius: 4px;
+    font-weight: 400;
+    display: block;
+    width: 100%;
+    cursor: pointer;
+    border: 1px solid #f4b548;
+    background: transparent;
+    margin: auto;
+    width: auto;
+}    
+.btn:hover {
+    background-color: red;       
+}
+/* *** */

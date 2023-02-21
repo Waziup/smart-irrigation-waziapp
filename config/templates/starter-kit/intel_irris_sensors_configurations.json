@@ -1,0 +1,29 @@
+{
+    "globals": {
+        "soil_salinity": "undefined",
+        "soil_bulk_density": "undefined",
+        "region": "arid"
+    },
+    "sensors": [
+        {
+            "value": {
+                "sensor_type": "capacitive",
+                "sensor_age": "0",
+                "sensor_max_value": "800",
+                "soil_type": "silty",
+                "soil_irrigation_type": "undefined",
+                "plant": "undefined",
+                "plant_sub_type": "undefined",
+                "planting_date": "undefined",
+                "last_sensor_value": -1
+            },
+            "soil_temperature_source": {
+                "soil_temperature_device_id": "undefined",
+                "soil_temperature_sensor_id": "undefined",
+                "soil_temperature_value": "undefined"
+            },
+            "device_id": "63d38d9d26c0473ae456730f",
+            "sensor_id": "temperatureSensor_0"
+        }
+    ]
+}

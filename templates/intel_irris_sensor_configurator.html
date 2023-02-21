@@ -3,79 +3,60 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>IIWA Configuration</title>
-    <meta name="description" content="" />
+    <title>IIWA Sensor Configurator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/sensor_config.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/intel_irris_sensor_configurator.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/menu_bar.css') }}" />
 
-    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script type="text/javascript"
+        src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    
+    <script type="text/javascript">
+        var deviceID = '{{ deviceID}}';
+        var sensorID = '{{ sensorID}}';
+    </script>
+
+    <script type="text/javascript"
+        src="{{ url_for('static', filename='js/intel_irris_sensor_configurator.js') }}"></script>
+
 </head>
 
 <body>
     <div class="topnav" id="myTopnav">
-    <img src="{{ url_for('static', filename='images/intel-irris-logo.png') }}" height="40" style="vertical-align:middle;margin:4px 0px">
-    <a href="{{ url_for('dashboard') }}" class="active"><img src="{{ url_for('static', filename='images/dashboard.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"></a>
-    <a href="{{ url_for('intel_irris_device_manager') }}"><img src="{{ url_for('static', filename='images/device.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"></a>
-    <a href="{{ url_for('intel_irris_sensor_config') }}"><img src="{{ url_for('static', filename='images/config.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"></a>    
-    <div class="dropdown">
-      <button class="dropbtn">Menu
-        <i class="fa fa-caret-down"></i>
-      </button>     
-      <div class="dropdown-content">
-      	<a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('intel_irris_device_manager') }}">Device Manager</a>
-        <a href="{{ url_for('intel_irris_sensor_config') }}">Configuration</a>
-      </div>
-    </div>        <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
+        <img src="{{ url_for('static', filename='images/intel-irris-logo.png') }}" height="40" style="vertical-align:middle;margin:4px 0px">
+        <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='images/dashboard.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"> Dashboard</a>
+        <a href="{{ url_for('intel_irris_device_manager') }}"><img src="{{ url_for('static', filename='images/device_manager.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"> Device Manager</a>
+        <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
+        <hr color="#f4b548">
     </div>
     <script>
         function myFunction() {
-            var x = document.getElementById("myTopnav");
-            if (x.className === "topnav") {
-                x.className += " responsive";
-            } else {
-                x.className = "topnav";
-            }
+          var x = document.getElementById("myTopnav");
+          if (x.className === "topnav") {
+            x.className += " responsive";
+          } else {
+            x.className = "topnav";
+          }
         }
     </script>
-
+      
     <div style="padding-left:16px; padding-top:16px">
-        <script type="text/javascript">no_active = {{ no_active | tojson | safe }}</script>
-        <script type="text/javascript"
-            src="{{ url_for('static', filename='js/intel_irris_sensor_configuration.js') }}"></script>
-        {% if no_active == True %}
-        <p> {{no_device }}</p>
+        <h1>IIWA Sensor Configurator</h1>
+        <p> Update the sensor configuration for the selected WaziGate Device/Sensor ID pair</p>
+        <p>Device ID : {{ deviceID }}</p>
+        <p>Sensor ID : {{sensorID }}</p>
+        <h2>Update configurations</h2>
 
-        {% else %}
-        <h1 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">IIWA Sensor Configuration</h1>
-        <p id="no_config_made"> No sensor configuration has been made!</p>
-        <p id="active_device">Active Device: {{ deviceID }}</p>
-        <p id="active_device">Active Sensor: {{ sensorID }}</p>
-        <div class="preview_sensor_config">
-            <h2 class="MuiTypography-root jssWA1 MuiTypography-h1 MuiTypography-noWrap">Settings for sensor
-                configuration</h2>
-
-            <p> Select a sensor to view its current configuration and update its parameters</p>
-            <form action="" id="select_sensor_radio">
-            </form>
-        </div>
-        <h3 class="MuiTypography-h1">Update configurations </h3>
-
-        <form action="{{ url_for('intel_irris_sensor_config') }}" method="post">
+        <form action="" method="post" onsubmit="make_AddConfiguration_HttpPOSTRequest()">
             <div class="accordion-body">
                 <div class="accordion">
-                		<p>Sensor Type is the only mandatory parameter to be filled, other parameters can be left undefined</p>
+                		<p>Sensor Type is the only mandatory parameter to be filled</p>
                 		<hr>
                     <div class="container">
                         <div class="accordion-title">Sensor parameters</div>
                         <div class="accordion-content">
                             <div class="sensor_parameters">
-                                <br>
-                                <select name="sensor_id" id="sensor_id_select" class="input" required>
-                                </select>
-
                                 <br>
                                 <p> Sensor Type</p>
                                 <ul style="list-style-type:none;">
@@ -93,13 +74,9 @@
                                 <p>Sensor age
                                     <input id="sensor_age" class="sensor_age" name="sensor_age" type="text"
                                         placeholder=" months ">
-                                </p>
-                                <p>Min value
-                                    <input id="sensor_min" class="sensor_min" name="sensor_min" type="text"
-                                        placeholder=" min sensor value ">
-                                </p>        
-                                <p>Max value
-                                    <input id="sensor_max" class="sensor_max" name="sensor_max" type="text"
+                                </p>   
+                                <p>Maximum sensor value
+                                    <input id="sensor_max_value" class="sensor_max_value" name="sensor_max_value" type="text"
                                         placeholder=" max sensor value ">
                                 
                             </div>
@@ -140,11 +117,11 @@
                                     </ul>
                                 </div>
                                 <p>Soil Salinity
-                                    <input id="soil_salinity" class="soil_values" name="soil_salinity"
+                                    <input id="global_soil_salinity" class="soil_values" name="global_soil_salinity"
                                         type="text" placeholder=" empty or -1 for disabled ">
                                 </p>
                                 <p>Soil Bulk Density
-                                    <input id="soil_bulk_density" class="soil_values" name="soil_bulk_density"
+                                    <input id="global_soil_bulk_density" class="soil_values" name="global_soil_bulk_density"
                                         type="text" placeholder=" empty or -1 for disabled ">
                                 </p>
                                 <br>
@@ -156,9 +133,8 @@
                         <div class="accordion-title">Soil temperature</div>
                         <div class="accordion-content">
                             <div class="soil_temperature">
-
                                 <p>Please select a source for soil temperature data</p>
-                                <div id="soil_temperatureForm" style="display: none;">
+                                <div id="soil_temperatureForm">
                                     <p id="p_currentSource">Current soil temperature source is <em><span
                                             id="span_currentSource"></span></em></p>
                                     <ul style="list-style-type:none;">
@@ -198,7 +174,7 @@
                         <div class="accordion-content">
                             <div class="plant_parameters">
                                 <p> Plant/Crop
-                                    <select name="plant_crop" id="plant_crop" class="input">
+                                    <select name="plant" id="plant" class="plant">
                                         <option value="undefined"> Undefined</option>
                                         <option value="cassava"> Cassava</option>
                                         <option value="maize"> Maize</option>
@@ -223,7 +199,7 @@
                                 </p>
                                 <p>
                                     <label for="plant_planting_date">Planting Date</label>
-                                    <input type="date" id="plant_planting_date" name="plant_planting_date"
+                                    <input type="date" id="planting_date" name="planting_date"
                                         style=" border: thin solid #f4b548; border-radius: 4px;height: 30px;">
                                 </p>
                             </div>
@@ -235,7 +211,7 @@
                         <div class="accordion-content">
                             <div class="weather-parameters">
                                 <p> Region
-                                    <select name="weather_region" id="weather_region" class="input">
+                                    <select name="global_region" id="global_region" class="global_region">
                                         <option value="undefined"> Undefined</option>
                                         <option value="arid"> Arid</option>
                                         <option value="semi-arid"> Semi-Arid</option>
@@ -245,16 +221,14 @@
                             </div>
                         </div>
                     </div>
- 										<hr>
+ 					<hr>
  										
                     <br>
-                    <button type="submit" value="submit" class="update_parameters">Update</button>
+                    <button type="submit" value="submit" class="update_parameters">Save this configuration</button>
                 </div>
             </div>
             <br>
         </form>
-        {% endif %}
-
         <script>
             $(document).ready(function () {
                 $('.accordion-title').click(function () {
