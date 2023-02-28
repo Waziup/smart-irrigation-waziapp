@@ -164,15 +164,15 @@ capacitive_sensor_soil_condition = []
 if iiwa_lang == "fr":
 	capacitive_sensor_soil_condition.append('très sec')
 	capacitive_sensor_soil_condition.append('sec')
-	capacitive_sensor_soil_condition.append('sec-hum')
-	capacitive_sensor_soil_condition.append('hum-sec')
+	capacitive_sensor_soil_condition.append('sec')
+	capacitive_sensor_soil_condition.append('hum')
 	capacitive_sensor_soil_condition.append('hum')
 	capacitive_sensor_soil_condition.append('saturé')
 else:
 	capacitive_sensor_soil_condition.append('very dry')
 	capacitive_sensor_soil_condition.append('dry')
-	capacitive_sensor_soil_condition.append('dry-wet')
-	capacitive_sensor_soil_condition.append('wet-dry')
+	capacitive_sensor_soil_condition.append('dry')
+	capacitive_sensor_soil_condition.append('wet')
 	capacitive_sensor_soil_condition.append('wet')
 	capacitive_sensor_soil_condition.append('saturated')
 
@@ -192,15 +192,15 @@ use_irrometer_interval_for_tensiometer = True
 if iiwa_lang == "fr":
 	tensiometer_sensor_soil_condition.append('très sec')
 	tensiometer_sensor_soil_condition.append('sec')
-	tensiometer_sensor_soil_condition.append('sec-hum')
-	tensiometer_sensor_soil_condition.append('hum-sec')
+	tensiometer_sensor_soil_condition.append('sec')
+	tensiometer_sensor_soil_condition.append('hum')
 	tensiometer_sensor_soil_condition.append('hum')
 	tensiometer_sensor_soil_condition.append('saturé')
 else:
 	tensiometer_sensor_soil_condition.append('very dry')
 	tensiometer_sensor_soil_condition.append('dry')
-	tensiometer_sensor_soil_condition.append('dry-wet')
-	tensiometer_sensor_soil_condition.append('wet-dry')
+	tensiometer_sensor_soil_condition.append('dry')
+	tensiometer_sensor_soil_condition.append('wet')
 	tensiometer_sensor_soil_condition.append('wet')
 	tensiometer_sensor_soil_condition.append('saturated')
 
