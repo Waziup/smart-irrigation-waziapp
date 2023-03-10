@@ -33,3 +33,6 @@ done
 
 echo "Checking delete operation"
 curl -X GET "http://localhost/devices" -H  "accept: application/json"
+
+echo "Start with empty configuration file for IIWA"
+cp ../config/empty/*.json ../config
