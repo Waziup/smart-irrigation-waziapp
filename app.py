@@ -11,6 +11,29 @@ app = Flask(__name__)
 
 import iiwa_apis  # import script for making REST APIs
 
+# --------------------------------------------------------------------------
+# argument to define if continuous_computation() will run periodically in background 
+# --------------------------------------------------------------------------
+import argparse
+iiwa_argumentparser = argparse.ArgumentParser()
+iiwa_argumentparser.add_argument('--continuous-computation', dest='continuous_computation', type=str, help='Defines if monitor_all_configured_sensors will run periodically')
+iiwa_argument = iiwa_argumentparser.parse_args()
+
+"""
+to disable continuous_computation() we pass the argument as false, ie
+  python app.py --continuous-computation false
+"""
+# by default IIWA will periodically run the countinuous_computation() in background
+iiwa_run_continuous_computation = True
+
+# in seconds
+continuous_computation_interval_sec = 10
+
+if (iiwa_argument.continuous_computation == "false"):
+	print("=== IIWA continuous index value computation has been disabled! ===")
+	iiwa_run_continuous_computation = False
+# ---------------------#
+
 # --- IIWA configurations filepaths ---#
 iiwa_devices_filename = 'config/intel_irris_devices.json'
 iiwa_sensors_config_filename = 'config/intel_irris_sensors_configurations.json'
@@ -21,8 +44,7 @@ iiwa_lang = 'en'
 
 BASE_URL = "http://localhost/"
 
-# common header for requests
-
+# common headers for requests
 iiwa_headers = {
 	'content-type': 'application/json'
 }
@@ -89,6 +111,10 @@ tensiometer_default_sensor_config = {
 }
 # ---------------------#
 
+# --------------------------------------------------------------------------
+# route methods for returning the HTML pages
+# --------------------------------------------------------------------------
+
 # returns the homepage (Dashboard) of IIWA
 @app.route("/")
 def dashboard():
@@ -143,10 +169,12 @@ def intel_irris_device_manager():
 @app.route("/intel_irris_sensor_configurator", methods=['POST', 'GET'])
 def intel_irris_sensor_configurator():
 	deviceID = request.args.get('deviceID')
-	sensorID = request.args.get('sensorID')
-
+	deviceName = get_deviceName(deviceID)
+	sensorID = 'temperatureSensor_0'
+	
 	return render_template("intel_irris_sensor_configurator.html",
 		deviceID = deviceID,
+		deviceName = deviceName,
 		sensorID = sensorID)
 # ---------------------#
 
@@ -216,9 +244,24 @@ set_value_index_in_local_database = True
 iterate_over_all_configured_devices = True
 # ---------------------#
 
+# --------------------------------------------------------------------------
+# function to compute the index value for all sensors taking into consideration the sensor type
+# --------------------------------------------------------------------------
+# the computed data is returned by the function and it is used for the Dashboard
 def monitor_all_configured_sensors():
 
 	# store the device and sensor data in JSON and return it
+	"""
+	iiwa_devices_data structure:
+	{
+		"device_id": deviceID,
+		"device_name" : deviceName,
+		"sensor_id" : sensorID,
+		"sensor_type" : sensor_type,
+		"value_index" : value_index,
+		"soil_condition" : soil_condition
+	}
+	"""
 	iiwa_devices_data = []
 
 	sensor_type = 'undefined'
@@ -227,7 +270,7 @@ def monitor_all_configured_sensors():
 	soil_condition = ''
 
 	number_of_iiwa_configurations = 0
-
+	
 	if os.path.getsize(iiwa_sensors_config_filename) != 0:
 		f = open(iiwa_sensors_config_filename)
 		read_iiwa_configurations = json.loads(f.read())
@@ -295,8 +338,9 @@ def monitor_all_configured_sensors():
 
 	else:
 		print("monitor_all_configured_sensors : No sensor configuration has been made")
-		# return a zero if no sensor configuration is available
+		# return None if no sensor configuration is available
 		return(0)
+# ---------------------#
 
 # --------------------------------------------------------------------------
 # determine the soil condition string indication for capacitive
@@ -443,6 +487,7 @@ def get_capacitive_soil_condition(raw_value, device_id, sensor_id, sensor_config
 
 	# return a tuple
 	return value_index_capacitive, capacitive_soil_condition
+# ---------------------#
 
 # --------------------------------------------------------------------------
 # determine the soil condition string indication for tensiometer
@@ -590,8 +635,11 @@ def get_tensiometer_soil_condition(raw_value, device_id, sensor_id, sensor_confi
 
 	# return a tuple
 	return value_index_tensiometer,tensiometer_soil_condition
+# ---------------------#
 
-# returns the soil temperature value from the selected source
+# --------------------------------------------------------------------------
+# function that returns the soil temperature value based on the selected source
+# --------------------------------------------------------------------------
 def get_linked_soil_temperature(device_id, sensor_id):
 	device_ID = device_id
 	sensor_ID = sensor_id
@@ -642,8 +690,11 @@ def get_linked_soil_temperature(device_id, sensor_id):
 		else:
 			print("sensor ID not found in the IIWA configuration!")
 			print("=========================================")
+# ---------------------#
 
-# returns device name given a deviceID
+# --------------------------------------------------------------------------
+# function that returns IIWA device name given a deviceID
+# --------------------------------------------------------------------------
 def get_deviceName(deviceID):
 	deviceID = deviceID
 	device_name = ''
@@ -654,17 +705,20 @@ def get_deviceName(deviceID):
 	deviceID_exists = False
 	for x in range(0, len(iiwa_devices)):
 		if (iiwa_devices[x]['device_id'] == deviceID):
-				deviceID_exists = True
-				device_name = iiwa_devices[x]['device_name']
-				break
+			deviceID_exists = True
+			device_name = iiwa_devices[x]['device_name']
+			break
 	
 	if deviceID_exists:
 		return device_name
 	else:
-		print("monitor_all_configured_sensors : DeviceID %s is not a Wazigate device!"%deviceID)
+		print("get_deviceName : DeviceID %s is not a Wazigate device!"%deviceID)
 		return 'not_iiwa_device'
 # ---------------------#
 
+# --------------------------------------------------------------------------
+# function that removes an device from IIWA given the deviceID
+# --------------------------------------------------------------------------
 def iiwa_remove_device_function(deviceID):
 	remove_device_id = deviceID
 	print("IIWA : Requested to remove DeviceID : %s" % remove_device_id)
@@ -743,22 +797,23 @@ def iiwa_remove_device_function(deviceID):
 				"message" :  "IIWA remove device : successfully removed the device and it's sensor(s) configuration(s)!"})
 # ---------------------#
 
-
-# ---------------------#
-# periodically compute humidity index value
-
-# in seconds
-computing_interval_sec = 10
-
-def countinuous_computation():
+# --------------------------------------------------------------------------
+# function to periodically compute humidity index value
+# --------------------------------------------------------------------------
+def continuous_computation():
 	if iterate_over_all_configured_devices == True:
 		monitor_all_configured_sensors()
 
-	threading.Timer(computing_interval_sec, countinuous_computation).start()
-countinuous_computation()
+	threading.Timer(continuous_computation_interval_sec, continuous_computation).start()
 
+if (iiwa_run_continuous_computation):
+	continuous_computation()
 # ---------------------#
 
+# --------------------------------------------------------------------------
+# define IP address, port and debugging mode of Flask App
+# --------------------------------------------------------------------------
 if __name__ == "__main__":
 	# Run on IP address of the host computer at Port 5000
 	app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False)
+# ---------------------#

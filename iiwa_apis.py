@@ -132,7 +132,7 @@ def iiwa_remove_device(deviceID):
 				"message" :  "IIWA remove device : successfully removed the device and it's sensor(s) configuration(s)!"})
 # ---------------------#
 
-# returns list of IIWA devices
+# returns all data in 'intel_irris_devices.json'
 @app.route("/devices", methods=['GET'])
 def get_iiwa_devices():
 	f = open(iiwa_devices_filename, 'r')
@@ -143,9 +143,57 @@ def get_iiwa_devices():
 # ---------------------#
 
 # returns Intel-Irris device data: device ID, sensor ID, device name, sensor type, last sensor value, soil type, soil condition
+# this is used by the Dashboard's JS file to populate the cards
 @app.route("/devices/data", methods=['GET'])
 def devices_data():
-	return jsonify(monitor_all_configured_sensors())
+
+	iiwa_devices_data = []
+	iiwa_devices_data =  monitor_all_configured_sensors()
+	#print("iiwa_devices_data : %s" %iiwa_devices_data)
+
+	if (iiwa_devices_data == None):
+		iiwa_devices_data = []
+
+	# read the IIWA devices list
+	f = open(iiwa_devices_filename, 'r')
+	iiwa_devices = json.loads(f.read())
+	f.close()
+
+	number_of_iiwa_devices = len(iiwa_devices)
+	
+	# read the configured sensors
+	with open(iiwa_sensors_config_filename, "r") as file:
+		read_iiwa_sensor_configurations = json.load(file)['sensors']
+	read_iiwa_sensor_configurations_count = len(read_iiwa_sensor_configurations)
+
+	configured_iiwa_devices = []
+
+	# check if each IIWA deviceID has a configured sensor
+	for x in range(0,number_of_iiwa_devices):
+		for y in range(0, read_iiwa_sensor_configurations_count):
+			if iiwa_devices[x]['device_id'] == read_iiwa_sensor_configurations[y]['device_id']:
+				configured_iiwa_devices.append(iiwa_devices[x]['device_id'])
+				
+	configured_iiwa_devices_count = len(configured_iiwa_devices)
+
+	# iterate IIWA device list and check the deviceIDs that were not found in sensor configuration data
+	for i in range(0, number_of_iiwa_devices):
+		if iiwa_devices[i]['device_id'] not in configured_iiwa_devices:
+			# if a deviceID is not found to have a sensor, we append this data to iiwa_devices_data
+			# soil_condition value, 'Unconfigured', is important as it is used on the Dashboard to indicate no configuration
+			iiwa_devices_data.append({
+						"device_id": iiwa_devices[i]['device_id'],
+						"device_name" : iiwa_devices[i]['device_name'],
+						"sensor_id" : 'undefined',
+						"sensor_type" : 'undefined',
+						"value_index" : 'undefined',
+						"soil_condition" : 'Unconfigured'
+					})
+				
+	#print("iiwa_devices_data : %s"%iiwa_devices_data)  
+	
+	return jsonify(iiwa_devices_data)
+# ---------------------#
 
 # adds a sensor configuration to IIWA by writing to 'intel_irris_sensors_configurations.json'
 @app.route("/devices/<deviceID>/sensors/<sensorID>", methods=['POST'])
@@ -220,6 +268,7 @@ def update_sensor_configuration(deviceID,sensorID ):
 		sensor_DataResponse = response.json()
 		last_PostedSensorValue = sensor_DataResponse["value"]
 
+		print("Device ID : %s" %deviceID)
 		print("Sensor ID : %s" % sensorID)
 		print("Sensor Type : %s" % sensor_type)
 		print("Sensor Age : %s" % sensor_age)
@@ -306,7 +355,37 @@ def update_sensor_configuration(deviceID,sensorID ):
 			"message" :  "IIWA add sensor configuration : Invalid JSON body received!"})
 # ---------------------#
 
-# returns data in sensor configuration file
+# returns the sensor configuration data for a specific sensor given the deviceID and sensorID
+@app.route("/devices/<deviceID>/sensors/<sensorID>", methods=['GET'])
+def get_sensor_configuration(deviceID,sensorID ):
+	deviceID = deviceID
+	sensorID = sensorID
+
+	# read sensors configurations
+	with open(iiwa_sensors_config_filename, "r") as file:
+		read_iiwa_sensor_configurations = json.load(file)['sensors']
+
+	read_iiwa_sensor_configurations_count = len(read_iiwa_sensor_configurations)
+
+	found_requested_sensor_configuration = False
+	sensor_configuration = {}
+	for x in range(0, read_iiwa_sensor_configurations_count):
+		if (read_iiwa_sensor_configurations[x]['device_id'] == deviceID and read_iiwa_sensor_configurations[x]['sensor_id'] == sensorID):
+			found_requested_sensor_configuration = True
+			sensor_configuration = read_iiwa_sensor_configurations[x]
+			print("IIWA get sensor configuration : Found configuration for the requested sensorID")
+			print("IIWA get sensor configuration : %s" %read_iiwa_sensor_configurations[x])
+
+			break
+
+	if (found_requested_sensor_configuration):
+		return jsonify(sensor_configuration)
+	else:
+		return jsonify({"code" : 409,
+			"message" :  "IIWA get sensor configuration : submitted DeviceID/SensorID does not have a configuration"})
+# ---------------------#
+
+# returns all data in 'intel_irris_sensors_configurations.json'
 @app.route("/sensors_configurations", methods=['GET'])
 def sensors_configurations():
 	f = open(iiwa_sensors_config_filename, 'r')
@@ -347,7 +426,7 @@ def iiwa_request_wazigate_devices():
 		return jsonify(data)
 
 # returns 200 or 404 to indicate if sensor or device id exists on WaziGate
-@app.route("/exists_on_WaziGate_devicesensor_ID", methods=['GET'])
+@app.route("/exists_on_WaziGate_DeviceSensor_ID", methods=['GET'])
 def exists_on_WaziGate_devicesensor_ID():
 	if request.method == 'GET':
 		device_id = request.args.get('deviceID')
@@ -356,35 +435,39 @@ def exists_on_WaziGate_devicesensor_ID():
 		url = BASE_URL+"devices/" + device_id + '/sensors/' + sensor_id
 
 		response = requests.get(url, headers=WaziGate_headers)
-		print("request_ifValid_devicesensor_ID Response status : %s"%response.status_code)
+		print("exists_on_WaziGate_devicesensor_ID Response status : %s"%response.status_code)
 		if (response.status_code == 404):
 			# make a DELETE request to IIWA API to remove the device ID from Intel-Irris
-			print("monitor_all_configured_sensors :  Removing %s Device ID from IIWA"%deviceID)
-			iiwa_remove_device_function(deviceID)
+			print("exists_on_WaziGate_devicesensor_ID :  Removing %s Device ID from IIWA"%device_id)
+			iiwa_remove_device_function(device_id)
 			return jsonify([{"status": "404"}])
 		elif (response.status_code == 200):
 			return jsonify([{"status": "200"}])
 
+"""
 # returns sensors data of a device ID
-@app.route("/device_sensors", methods=['GET'])
+@app.route("/get_WaziGate_deviceID_sensors", methods=['GET'])
 def iiwa_request_device_sensors():
 	if request.method == 'GET':
 		device_id = request.args.get('deviceID')
 
-		if device_id[0] != '[':
+		if device_id != 'undefined' and device_id != '':
 			device_url = BASE_URL+"devices/" + device_id + '/sensors'
-
 			response = requests.get(device_url, headers=WaziGate_headers)
 
+			# check if a response is obtained for the deviceID
 			if response.status_code == 200:
 				data = response.json()
-				print("request-device-sensors : Device ID exists")
+				print("get_WaziGate_deviceID_sensors : Device ID exists")
 				return jsonify(data)
 			elif response.status_code == 404:
-				print("request-device-sensors : Device ID does not exist")
+				print("get_WaziGate_deviceID_sensors : Device ID does not exist!")
+				# if a deviceID is found to not exist it is removed automatically
+				iiwa_remove_device_function(device_id)
 				return jsonify([{'status': '404'}])
 
 		# handle when empty device id
-		elif device_id[0] == '[':
-			print("no device id has been provided")
-			return jsonify([{'status': '409'}])
+		else:
+			print("get_WaziGate_deviceID_sensors : no Device ID has been provided")
+			return jsonify([{'status': '404'}])
+"""

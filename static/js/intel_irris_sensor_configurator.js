@@ -3,31 +3,29 @@ window.onload = function(){
 	check_if_WaziGate_device_sensor();
 };
 
-const exists_on_WaziGate_devicesensor_ID_url = 'exists_on_WaziGate_devicesensor_ID'
+const exists_on_WaziGate_devicesensor_ID_url = 'exists_on_WaziGate_DeviceSensor_ID'
 const sensors_configurations_url = 'sensors_configurations'
-
-const sensorConfigurationHttpPOSTRequest_Baseurl = '/devices/';
+const sensorConfigurationHttpPOSTRequest_Base_url = '/devices/';
 
 const iiwa_headers = {
 	'Content-Type': 'application/json'
 };
 
-
 /* sensor configuration parameters variables */
 var sensor_type;
-var sensor_age;
-var sensor_max_value;
-var soil_type;
-var soil_irrigation_type;
-var soil_temperature_value;
-var soil_temperature_device_id;
-var soil_temperature_sensor_id;
-var plant;
-var plant_sub_type;
+var sensor_age = '0';
+var sensor_max_value = '';
+var soil_type = 'undefined';
+var soil_irrigation_type = 'undefined';
+var soil_temperature_value = '';
+var soil_temperature_device_id = '';
+var soil_temperature_sensor_id = '';
+var plant = 'undefined';
+var plant_sub_type = 'undefined';
 var planting_date;
-var global_region;
-var global_soil_salinity;
-var global_soil_bulk_density;
+var global_region = 'undefined';
+var global_soil_salinity = '';
+var global_soil_bulk_density = '';
 
 var sensors_configurations_response_asJSON; // stores the current IIWA sensor config file content
 
@@ -37,12 +35,19 @@ async function check_if_WaziGate_device_sensor(){
 	const exists_on_WaziGate_devicesensor_ID_response = await fetch(exists_on_WaziGate_devicesensor_ID_url + '?deviceID=' + deviceID + '&sensorID=' + sensorID);
 	var exists_on_WaziGate_devicesensor_ID_response_asJSON = await exists_on_WaziGate_devicesensor_ID_response.json();
 	exists_on_WaziGate_devicesensor_ID_response_asJSON = JSON.stringify(exists_on_WaziGate_devicesensor_ID_response_asJSON);
-	console.log('request_ifValid_devicesensor_ID Response : ' + exists_on_WaziGate_devicesensor_ID_response_asJSON);
+	console.log('exists_on_WaziGate_devicesensor_ID Response : ' + exists_on_WaziGate_devicesensor_ID_response_asJSON);
 
 	// if the device/sensor ID exists, obtain it's current configuration
 	if (exists_on_WaziGate_devicesensor_ID_response_asJSON == '[{"status":"200"}]'){
 		// obtain all current configurations
 		fetch_sensors_configurations();
+	}
+	// if the device/sensor ID doesn't exits on WaziGate or IIWA, inform user
+	if (deviceName == 'not_iiwa_device' || exists_on_WaziGate_devicesensor_ID_response_asJSON == '[{"status":"404"}]'){
+		console.log("Invalid deviceID " + deviceID + " or sensorID " + sensorID + " has been provided!");
+		alert("Oops! The provided device/sensor ID doesn't seem to exist on WaziGate or IIWA!");
+		// return the user back to the Dashboard page automatically
+		window.location.href = "/";
 	}
 }
 
@@ -62,6 +67,7 @@ function get_DeviceSensorID_configuration() {
 	global_soil_bulk_density = sensors_configurations_response_asJSON['globals']['soil_bulk_density'];
 	global_region = sensors_configurations_response_asJSON['globals']['region'];
 
+
 	if (global_soil_salinity == 'undefined' || typeof (global_soil_salinity) == "undefined") {
 		global_soil_salinity = '';
 	}
@@ -69,7 +75,7 @@ function get_DeviceSensorID_configuration() {
 		global_soil_bulk_density = '';
 	}
 	if (global_region == 'undefined' || typeof (global_region) == "undefined") {
-		global_region = '';
+		global_region = 'undefined';
 	}
 
 	number_of_configurations = sensors_configurations_response_asJSON['sensors'].length;
@@ -143,8 +149,9 @@ function update_accordion_parameters() {
 			// only one radio can be logically checked, don't check the rest
 			//break;
 		}
-		else
+		else{
 			sensor_type_radios[t].checked = false;
+		}
 	}
 
 	/* show current sensor age (input)*/
@@ -232,6 +239,7 @@ function update_accordion_parameters() {
 		show_temperature_source_fields();
 	}
 	/* *** */
+	
 	/* Handle selecting soil temperature source */
 	check_selected_temperature_source();
 	/* *** */
@@ -280,11 +288,11 @@ function show_temperature_source_fields() {
 
 // function that submits form data to IIWA REST API
 async function make_AddConfiguration_HttpPOSTRequest(){
-	var posted_sensor_type = document.getElementsByName('sensor_type')[0].value;
+	var posted_sensor_type = document.querySelector('input[name="sensor_type"]:checked').value;
 	var posted_sensor_age = document.getElementsByName('sensor_age')[0].value;
 	var posted_sensor_max_value = document.getElementsByName('sensor_max_value')[0].value;
 	var posted_soil_type = document.getElementsByName('soil_type')[0].value;
-	var posted_soil_irrigation_type = document.getElementsByName('soil_irrigation_type')[0].value;
+	var posted_soil_irrigation_type = document.querySelector('input[name="soil_irrigation_type"]:checked').value;
 	var posted_soil_temperature_value = document.getElementsByName('soil_temperature_value')[0].value;
 	var posted_soil_temperature_device_id = document.getElementsByName('soil_temperature_device_id')[0].value;
 	var posted_soil_temperature_sensor_id = document.getElementsByName('soil_temperature_sensor_id')[0].value;
@@ -311,9 +319,9 @@ async function make_AddConfiguration_HttpPOSTRequest(){
 		"global_soil_bulk_density" : posted_global_soil_bulk_density,
 		"global_region" : posted_global_region
 	}
-
+	
 	try {
-        const RequestResponse = await fetch(sensorConfigurationHttpPOSTRequest_Baseurl + deviceID + '/sensors/' + sensorID, {
+        const RequestResponse = await fetch(sensorConfigurationHttpPOSTRequest_Base_url + deviceID + '/sensors/' + sensorID, {
             method: "POST",
             headers: iiwa_headers,
             body: JSON.stringify(new_sensor_configuration_body)

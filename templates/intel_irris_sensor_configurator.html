@@ -13,7 +13,9 @@
         src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
     
     <script type="text/javascript">
+        // load device name and ID received from Flask 
         var deviceID = '{{ deviceID}}';
+        var deviceName = '{{ deviceName}}';
         var sensorID = '{{ sensorID}}';
     </script>
 
@@ -43,206 +45,209 @@
       
     <div style="padding-left:16px; padding-top:16px">
         <h1>IIWA Sensor Configurator</h1>
-        <p> Update the sensor configuration for the selected WaziGate Device/Sensor ID pair</p>
-        <p>Device ID : {{ deviceID }}</p>
-        <p>Sensor ID : {{sensorID }}</p>
-        <h2>Update configurations</h2>
+        <p> Update the sensor configuration for the selected IIWA Device</p>
+        {% if deviceName == 'not_iiwa_device' %}
+            <p>Not a WaziGate or IIWA device!</p>
+        {% else %}
+            <p>Device Name : {{ deviceName }}</p>
 
-        <form action="" method="post" onsubmit="make_AddConfiguration_HttpPOSTRequest()">
-            <div class="accordion-body">
-                <div class="accordion">
-                		<p>Sensor Type is the only mandatory parameter to be filled</p>
-                		<hr>
-                    <div class="container">
-                        <div class="accordion-title">Sensor parameters</div>
-                        <div class="accordion-content">
-                            <div class="sensor_parameters">
-                                <br>
-                                <p> Sensor Type</p>
-                                <ul style="list-style-type:none;">
-                                    <li><input type="radio" id="capacitive" name="sensor_type" value="capacitive"
-                                            required>
-                                        <label for="capacitive">Capacitive</label>
-                                    </li>
-                                    <li><input type="radio" id="tensiometer_cbar" name="sensor_type" value="tensiometer_cbar">
-                                        <label for="tensiometer_cbar">Tensiometer (cbar)</label>
-                                    </li>
-                                    <li><input type="radio" id="tensiometer_raw" name="sensor_type" value="tensiometer_raw">
-                                        <label for="tensiometer_raw">Tensiometer (raw)</label>
-                                    </li>                                    
-                                </ul>
-                                <p>Sensor age
-                                    <input id="sensor_age" class="sensor_age" name="sensor_age" type="text"
-                                        placeholder=" months ">
-                                </p>   
-                                <p>Maximum sensor value
-                                    <input id="sensor_max_value" class="sensor_max_value" name="sensor_max_value" type="text"
-                                        placeholder=" max sensor value ">
-                                
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="container">
-                        <div class="accordion-title">Soil parameters</div>
-                        <div class="accordion-content">
-                            <div class="soil_parameters">
-                                <p> Soil Type
-                                    <select name="soil_type" id="soil_type" class="input">
-                                        <option value="undefined"> Undefined</option>
-                                        <option value="clay"> Clay</option>
-                                        <option value="sandy"> Sandy</option>
-                                        <option value="silty"> Silty</option>
-                                        <option value="peaty"> Peaty</option>
-                                        <option value="chalky"> Chalky</option>
-                                        <option value="loamy"> Loamy</option>
-                                    </select>
-                                </p>
-                                <div class="soil_irrigation_type">
-                                    <p> Soil Irrigation Type </p>
+            <h2>Update parameters</h2>
+
+            <form action="" method="post" onsubmit="make_AddConfiguration_HttpPOSTRequest()">
+                <div class="accordion-body">
+                    <div class="accordion">
+                            <p>Sensor Type is the only mandatory parameter to be filled</p>
+                            <hr>
+                        <div class="container">
+                            <div class="accordion-title">Sensor parameters</div>
+                            <div class="accordion-content">
+                                <div class="sensor_parameters">
+                                    <br>
+                                    <p> Sensor Type</p>
                                     <ul style="list-style-type:none;">
-                                        <li><input type="radio" id="undefined" name="soil_irrigation_type" value="undefined"
-                                            >
-                                            <label for="undefined">Undefined</label>
+                                        <li><input type="radio" id="capacitive" name="sensor_type" value="capacitive"
+                                                required>
+                                            <label for="capacitive">Capacitive</label>
                                         </li>
-                                        <li><input type="radio" id="furrow" name="soil_irrigation_type" value="furrow">
-                                            <label for="furrow">Furrow</label>
+                                        <li><input type="radio" id="tensiometer_cbar" name="sensor_type" value="tensiometer_cbar">
+                                            <label for="tensiometer_cbar">Tensiometer (cbar)</label>
                                         </li>
-                                        <li><input type="radio" id="sprinkler" name="soil_irrigation_type" value="sprinkler">
-                                            <label for="sprinkler">Sprinkler</label>
-                                        </li>
-                                        <li><input type="radio" id="drip" name="soil_irrigation_type" value="drip">
-                                            <label for="drip">Drip</label>
-                                        </li>
+                                        <li><input type="radio" id="tensiometer_raw" name="sensor_type" value="tensiometer_raw">
+                                            <label for="tensiometer_raw">Tensiometer (raw)</label>
+                                        </li>                                    
                                     </ul>
+                                    <p>Sensor age
+                                        <input id="sensor_age" class="sensor_age" name="sensor_age" type="text"
+                                            placeholder=" months ">
+                                    </p>   
+                                    <p>Maximum sensor value
+                                        <input id="sensor_max_value" class="sensor_max_value" name="sensor_max_value" type="text"
+                                            placeholder=" max sensor value ">
+                                    
                                 </div>
-                                <p>Soil Salinity
-                                    <input id="global_soil_salinity" class="soil_values" name="global_soil_salinity"
-                                        type="text" placeholder=" empty or -1 for disabled ">
-                                </p>
-                                <p>Soil Bulk Density
-                                    <input id="global_soil_bulk_density" class="soil_values" name="global_soil_bulk_density"
-                                        type="text" placeholder=" empty or -1 for disabled ">
-                                </p>
-                                <br>
                             </div>
                         </div>
-                    </div>
-                    <hr>
-                    <div class="container">
-                        <div class="accordion-title">Soil temperature</div>
-                        <div class="accordion-content">
-                            <div class="soil_temperature">
-                                <p>Please select a source for soil temperature data</p>
-                                <div id="soil_temperatureForm">
-                                    <p id="p_currentSource">Current soil temperature source is <em><span
-                                            id="span_currentSource"></span></em></p>
-                                    <ul style="list-style-type:none;">
-                                        <li><input type="radio" id="soil_temp_source" name="soil_temp_source"
-                                                value="user">
-                                            <label for="user">user input</label>
-                                        </li>
-                                        <li><input type="radio" id="soil_temp_source" name="soil_temp_source"
-                                                value="sensor">
-                                            <label for="sensor">real sensor</label>
-                                        </li>
-                                    </ul>
-                                    <div id="show_sensor_field">
-                                        <input id="soil_temperature_value" class="soil_values"
-                                            name="soil_temperature_value" type="text" placeholder=" enter temperature">
-                                        <br>
-                                        <div id="soil_temperature_source">
-                                            <p>Enter device id
-                                                <input id="soil_temperature_device_id" class="soil_values"
-                                                    name="soil_temperature_device_id" type="text"
-                                                    placeholder=" enter device id"></li>
-                                            </p>
-                                            <p>Enter sensor id
-                                                <input id="soil_temperature_sensor_id" class="soil_values"
-                                                    name="soil_temperature_sensor_id" type="text"
-                                                    placeholder=" enter sensor id"></li>
-                                            </p>
+                        <hr>
+                        <div class="container">
+                            <div class="accordion-title">Soil parameters</div>
+                            <div class="accordion-content">
+                                <div class="soil_parameters">
+                                    <p> Soil Type
+                                        <select name="soil_type" id="soil_type" class="input">
+                                            <option value="undefined"> Undefined</option>
+                                            <option value="clay"> Clay</option>
+                                            <option value="sandy"> Sandy</option>
+                                            <option value="silty"> Silty</option>
+                                            <option value="peaty"> Peaty</option>
+                                            <option value="chalky"> Chalky</option>
+                                            <option value="loamy"> Loamy</option>
+                                        </select>
+                                    </p>
+                                    <div class="soil_irrigation_type">
+                                        <p> Soil Irrigation Type </p>
+                                        <ul style="list-style-type:none;">
+                                            <li><input type="radio" id="undefined" name="soil_irrigation_type" value="undefined">
+                                                <label for="undefined">Undefined</label>
+                                            </li>
+                                            <li><input type="radio" id="furrow" name="soil_irrigation_type" value="furrow">
+                                                <label for="furrow">Furrow</label>
+                                            </li>
+                                            <li><input type="radio" id="sprinkler" name="soil_irrigation_type" value="sprinkler">
+                                                <label for="sprinkler">Sprinkler</label>
+                                            </li>
+                                            <li><input type="radio" id="drip" name="soil_irrigation_type" value="drip">
+                                                <label for="drip">Drip</label>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <p>Soil Salinity
+                                        <input id="global_soil_salinity" class="soil_values" name="global_soil_salinity"
+                                            type="text" placeholder=" empty or -1 for disabled ">
+                                    </p>
+                                    <p>Soil Bulk Density
+                                        <input id="global_soil_bulk_density" class="soil_values" name="global_soil_bulk_density"
+                                            type="text" placeholder=" empty or -1 for disabled ">
+                                    </p>
+                                    <br>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="container">
+                            <div class="accordion-title">Soil temperature</div>
+                            <div class="accordion-content">
+                                <div class="soil_temperature">
+                                    <p>Please select a source for soil temperature data</p>
+                                    <div id="soil_temperatureForm">
+                                        <p id="p_currentSource">Current soil temperature source is <em><span
+                                                id="span_currentSource"></span></em></p>
+                                        <ul style="list-style-type:none;">
+                                            <li><input type="radio" id="soil_temp_source" name="soil_temp_source"
+                                                    value="user">
+                                                <label for="user">user input</label>
+                                            </li>
+                                            <li><input type="radio" id="soil_temp_source" name="soil_temp_source"
+                                                    value="sensor">
+                                                <label for="sensor">real sensor</label>
+                                            </li>
+                                        </ul>
+                                        <div id="show_sensor_field">
+                                            <input id="soil_temperature_value" class="soil_values"
+                                                name="soil_temperature_value" type="text" placeholder=" enter temperature">
+                                            <br>
+                                            <div id="soil_temperature_source">
+                                                <p>Enter device id
+                                                    <input id="soil_temperature_device_id" class="soil_values"
+                                                        name="soil_temperature_device_id" type="text"
+                                                        placeholder=" enter device id"></li>
+                                                </p>
+                                                <p>Enter sensor id
+                                                    <input id="soil_temperature_sensor_id" class="soil_values"
+                                                        name="soil_temperature_sensor_id" type="text"
+                                                        placeholder=" enter sensor id"></li>
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <hr>
-                    <div class="container">
-                        <div class="accordion-title">Plant parameters</div>
-                        <div class="accordion-content">
-                            <div class="plant_parameters">
-                                <p> Plant/Crop
-                                    <select name="plant" id="plant" class="plant">
-                                        <option value="undefined"> Undefined</option>
-                                        <option value="cassava"> Cassava</option>
-                                        <option value="maize"> Maize</option>
-                                        <option value="plantains"> Plantains</option>
-                                        <option value="potatoes"> Potatoes</option>
-                                        <option value="rice"> Rice</option>
-                                        <option value="sorghum"> Sorghum</option>
-                                        <option value="soybeans"> Soybeans</option>
-                                        <option value="sweet_potatoes,"> Sweet Potatoes</option>
-                                        <option value="wheat"> Wheat</option>
-                                        <option value="yam"> Yam</option>
-                                    </select>
-                                </p>
-                                <p> Plant Sub-Type
-                                    <select name="plant_sub_type" id="plant_sub_type" class="input">
-                                        <option value="undefined">Undefined</option>
-                                        <option value="sub_type_A">Sub-Type A</option>
-                                        <option value="sub_type_B">Sub-Type B</option>
-                                        <option value="sub_type_C">Sub-Type C</option>
-                                        <option value="sub_type_D">Sub-Type D</option>
-                                    </select>
-                                </p>
-                                <p>
-                                    <label for="plant_planting_date">Planting Date</label>
-                                    <input type="date" id="planting_date" name="planting_date"
-                                        style=" border: thin solid #f4b548; border-radius: 4px;height: 30px;">
-                                </p>
+                        <hr>
+                        <div class="container">
+                            <div class="accordion-title">Plant parameters</div>
+                            <div class="accordion-content">
+                                <div class="plant_parameters">
+                                    <p> Plant/Crop
+                                        <select name="plant" id="plant" class="plant">
+                                            <option value="undefined"> Undefined</option>
+                                            <option value="cassava"> Cassava</option>
+                                            <option value="maize"> Maize</option>
+                                            <option value="plantains"> Plantains</option>
+                                            <option value="potatoes"> Potatoes</option>
+                                            <option value="rice"> Rice</option>
+                                            <option value="sorghum"> Sorghum</option>
+                                            <option value="soybeans"> Soybeans</option>
+                                            <option value="sweet_potatoes,"> Sweet Potatoes</option>
+                                            <option value="wheat"> Wheat</option>
+                                            <option value="yam"> Yam</option>
+                                        </select>
+                                    </p>
+                                    <p> Plant Sub-Type
+                                        <select name="plant_sub_type" id="plant_sub_type" class="input">
+                                            <option value="undefined">Undefined</option>
+                                            <option value="sub_type_A">Sub-Type A</option>
+                                            <option value="sub_type_B">Sub-Type B</option>
+                                            <option value="sub_type_C">Sub-Type C</option>
+                                            <option value="sub_type_D">Sub-Type D</option>
+                                        </select>
+                                    </p>
+                                    <p>
+                                        <label for="plant_planting_date">Planting Date</label>
+                                        <input type="date" id="planting_date" name="planting_date"
+                                            style=" border: thin solid #f4b548; border-radius: 4px;height: 30px;">
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <hr>
-                    <div class="container">
-                        <div class="accordion-title">Weather parameters</div>
-                        <div class="accordion-content">
-                            <div class="weather-parameters">
-                                <p> Region
-                                    <select name="global_region" id="global_region" class="global_region">
-                                        <option value="undefined"> Undefined</option>
-                                        <option value="arid"> Arid</option>
-                                        <option value="semi-arid"> Semi-Arid</option>
-                                        <option value="dry"> Dry</option>
-                                    </select>
-                                </p>
+                        <hr>
+                        <div class="container">
+                            <div class="accordion-title">Weather parameters</div>
+                            <div class="accordion-content">
+                                <div class="weather-parameters">
+                                    <p> Region
+                                        <select name="global_region" id="global_region" class="global_region">
+                                            <option value="undefined"> Undefined</option>
+                                            <option value="arid"> Arid</option>
+                                            <option value="semi-arid"> Semi-Arid</option>
+                                            <option value="dry"> Dry</option>
+                                        </select>
+                                    </p>
+                                </div>
                             </div>
                         </div>
+                        <hr>
+                                            
+                        <br>
+                        <button type="submit" value="submit" class="update_parameters">Save this configuration</button>
                     </div>
- 					<hr>
- 										
-                    <br>
-                    <button type="submit" value="submit" class="update_parameters">Save this configuration</button>
                 </div>
-            </div>
-            <br>
-        </form>
-        <script>
-            $(document).ready(function () {
-                $('.accordion-title').click(function () {
-                    if ($(this).hasClass('active')) {
-                        $(this).removeClass('active').next('.accordion-content').slideUp();
-                    }
-                    else {
-                        $('.accordion-title').removeClass('active');
-                        $('.accordion-content').slideUp();
-                        $(this).addClass('active').next('.accordion-content').slideDown();
-                    }
+                <br>
+            </form>
+            <script>
+                $(document).ready(function () {
+                    $('.accordion-title').click(function () {
+                        if ($(this).hasClass('active')) {
+                            $(this).removeClass('active').next('.accordion-content').slideUp();
+                        }
+                        else {
+                            $('.accordion-title').removeClass('active');
+                            $('.accordion-content').slideUp();
+                            $(this).addClass('active').next('.accordion-content').slideDown();
+                        }
+                    });
                 });
-            });
-        </script>
+            </script>
+        {% endif %}
     </div>
 </body>
 

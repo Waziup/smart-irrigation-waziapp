@@ -1,4 +1,4 @@
-const iiwa_devices_data_GETURL = '/devices/data'
+const iiwa_devices_data_url = '/devices/data'
 
 var iiwa_devices_data; // stores device and sensor data:
 var iiwa_devices_data_count = 0;
@@ -19,13 +19,16 @@ const iiwa_headers = {
 // fetches the device and sensor data for the page
 async function get_iiwa_devices_data(){
     try {
-        const RequestResponse = await fetch(iiwa_devices_data_GETURL, {
+        const RequestResponse = await fetch(iiwa_devices_data_url, {
             method: "GET",
             headers: iiwa_headers,
         });
         iiwa_devices_data = await RequestResponse.json();
-        console.log(iiwa_devices_data)
-        generate_dashboard_cards();
+        console.log(iiwa_devices_data);
+
+        if (iiwa_devices_data != null){
+            generate_dashboard_cards();
+        }
     }
     catch(err) {
         console.error(`Error at Http GET Request : ${err}`);
@@ -43,7 +46,7 @@ function generate_dashboard_cards(){
         document.getElementById('dashboard_cards_ul').innerHTML = '';
 
         // itertate over the device data and generate new HTML card items
-        // using ES 6 Back-ticks method
+        // using ES 6 Back-ticks method to generate the HTML content
         for (let x = 0; x< iiwa_devices_data_count; x++){
             
             iiwa_devices_data_soilCondition = iiwa_devices_data[x]['soil_condition']
@@ -60,7 +63,17 @@ function generate_dashboard_cards(){
                 `;
                 html_valueIndex_isSet = true;
             }
-            else if (iiwa_devices_data_soilCondition != 'no sensor'){
+            if (iiwa_devices_data_soilCondition == 'Unconfigured'){
+                html_soilCondition = `
+                    <p class="dashboard_card_text">Please configure!</p>
+                `;
+
+                html_valueIndex = `
+                    <img src="./static/images/unconfigured_device.svg" alt="Unconfigured">
+                `;
+                html_valueIndex_isSet = true;
+            }
+            if (iiwa_devices_data_soilCondition != 'no sensor' && iiwa_devices_data_soilCondition != 'Unconfigured'){
                 html_soilCondition = `
                     <p class="dashboard_card_text">Soil condition : <span id="dashboard_card_text_sensor_value">${iiwa_devices_data[x]['soil_condition']}</span></p>
                 `;
@@ -68,12 +81,7 @@ function generate_dashboard_cards(){
             /* *** */
 
             /* create html content for value index svg icons */
-            if (iiwa_devices_valueIndex == 'undefined' && !html_valueIndex_isSet){
-                html_valueIndex = `
-                    <img src="./static/images/unconfigured_sensor.svg" alt="Unconfigured sensor">
-                `;
-            }
-            else if (iiwa_devices_valueIndex != 'undefined' && !html_valueIndex_isSet){
+            if (iiwa_devices_valueIndex != 'undefined' && !html_valueIndex_isSet){
                 // we adopt the following rule: 
                 // 0:very dry; 1:dry; 2:dry-wet 3-wet-dry; 4-wet; 5-very wet/saturated
 
@@ -116,7 +124,7 @@ function generate_dashboard_cards(){
 
             // generate link for sensor configurator page
             html_sensorConfigurator_link = `
-                <a href="intel_irris_sensor_configurator?deviceID=${iiwa_devices_data[x]['device_id']}&sensorID=${iiwa_devices_data[x]['sensor_id']}"><img src="./static/images/sensor_configurator.png" alt="Configure this sensor"></a>
+                <a href="intel_irris_sensor_configurator?deviceID=${iiwa_devices_data[x]['device_id']}&sensorID=temperatureSensor_0"><img src="./static/images/sensor_configurator.png" alt="Configure this sensor"></a>
             `;
 
             // append new card items to card ul
