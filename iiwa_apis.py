@@ -100,7 +100,10 @@ def iiwa_remove_device(deviceID):
 		# print("iiwa_sensors_configurations.json : %s"%iiwa_sensors_configurations)
 		globals_soil_salinity = iiwa_sensors_config_data['globals']['soil_salinity']
 		globals_soil_bulk_density = iiwa_sensors_config_data['globals']['soil_bulk_density']
-		global_region = iiwa_sensors_config_data['globals']['region']
+		global_soil_field_capacity = iiwa_sensors_config_data['globals']['soil_field_capacity']
+		global_weather_region = iiwa_sensors_config_data['globals']['weather_region']
+		global_weather_weekly_evaporation = iiwa_sensors_config_data['globals']['weather_weekly_evaporation']
+		global_weather_weekly_pluviometry = iiwa_sensors_config_data['globals']['weather_weekly_pluviometry']
 
 		iiwa_configured_sensors_count = len(iiwa_sensors_configurations)
 		pop_indices = []
@@ -111,17 +114,19 @@ def iiwa_remove_device(deviceID):
 		for b in range(0, len(pop_indices)):
 			iiwa_sensors_configurations.pop(pop_indices[b])
 
-		print("IIWA : New sensor(s) configuration(s) data to be saved in JSON: %s" % iiwa_sensors_configurations)
-
 		# save new data to config file
 		new_iiwa_sensors_configurations = {
 			"globals": {
 				"soil_salinity": globals_soil_salinity,
 				"soil_bulk_density": globals_soil_bulk_density,
-				"region" : global_region
+				"soil_field_capacity": global_soil_field_capacity,
+				"weather_region" : global_weather_region,
+				"weather_weekly_evaporation": global_weather_weekly_evaporation,
+				"weather_weekly_pluviometry": global_weather_weekly_pluviometry
 			},
 			"sensors": iiwa_sensors_configurations
 		}
+		print("IIWA : New data data to be saved in JSON: %s" % new_iiwa_sensors_configurations)
 		# update with the sensor config
 		jsString = json.dumps(new_iiwa_sensors_configurations)
 		jsFile = open(iiwa_sensors_config_filename, "w")
@@ -207,17 +212,22 @@ def update_sensor_configuration(deviceID,sensorID ):
 			sensor_type = request.json['sensor_type']
 			sensor_age = request.json['sensor_age']
 			sensor_max_value = request.json['sensor_max_value']
+			sensor_min_value = request.json['sensor_min_value']
 			soil_type = request.json['soil_type']
 			soil_irrigation_type = request.json['soil_irrigation_type']
+			soil_salinity = request.json['soil_salinity']
+			soil_bulk_density = request.json['soil_bulk_density']
+			soil_field_capacity = request.json['soil_field_capacity']
 			soil_temperature_value = request.json['soil_temperature_value']
 			soil_temperature_device_id = request.json['soil_temperature_device_id']
 			soil_temperature_sensor_id = request.json['soil_temperature_sensor_id']
-			plant = request.json['plant']
+			plant_category = request.json['plant_category']
+			plant_crop = request.json['plant_crop']
 			plant_sub_type = request.json['plant_sub_type']
-			planting_date = request.json['planting_date']
-			global_soil_salinity = request.json['global_soil_salinity']
-			global_soil_bulk_density = request.json['global_soil_bulk_density']
-			global_region = request.json['global_region']
+			plant_planting_date = request.json['plant_planting_date']
+			weather_region = request.json['weather_region']
+			weather_weekly_evaporation = request.json['weather_weekly_evaporation']
+			weather_weekly_pluviometry = request.json['weather_weekly_pluviometry']
 
 		# raise an error when any required key is not found in submitted JSON
 		except KeyError:
@@ -233,7 +243,8 @@ def update_sensor_configuration(deviceID,sensorID ):
 				sensor_max_value = sensor_max_tensiometer_cbar
 			elif (sensor_type == "tensiometer_raw"):
 				sensor_max_value = sensor_max_tensiometer_raw
-
+		if (sensor_min_value == ""):
+			sensor_min_value = 0
 		if (soil_type == "hide"):
 			soil_type = "undefined"
 		if (soil_irrigation_type == "None"):
@@ -244,23 +255,36 @@ def update_sensor_configuration(deviceID,sensorID ):
 			soil_temperature_device_id = "undefined"
 		if (soil_temperature_sensor_id == ""):
 			soil_temperature_sensor_id = "undefined"
-		if (plant == "hide"):
-			plant = "undefined"
+		if (plant_category == "hide"):
+			plant_category = "undefined"
+		if (plant_crop == "hide"):
+			plant_crop = "undefined"
 		if (plant_sub_type == "hide"):
 			plant_sub_type = "undefined"
-		if (planting_date == ""):
-			planting_date = "undefined"
-		if (global_region == "hide"):
-			global_region = "undefined"
-
-		if (global_soil_salinity != "" and global_soil_salinity != '-1'):
-			global_soil_salinity = global_soil_salinity
+		if (plant_planting_date == ""):
+			plant_planting_date = "undefined"
+		if (weather_region == "hide"):
+			weather_region = "undefined"
+		if (weather_weekly_evaporation != "" and weather_weekly_evaporation != '-1'):
+			weather_weekly_evaporation = weather_weekly_evaporation
 		else:
-			global_soil_salinity = "undefined"
-		if (global_soil_bulk_density != "" and global_soil_bulk_density != '-1'):
-			global_soil_bulk_density = global_soil_bulk_density
+			weather_weekly_evaporation = "undefined"
+		if (weather_weekly_pluviometry != "" and weather_weekly_pluviometry != '-1'):
+			weather_weekly_pluviometry = weather_weekly_pluviometry
 		else:
-			global_soil_bulk_density = "undefined"
+			weather_weekly_pluviometry = "undefined"
+		if (soil_salinity != "" and soil_salinity != '-1'):
+			soil_salinity = soil_salinity
+		else:
+			soil_salinity = "undefined"
+		if (soil_bulk_density != "" and soil_bulk_density != '-1'):
+			soil_bulk_density = soil_bulk_density
+		else:
+			soil_bulk_density = "undefined"
+		if (soil_field_capacity != "" and soil_field_capacity != '-1'):
+			soil_field_capacity = soil_field_capacity
+		else:
+			soil_field_capacity = "undefined"
 
 		# -- GET last sensor value --#
 		url = BASE_URL+"devices/" + deviceID + '/sensors/' + sensorID
@@ -273,18 +297,23 @@ def update_sensor_configuration(deviceID,sensorID ):
 		print("Sensor Type : %s" % sensor_type)
 		print("Sensor Age : %s" % sensor_age)
 		print("Sensor Max Value : %s" % sensor_max_value)
+		print("Sensor Min Value : %s" % sensor_min_value)
 		print("Soil Type : %s" % soil_type)
 		print("Soil Irrigation Type : %s" % soil_irrigation_type)
-		print("Soil Salinity : %s" % global_soil_bulk_density)
-		print("Soil Bulk Density : %s" % global_soil_bulk_density)
+		print("Soil Salinity : %s" % soil_salinity)
+		print("Soil Bulk Density : %s" % soil_bulk_density)
+		print("Soil Field Capacity : %s" % soil_field_capacity)
 		print("Soil temperature value : %s" % soil_temperature_value)
-		print("Soil temperature source device id : %s" %soil_temperature_device_id)
-		print("Soil temperature source sensor id : %s" %soil_temperature_sensor_id)
-		print("Plant : %s" % plant)
+		print("Soil temperature source WaziGate DeviceID : %s" %soil_temperature_device_id)
+		print("Soil temperature source WaziGate SensorID : %s" %soil_temperature_sensor_id)
+		print("Plant Category : %s" % plant_category)
+		print("Plant : %s" % plant_crop)
 		print("Plant Sub-Type : %s" % plant_sub_type)
-		print("Planting Date : %s" % planting_date)
-		print("Region : %s" % global_region)
-		print("Last sensor value : %s" % last_PostedSensorValue)
+		print("Planting Date : %s" % plant_planting_date)
+		print("Weather Region : %s" % weather_region)
+		print("Weather weekly evaporation (in mm) : %s" % weather_weekly_evaporation)
+		print("Weather weekly pluviometry (in mm) : %s" % weather_weekly_pluviometry)
+		print("Last posted sensor value : %s" % last_PostedSensorValue)
 
 		# ---------------------#
 		# -- add new config to the sensor-config.json --#
@@ -294,11 +323,19 @@ def update_sensor_configuration(deviceID,sensorID ):
 				"sensor_type": sensor_type,
 				"sensor_age": sensor_age,
 				"sensor_max_value": sensor_max_value,
+				"sensor_min_value": sensor_min_value,
 				"soil_type": soil_type,
 				"soil_irrigation_type": soil_irrigation_type,
-				"plant": plant,
+				"soil_salinity": soil_salinity,
+				"soil_bulk_density": soil_bulk_density,
+				"soil_field_capacity" : soil_field_capacity,
+				"plant_category" : plant_category,
+				"plant_crop": plant_crop,
 				"plant_sub_type": plant_sub_type,
-				"planting_date": planting_date,
+				"plant_planting_date": plant_planting_date,
+				"weather_region" : weather_region,
+				"weather_weekly_evaporation" : weather_weekly_evaporation,
+				"weather_weekly_pluviometry" : weather_weekly_pluviometry,
 				"last_sensor_value": last_PostedSensorValue
 			},
 			"soil_temperature_source": {
@@ -306,8 +343,8 @@ def update_sensor_configuration(deviceID,sensorID ):
 				"soil_temperature_sensor_id": soil_temperature_sensor_id,
 				"soil_temperature_value": soil_temperature_value
 			},
-				"device_id": deviceID,
-				"sensor_id": sensorID
+			"device_id": deviceID,
+			"sensor_id": sensorID
 		}
 
 		# read sensors configurations
@@ -331,12 +368,15 @@ def update_sensor_configuration(deviceID,sensorID ):
 		if (updated_new_sensorConfiguration == False):
 			read_iiwa_sensor_configurations.append(new_sensor_configuration_record)
 
-		# update the global parameters
+		# update the global parameters, *** how will this be updated in future? ***
 		new_iiwa_sensor_configuration = {
 			"globals": {
-				"soil_salinity": global_soil_salinity,
-				"soil_bulk_density": global_soil_bulk_density,
-				"region" : global_region
+				"soil_salinity": "undefined",
+				"soil_bulk_density": "undefined",
+				"soil_field_capacity" : "undefined",
+				"weather_region" : "undefined",
+				"weather_weekly_evaporation" : "undefined",
+				"weather_weekly_pluviometry" : "undefined"
 			},
 			"sensors": read_iiwa_sensor_configurations
 		}

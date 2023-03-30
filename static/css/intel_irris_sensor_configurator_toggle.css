@@ -1,0 +1,170 @@
+:root {
+  /*Background color when it's turned off*/
+  --toggle-off-color: #d1d3d4;
+
+  /*Background color when it's turned on*/
+  --toggle-on-color: #f4b548;
+  
+  /*Animation speed and type*/
+  --toggle-animation-speed: 0;
+
+  /*Font used by the text*/
+  --toggle-font-family: Arial;
+
+  /*The size used*/
+  --toggle-font-size: 11px;
+
+  /*The font weight*/
+  --toggle-font-weight: 300;
+  
+  /*Font color when the switch is on*/
+  --toggle-on-font-color: white;
+
+  /*Font color when the switch is off*/
+  --toggle-off-font-color: white;
+
+  /*How far the OFF text is from the right side*/
+  --toggle-label-position-off: 12px;
+
+  /*How far the ON text is from the left side*/
+  --toggle-label-position-on: 11px;
+
+  /*Small switch width*/
+  --toggle-width: 90px;
+
+  /*Small switch height*/
+  --toggle-height: 25px;
+
+  /*Border radius for the handle*/
+  --toggle-handle-border-radius: 20px;
+
+  /*Border radius for the box*/
+  --toggle-box-border-radius: 18px;
+
+  /*Shadow for the handle*/
+  --toggle-handle-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+  
+  /*Handle color*/
+  --toggle-handle-color: white;
+
+  /*Handle width*/
+  --toggle-handle-width: 15px;
+
+  /*Handle height*/
+  --toggle-handle-height: 15px;
+
+  /*The handle's width while the toggle is clicked*/
+  --toggle-onclick-width: 30px;
+
+  /*Handle's distance from the top*/
+  --toggle-handle-top: 5px;
+}
+
+.toggle-container * {
+  font-family: var(--toggle-font-family);
+  -webkit-transition: var(--toggle-animation-speed);
+  -moz-transition: var(--toggle-animation-speed);
+  -o-transition: var(--toggle-animation-speed);
+  transition: var(--toggle-animation-speed);
+}
+
+.toggle-switch {
+  width: var(--toggle-width);
+  height: var(--toggle-height);
+}
+
+.toggle-container label {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  border-radius: var(--toggle-box-border-radius);
+  cursor: pointer;
+}
+
+.toggle-switch-input {
+  position: absolute;
+  transform: translate3d(5px, 5px, 0);
+}
+
+.toggle-switch-label {
+  position: relative;
+  display: block;
+  height: inherit;
+  font-size: var(--toggle-font-size);
+  font-weight: var(--toggle-font-weight);
+  background: var(--toggle-off-color);
+  border-radius: inherit;
+}
+
+.toggle-switch-label:before,
+.toggle-switch-label:after {
+  position: absolute;
+  top: 50%;
+  margin-top: -0.5em;
+  line-height: 1.1;
+}
+
+.toggle-switch-label:before {
+  content: attr(data-off);
+  color: var(--toggle-on-font-color);
+}
+
+.toggle-switch-label:after {
+  content: attr(data-on);
+  color: var(--toggle-off-font-color);
+  opacity: 0;
+}
+
+.toggle-switch-label:before {
+  right: var(--toggle-label-position-off);;
+}
+
+.toggle-switch-label:after {
+  left: var(--toggle-label-position-on);;
+}
+
+.toggle-switch-input:checked ~ .toggle-switch-label {
+  background: var(--toggle-on-color);
+}
+
+.toggle-switch-input:checked ~ .toggle-switch-label:before {
+  opacity: 0;
+}
+
+.toggle-switch-input:checked ~ .toggle-switch-label:after {
+  opacity: 1;
+}
+
+.toggle-handle {
+  position: absolute !important;
+  top: var(--toggle-handle-top);
+  left: 5px;
+  background: var(--toggle-handle-color);
+  border-radius: var(--toggle-handle-border-radius);
+  box-shadow: var(--toggle-handle-shadow);
+}
+
+.toggle-handle {
+  width: var(--toggle-handle-width);
+  height: var(--toggle-handle-height);
+}
+
+.toggle-handle:before {
+  content: "";
+  top: 50%;
+  left: 50%;
+  position: absolute !important;
+  margin: -6px 0 0 -6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+}
+
+.toggle-switch-label:active ~ .toggle-handle, .toggle-handle:active {
+  width: var(--toggle-onclick-width);
+}
+
+.toggle-switch-input:checked ~ .toggle-handle {
+  left: unset;
+  right: 5px;
+}

@@ -119,7 +119,7 @@ function generate_dashboard_cards(){
 
             // generate Wazigate Dashboard link for sensor graph
             html_sensorGraph_link = `
-                <a href="http://wazigate.local/#/devices/${iiwa_devices_data[x]['device_id']}/sensors/${iiwa_devices_data[x]['sensor_id']}"><img src="./static/images/graph.svg" alt="View sensor graph"></a>
+                <a href="http://wazigate.local/#/devices/${iiwa_devices_data[x]['device_id']}/sensors/${iiwa_devices_data[x]['sensor_id']}" target="_blank"><img src="./static/images/graph.svg" alt="View sensor graph"></a>
             `;
 
             // generate link for sensor configurator page
@@ -140,15 +140,11 @@ function generate_dashboard_cards(){
                                     ${html_valueIndex}
                                 </div>
                                 <p></p>
-                                <div class="dashboard_card_footer">
-                                    <div class="dashboard_card_footer_cell">
-                                        <div class="dashboard_card_footer_graph">
-                                            ${html_sensorGraph_link}
-                                        </div>
-                                        <div class="dashboard_card_footer_configurator">
-                                            ${html_sensorConfigurator_link}
-                                        </div>
-                                    </div>
+                                <div class="dashboard_card_footer_graph">
+                                    ${html_sensorGraph_link}
+                                </div>
+                                <div class="dashboard_card_footer_sensor_configurator">
+                                    ${html_sensorConfigurator_link}
                                 </div>
                             </div>
                         </div>

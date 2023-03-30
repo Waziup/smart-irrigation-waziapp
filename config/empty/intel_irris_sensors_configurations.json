@@ -2,7 +2,10 @@
     "globals": {
         "soil_salinity": "undefined",
         "soil_bulk_density": "undefined",
-        "region": "undefined"
+        "soil_field_capacity": "undefined",
+        "weather_region": "undefined",
+        "weather_weekly_evaporation": "undefined",
+        "weather_weekly_pluviometry": "undefined"
     },
     "sensors": []
 }
