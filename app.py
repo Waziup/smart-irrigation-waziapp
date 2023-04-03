@@ -60,55 +60,9 @@ WaziGate_headers_auth = {
 # ---------------------#
 
 sensor_max_capacitive = "800"
-
-capacitive_default_sensor_config = {
-	"value": {
-		"sensor_type": "capacitive",
-		"sensor_age": "0",
-		"sensor_max": sensor_max_capacitive,
-		"sensor_min": "0",
-		"soil_type": "silty",
-		"soil_irrigation_type": "undefined",
-			"soil_salinity": "disabled",
-			"soil_bulk_density": "disabled",
-			"plant_crop": "undefined",
-			"plant_sub_type": "undefined",
-			"plant_planting_date": "undefined",
-			"weather_region": "semi-arid",
-			"last_value": 0.0
-	},
-	"soil_temperature_source": {
-		"soil_temperature_device_id": "undefined",
-		"soil_temperature_sensor_id": "undefined",
-		"soil_temperature_value": 28.0
-	}
-}
-
 sensor_max_tensiometer_cbar = "124"
 sensor_max_tensiometer_raw = "18000"
 
-tensiometer_default_sensor_config = {
-	"value": {
-		"sensor_type": "tensiometer_cbar",
-		"sensor_age": "0",
-		"sensor_max": sensor_max_tensiometer_cbar,
-		"sensor_min": "0",
-		"soil_type": "silty",
-		"soil_irrigation_type": "undefined",
-			"soil_salinity": "disabled",
-			"soil_bulk_density": "disabled",
-			"plant_crop": "undefined",
-			"plant_sub_type": "undefined",
-			"plant_planting_date": "undefined",
-			"weather_region": "semi-arid",
-			"last_value": 0.0
-	},
-	"soil_temperature_source": {
-		"soil_temperature_device_id": "undefined",
-		"soil_temperature_sensor_id": "undefined",
-		"soil_temperature_value": 28.0
-	}
-}
 # ---------------------#
 
 # --------------------------------------------------------------------------

@@ -144,6 +144,13 @@ h1{
     1px 1.5em;
   background-repeat: no-repeat;
 }
+
+.plant_values{
+  border: thin solid #f4b548;
+  border-radius: 4px;
+  height: 30px;
+}
+
 .plant_parameters select:focus {
   background-image:
     linear-gradient(45deg, green 50%, transparent 50%),

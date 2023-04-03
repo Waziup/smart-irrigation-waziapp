@@ -30,8 +30,8 @@ var soil_temperature_value = '';
 var soil_temperature_device_id = '';
 var soil_temperature_sensor_id = '';
 var plant_category = 'undefined';
-var plant_crop = 'undefined';
-var plant_sub_type = 'undefined';
+var plant_type = 'undefined';
+var plant_variety = 'undefined';
 var plant_planting_date;
 var weather_region = 'undefined';
 var weather_weekly_evaporation = '';
@@ -93,8 +93,8 @@ function get_DeviceSensorID_configuration() {
 				soil_temperature_device_id = sensors_configurations_response_asJSON['sensors'][x]['soil_temperature_source']['soil_temperature_device_id'];
 				soil_temperature_sensor_id = sensors_configurations_response_asJSON['sensors'][x]['soil_temperature_source']['soil_temperature_sensor_id'];
 				plant_category = sensors_configurations_response_asJSON['sensors'][x]['value']['plant_category'];
-				plant_crop = sensors_configurations_response_asJSON['sensors'][x]['value']['plant_crop'];
-				plant_sub_type = sensors_configurations_response_asJSON['sensors'][x]['value']['plant_sub_type'];
+				plant_type = sensors_configurations_response_asJSON['sensors'][x]['value']['plant_type'];
+				plant_variety = sensors_configurations_response_asJSON['sensors'][x]['value']['plant_variety'];
 				plant_planting_date = sensors_configurations_response_asJSON['sensors'][x]['value']['plant_planting_date'];
 				weather_region = sensors_configurations_response_asJSON['sensors'][x]['value']['weather_region'];
 				weather_weekly_evaporation = sensors_configurations_response_asJSON['sensors'][x]['value']['weather_weekly_evaporation'];
@@ -131,9 +131,12 @@ function get_DeviceSensorID_configuration() {
 	if (soil_field_capacity == 'undefined' || typeof (soil_field_capacity) == "undefined") {
 		soil_field_capacity = '';
 	}
-	if (plant_crop == 'undefined' || typeof (plant_crop) == "undefined") {
-		plant_crop = 'undefined';
+	if (plant_type == 'undefined' || typeof (plant_type) == "undefined") {
+		plant_type = 'undefined';
 	}
+	if (plant_variety == 'undefined' || typeof (plant_variety) == "undefined") {
+		plant_variety = 'undefined';
+	}	
 	if (weather_region == 'undefined' || typeof (weather_region) == "undefined") {
 		weather_region = 'undefined';
 	}
@@ -159,8 +162,8 @@ function get_DeviceSensorID_configuration() {
 	console.log('soil_temperature_device_id = ' + soil_temperature_device_id);
 	console.log('soil_temperature_sensor_id = ' + soil_temperature_sensor_id);
 	console.log('plant_category = ' + plant_category);
-	console.log('plant_crop = ' + plant_crop);
-	console.log('plant_sub_type = ' + plant_sub_type);
+	console.log('plant_type = ' + plant_type);
+	console.log('plant_variety = ' + plant_variety);
 	console.log('plant_planting_date = ' + plant_planting_date);
 	console.log('weather_region = ' + weather_region);
 	console.log('weather_weekly_evaporation = ' + weather_weekly_evaporation);
@@ -180,7 +183,7 @@ function update_accordion_parameters() {
 		document.getElementById('soil_type_p').style.display = 'block';
 		document.getElementById('soil_irriation_type_outer_div').style.display = 'block';
 		document.getElementById('soil_temperature_outer_div').style.display = 'block';
-		document.getElementById('plant_crop_p').style.display = 'block';
+		document.getElementById('plant_type_p').style.display = 'block';
 		document.getElementById('plant_planting_date_p').style.display = 'block';
 		document.getElementById('weather_region_p').style.display = 'block';
 
@@ -192,7 +195,7 @@ function update_accordion_parameters() {
 		document.getElementById('soil_bulk_density_p').style.display = 'none';
 		document.getElementById('soil_field_capacity_p').style.display = 'none';
 		document.getElementById('plant_category_p').style.display = 'none';
-		document.getElementById('plant_sub_type_p').style.display = 'none';
+		document.getElementById('plant_variety_p').style.display = 'none';
 		document.getElementById('weather_weekly_evaporation_p').style.display = 'none';
 		document.getElementById('weather_weekly_pluviometry_p').style.display = 'none';
 	}
@@ -207,7 +210,7 @@ function update_accordion_parameters() {
 		document.getElementById('soil_bulk_density_p').style.display = 'block';
 		document.getElementById('soil_field_capacity_p').style.display = 'block';
 		document.getElementById('plant_category_p').style.display = 'block';
-		document.getElementById('plant_sub_type_p').style.display = 'block';
+		document.getElementById('plant_variety_p').style.display = 'block';
 		document.getElementById('weather_weekly_evaporation_p').style.display = 'block';
 		document.getElementById('weather_weekly_pluviometry_p').style.display = 'block';
 		
@@ -216,7 +219,7 @@ function update_accordion_parameters() {
 		document.getElementById('soil_type_p').style.display = 'none';
 		document.getElementById('soil_irriation_type_outer_div').style.display = 'none';
 		document.getElementById('soil_temperature_outer_div').style.display = 'none';
-		document.getElementById('plant_crop_p').style.display = 'none';
+		document.getElementById('plant_type_p').style.display = 'none';
 		document.getElementById('plant_planting_date_p').style.display = 'none';
 		document.getElementById('weather_region_p').style.display = 'none';
 	}
@@ -319,14 +322,14 @@ function update_accordion_parameters() {
 	current_plant_category.value = plant_category;
 	/* *** */
 
-	/* show current plant/crop (select)*/
-	let current_plant_crop = document.getElementById('plant_crop');
-	current_plant_crop.value = plant_crop;
+	/* show current plant type (select)*/
+	let current_plant_type = document.getElementById('plant_type');
+	current_plant_type.value = plant_type;
 	/* *** */
 
-	/* show current plant sub type (select)*/
-	let current_plant_sub_type = document.getElementById('plant_sub_type');
-	current_plant_sub_type.value = plant_sub_type;
+	/* show current plant variety (select)*/
+	let current_plant_variety = document.getElementById('plant_variety');
+	current_plant_variety.value = plant_variety;
 
 	/* *** */
 	/* show current planting date (date input)*/
@@ -405,8 +408,8 @@ async function make_AddConfiguration_HttpPOSTRequest(){
 	var posted_soil_temperature_device_id = document.getElementsByName('soil_temperature_device_id')[0].value;
 	var posted_soil_temperature_sensor_id = document.getElementsByName('soil_temperature_sensor_id')[0].value;
 	var posted_plant_category = document.getElementsByName('plant_category')[0].value;
-	var posted_plant_crop = document.getElementsByName('plant_crop')[0].value;
-	var posted_plant_sub_type = document.getElementsByName('plant_sub_type')[0].value;
+	var posted_plant_type = document.getElementsByName('plant_type')[0].value;
+	var posted_plant_variety = document.getElementsByName('plant_variety')[0].value;
 	var posted_plant_planting_date = document.getElementsByName('plant_planting_date')[0].value;
 	var posted_weather_region = document.getElementsByName('weather_region')[0].value;
 	var posted_weather_weekly_evaporation = document.getElementsByName('weather_weekly_evaporation')[0].value;
@@ -426,8 +429,8 @@ async function make_AddConfiguration_HttpPOSTRequest(){
 		"soil_temperature_device_id" : posted_soil_temperature_device_id,
 		"soil_temperature_sensor_id" : posted_soil_temperature_sensor_id,
 		"plant_category" : posted_plant_category,
-		"plant_crop" : posted_plant_crop,
-		"plant_sub_type" : posted_plant_sub_type,
+		"plant_type" : posted_plant_type,
+		"plant_variety" : posted_plant_variety,
 		"plant_planting_date" : posted_plant_planting_date,
 		"weather_region" : posted_weather_region,
 		"weather_weekly_evaporation" : posted_weather_weekly_evaporation,
@@ -554,15 +557,22 @@ function plant_category_updated() {
 }
 /* *** */
 
-/* handle plant_crop select change */
-function plant_crop_updated() {
-    plant_crop = document.getElementsByName('plant_crop')[0].value;
+/* handle plant_type select change */
+function plant_type_updated() {
+    plant_type = document.getElementsByName('plant_type')[0].value;
+    
+    if (plant_type=='tomatoes' || plant_type=='potatoes' || plant_type=='watermelon' || plant_type=='artichoke')
+    	{plant_category = 'vegetable';}
+    if (plant_type=='maize' || plant_type=='wheat')
+    	{plant_category = 'cereal';}
+    if (plant_type=='citrus' || plant_type=='apple')
+    	{plant_category = 'fruit_tree';}
 }
 /* *** */
 
-/* handle plant_sub_type select change */
-function plant_sub_type_updated() {
-    plant_sub_type = document.getElementsByName('plant_sub_type')[0].value;
+/* handle plant_variety select change */
+function plant_variety_updated() {
+    plant_variety = document.getElementsByName('plant_variety')[0].value;
 }
 /* *** */
 

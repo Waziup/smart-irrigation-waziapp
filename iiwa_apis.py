@@ -222,8 +222,8 @@ def update_sensor_configuration(deviceID,sensorID ):
 			soil_temperature_device_id = request.json['soil_temperature_device_id']
 			soil_temperature_sensor_id = request.json['soil_temperature_sensor_id']
 			plant_category = request.json['plant_category']
-			plant_crop = request.json['plant_crop']
-			plant_sub_type = request.json['plant_sub_type']
+			plant_type = request.json['plant_type']
+			plant_variety = request.json['plant_variety']
 			plant_planting_date = request.json['plant_planting_date']
 			weather_region = request.json['weather_region']
 			weather_weekly_evaporation = request.json['weather_weekly_evaporation']
@@ -257,10 +257,10 @@ def update_sensor_configuration(deviceID,sensorID ):
 			soil_temperature_sensor_id = "undefined"
 		if (plant_category == "hide"):
 			plant_category = "undefined"
-		if (plant_crop == "hide"):
-			plant_crop = "undefined"
-		if (plant_sub_type == "hide"):
-			plant_sub_type = "undefined"
+		if (plant_type == "hide"):
+			plant_type = "undefined"
+		if (plant_variety == "hide"):
+			plant_variety = "undefined"
 		if (plant_planting_date == ""):
 			plant_planting_date = "undefined"
 		if (weather_region == "hide"):
@@ -307,8 +307,8 @@ def update_sensor_configuration(deviceID,sensorID ):
 		print("Soil temperature source WaziGate DeviceID : %s" %soil_temperature_device_id)
 		print("Soil temperature source WaziGate SensorID : %s" %soil_temperature_sensor_id)
 		print("Plant Category : %s" % plant_category)
-		print("Plant : %s" % plant_crop)
-		print("Plant Sub-Type : %s" % plant_sub_type)
+		print("Plant Type: %s" % plant_type)
+		print("Plant Variety : %s" % plant_variety)
 		print("Planting Date : %s" % plant_planting_date)
 		print("Weather Region : %s" % weather_region)
 		print("Weather weekly evaporation (in mm) : %s" % weather_weekly_evaporation)
@@ -330,8 +330,8 @@ def update_sensor_configuration(deviceID,sensorID ):
 				"soil_bulk_density": soil_bulk_density,
 				"soil_field_capacity" : soil_field_capacity,
 				"plant_category" : plant_category,
-				"plant_crop": plant_crop,
-				"plant_sub_type": plant_sub_type,
+				"plant_type": plant_type,
+				"plant_variety": plant_variety,
 				"plant_planting_date": plant_planting_date,
 				"weather_region" : weather_region,
 				"weather_weekly_evaporation" : weather_weekly_evaporation,

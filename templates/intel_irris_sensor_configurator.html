@@ -46,15 +46,15 @@
       
     <div style="padding-left:16px; padding-top:16px">
         <h1>IIWA Sensor Configurator</h1>
-        <p> Update the sensor configuration for the selected IIWA Device</p>
+        <!--<p> Update the sensor configuration for the selected IIWA Device</p> -->
         {% if deviceName == 'not_iiwa_device' %}
             <p>Not a WaziGate or IIWA device!</p>
         {% else %}
             <p>Device Name : {{ deviceName }}</p>
 
-            <h2>Update parameters</h2>
-            <p>Toggle between viewing basic and advanced parameters</p>
-            <p>Current : <span id="view_mode">basic</span> parameters</p>
+            <!--<h2>Update parameters</h2> -->
+            <p>Toggle between basic/advanced parameters</p>
+            <p>[<span id="view_mode">basic</span>] mode</p>
             <div>
                 <div class="toggle-container">
                     <label class="toggle-switch">
@@ -99,10 +99,11 @@
                                     <p id="sensor_max_value_p">Maximum sensor value
                                         <input id="sensor_max_value" class="sensor_max_value" name="sensor_max_value" type="text"
                                             placeholder=" max sensor value " onchange="sensor_max_value_updated()">
+                                    </p>        
                                     <p id="sensor_min_value_p">Minimum sensor value
                                         <input id="sensor_min_value" class="sensor_min_value" name="sensor_min_value" type="text"
                                             placeholder=" min sensor value " onchange="sensor_min_value_updated()">
-                                    
+                                    </p>        
                                 </div>
                             </div>
                         </div>
@@ -115,13 +116,17 @@
                                         <select name="soil_type" id="soil_type" class="input" onchange="soil_type_updated()">
                                             <option value="undefined"> Undefined</option>
                                             <option value="clay"> Clay</option>
-                                            <option value="sandy"> Sandy</option>
                                             <option value="silty"> Silty</option>
+                                            <option value="loamy"> Loamy</option>                                            
+                                            <option value="sandy"> Sandy</option>                                            
                                         </select>
                                     </p>
                                     <div class="soil_irrigation_type" id="soil_irriation_type_outer_div">
                                         <p> Soil Irrigation Type
                                             <ul style="list-style-type:none;" id="soil_irrigation_type_ul">
+                                                <li><input type="radio" id="submersion" name="soil_irrigation_type" value="submersion">
+                                                    <label for="submersion">Submersion</label>
+                                                </li>                                            
                                                 <li><input type="radio" id="furrow" name="soil_irrigation_type" value="furrow" required>
                                                     <label for="furrow">Furrow</label>
                                                 </li>
@@ -131,6 +136,9 @@
                                                 <li><input type="radio" id="drip" name="soil_irrigation_type" value="drip">
                                                     <label for="drip">Drip</label>
                                                 </li>
+                                                <li><input type="radio" id="subirrigation" name="soil_irrigation_type" value="subirrigation">
+                                                    <label for="subirrigation">Subirrigation</label>
+                                                </li>                                                
                                             </ul>
                                         </p>
                                     </div>
@@ -180,6 +188,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                      </div>  
                                 </div>
                             </div>
                         </div>
@@ -193,32 +202,34 @@
                                             <option value="undefined">Undefined</option>
                                             <option value="vegetable">Vegetable</option>
                                             <option value="cereal">Cereal</option>
-                                            <option value="tree">Tree</option>
+                                            <option value="fruit_tree">Fruit Tree</option>
                                         </select>
                                     </p>
-                                    <p id="plant_crop_p"> Plant/Crop
-                                        <select name="plant_crop" id="plant_crop" class="plant_crop" onchange="plant_crop_updated()">
+                                    <p id="plant_type_p"> Plant type
+                                        <select name="plant_type" id="plant_type" class="plant_type" onchange="plant_type_updated()">
                                             <option value="undefined"> Undefined</option>
-                                            <option value="cassava"> Cassava</option>
-                                            <option value="maize"> Maize</option>
-                                            <option value="plantains"> Plantains</option>
+                                            <option value="tomatoes"> Tomatoes</option>                                            
                                             <option value="potatoes"> Potatoes</option>
-                                            <option value="rice"> Rice</option>
-                                            <option value="sorghum"> Sorghum</option>
-                                            <option value="soybeans"> Soybeans</option>
-                                            <option value="sweet_potatoes,"> Sweet Potatoes</option>
+                                            <option value="watermelon"> Watermelon</option>
+                                            <option value="artichoke"> Artichoke</option>                                                                                        
+                                            <option value="maize"> Maize</option>                                                                                       
                                             <option value="wheat"> Wheat</option>
-                                            <option value="yam"> Yam</option>
+                                            <option value="citrus"> Citrus</option>    
+                                            <option value="apple"> Apple</option>                                                                                      
                                         </select>
                                     </p>
-                                    <p id="plant_sub_type_p"> Plant Sub-Type
-                                        <select name="plant_sub_type" id="plant_sub_type" class="input" onchange="plant_sub_type_updated()">
+                                    <p id="plant_variety_p"> Plant Variety
+                                        <input id="plant_variety" class="plant_variety" name="plant_variety"
+                                            type="text" placeholder=" enter variery info " onchange="plant_variety_updated()">                                    
+                                    <!--
+                                        <select name="plant_variety" id="plant_variety" class="input" onchange="plant_variety_updated()">
                                             <option value="undefined">Undefined</option>
                                             <option value="sub_type_A">Sub-Type A</option>
                                             <option value="sub_type_B">Sub-Type B</option>
                                             <option value="sub_type_C">Sub-Type C</option>
                                             <option value="sub_type_D">Sub-Type D</option>
                                         </select>
+                                     -->   
                                     </p>
                                     <p id="plant_planting_date_p">
                                         <label for="plant_planting_date">Planting Date</label>
@@ -241,11 +252,11 @@
                                             <option value="dry"> Dry</option>
                                         </select>
                                     </p>
-                                    <p id="weather_weekly_evaporation_p">Weekly evaporation(in mm)
+                                    <p id="weather_weekly_evaporation_p">Weekly evaporation (in mm)
                                         <input id="weather_weekly_evaporation" class="weather_values" name="weather_weekly_evaporation"
                                             type="text" placeholder=" value in mm " onchange="weather_weekly_evaporation_updated()">
                                     </p>
-                                    <p id="weather_weekly_pluviometry_p">Weekly pluviometry(in mm)
+                                    <p id="weather_weekly_pluviometry_p">Weekly pluviometry (in mm)
                                         <input id="weather_weekly_pluviometry" class="weather_values" name="weather_weekly_pluviometry"
                                             type="text" placeholder=" value in mm " onchange="weather_weekly_pluviometry_updated()">
                                     </p>
