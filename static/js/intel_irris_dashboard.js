@@ -124,7 +124,7 @@ function generate_dashboard_cards(){
 
             // generate link for sensor configurator page
             html_sensorConfigurator_link = `
-                <a href="intel_irris_sensor_configurator?deviceID=${iiwa_devices_data[x]['device_id']}&sensorID=temperatureSensor_0"><img src="./static/images/sensor_configurator.png" alt="Configure this sensor"></a>
+                <a href="intel_irris_sensor_configurator?deviceID=${iiwa_devices_data[x]['device_id']}&sensorID=${iiwa_devices_data[x]['sensor_id']}"><img src="./static/images/sensor_configurator.png" alt="Configure this sensor"></a>
             `;
 
             // append new card items to card ul
