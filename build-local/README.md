@@ -12,8 +12,8 @@ Therefore, for a capacitive sensor, the following mapping is currently implement
 
 - 0-83 -> water index 0: very dry
 - 84-166 -> water index 1: dry
-- 167-249 -> water index 2: dry-wet
-- 250-333 -> water index 3: wet-dry
+- 167-249 -> water index 2: dry
+- 250-333 -> water index 3: wet
 - 334-416 -> water index 4: wet
 - above 416 -> water index 5: saturated
 
@@ -21,14 +21,16 @@ For a tensiometer sensor, IIWA currently implements the basic Irrometer [irrigat
 
 - 0-10 Centibars = Saturated soil -> water index 5: saturated
 - 10-30 Centibars = Soil is adequately wet -> water index 4: wet
-- 30-60 Centibars = Usual range for irrigation (most soils) -> water index 2: dry-wet
+- 30-60 Centibars = Usual range for irrigation (most soils) -> water index 2: dry
 - 60-100 Centibars = Usual range for irrigation in heavy clay -> water index 1: dry
 - 100-200 Centibars = Soil is becoming dangerously dry -> water index 0: very dry
 
-You can have all these information summurized in the starter-kit [soil humidity indication flyer](https://intel-irris.eu/wp-content/uploads/2022/12/Intel-Irris-soil-humidity-indication-fr.pdf). More parameters and more intelligence will be added in IIWA during the project.
+You can have all these information summurized in the starter-kit [soil humidity indication flyer](https://intel-irris.eu/wp-content/uploads/2023/02/Intel-Irris-soil-humidity-indication-fr.pdf). More parameters and more intelligence will be added in IIWA during the project.
 
 Installation on your host computer
 ---
+
+**The installation on your host computer is only for the development phase of the IIWA application, without the whole INTEL-IRRIS WaziGate framework which normally runs on a RaspberryPi. Therefore, only the mongodb database and the WaziEdge REST API will be available to IIWA for creating/modifying device data.**
 
 There are installation instructions for MacOS (that should also work for Linux) and Windows computers. All instructions are duplicated and Windows users can jump directly to the Windows section.
 
@@ -97,15 +99,15 @@ Then open http://127.0.0.1:5050/ on your host computer's web browser.
 Adding default test devices to WaziEdge and configuring IIWA's configuration files
 ---
 
-Before running the scripts below, ensure that WaziEdge and MongoDB servers are running. We can automatically add the starter-kit default test devices. In a terminal window:
+Before running the scripts below, ensure that WaziEdge and MongoDB servers are running. Then you have to add the starter-kit default test devices. In a terminal window:
 
 	> cd intel-irris-waziapp-local
 	> cd build-local/scripts
 	> ./intel-irris-auto-config.sh
 	
-This will create the INTEL-IRRIS starter-kit default configuration which consist in a capacitive device (SOIL-AREA-1) and a tensiometer device (SOIL-AREA-2). These 2 devices are automatically added into the IIWA's configuration files. See [description of INTEL-IRRIS starter-kit default configuration](https://github.com/CongducPham/PRIMA-Intel-IrriS) for more detail.
+This will create the INTEL-IRRIS starter-kit default configuration which consist in a capacitive device (SOIL-AREA-1) and a tensiometer device (SOIL-AREA-2). These 2 devices are automatically added into the IIWA's configuration files. See [description of INTEL-IRRIS starter-kit default configuration](https://github.com/CongducPham/PRIMA-Intel-IrriS#default-configuration-for-the-gateway) for more detail although .
 
-**Note that, currently, IIWA only takes into account sensor data from `temperatureSensor_0` logical sensor which is the `Raw value from SEN0308` for a capacitive and the `centibars from WM200` for a tensiometer.**
+**Note that it is mandatory to run this `intel-irris-auto-config.sh` script**
 
 You can then refresh http://127.0.0.1:5050/ to see that the 2 devices have been added to IIWA. Then you can quickly push in real-time some sensor data to the default starter-kit devices as follows, in another terminal window:
 
@@ -114,8 +116,6 @@ You can then refresh http://127.0.0.1:5050/ to see that the 2 devices have been 
 	> ./push_starterkit_test_values.sh 170 15
 	
 170 is for the capacitive device (SOIL-AREA-1) and 15 is for the tensiometer device (SOIL-AREA-2). 
-
-**Note that for the moment, the IIWA's dashboard only display information for the active device which is by default the first capacitive device.**
 
 Then, it is now possible to change and modify IIWA's source code in real-time during development phase on your host computer.
 
@@ -126,7 +126,7 @@ After testing:
 Adding more devices
 ---
 
-You can add more devices for your tests. To add a new capacitive device named `SOIL-AREA-3` with device's address `26011DAB`:
+You can dynamically add more devices for your tests. To add a new capacitive device named `SOIL-AREA-3` with device's address `26011DAB`:
 
 	> cd intel-irris-waziapp-local
 	> cd build-local/scripts
@@ -156,6 +156,15 @@ You can alternatively use the more generic script `push_sensor_test_value.sh`:
 	> ./push_sensor_test_value.sh 63bfeddd6e45da24473eca72 temperatureSensor_0 15
 	
 assuming your capacitive device id is `63bfeddd6e45da24473eca6e` and your tensiometer device id is `63bfeddd6e45da24473eca72`.
+
+Resetting configuration
+---
+
+At any time, you can run again the starter-kit configuration script that will delete all devices and create a new initial configuration.
+
+	> cd intel-irris-waziapp-local
+	> cd build-local/scripts
+	> ./intel-irris-auto-config.sh 
 
 Windows instructions
 ====
@@ -210,7 +219,7 @@ Then open http://127.0.0.1:5000/ on your host computer's web browser.
 Adding default test devices to WaziEdge and configuring IIWA's configuration files
 ---
 
-Before running the scripts below, ensure that Wazi-Edge and MongoDB servers are running. We can automatically add the starter-kit default test devices. In a command line window:
+Before running the scripts below, ensure that Wazi-Edge and MongoDB servers are running. Then you have to add the starter-kit default test devices. In a terminal window:
 
 	> cd intel-irris-waziapp-local
 	> cd build-local\scripts
@@ -218,7 +227,7 @@ Before running the scripts below, ensure that Wazi-Edge and MongoDB servers are 
 
 This will create the INTEL-IRRIS starter-kit default configuration which consist in a capacitive device (SOIL-AREA-1) and a tensiometer device (SOIL-AREA-2). These 2 devices are automatically added into the IIWA's configuration files. See [description of INTEL-IRRIS starter-kit default configuration](https://github.com/CongducPham/PRIMA-Intel-IrriS) for more detail.
 
-**Note that, currently, IIWA only takes into account sensor data from `temperatureSensor_0` logical sensor which is the `Raw value from SEN0308` for a capacitive and the `centibars from WM200` for a tensiometer.**
+**Note that it is mandatory to run this `intel-irris-auto-config.sh` script**
 
 You can then refresh http://127.0.0.1:5000/ to see that the 2 devices have been added to IIWA. Then you can quickly push in real-time some sensor data to the default starter-kit devices as follows, in another terminal window:
 
@@ -227,8 +236,6 @@ You can then refresh http://127.0.0.1:5000/ to see that the 2 devices have been 
 	> .\push_starterkit_test_values.sh 170 15
 
 170 is for the capacitive device (SOIL-AREA-1) and 15 is for the tensiometer device (SOIL-AREA-2).
-
-**Note that for the moment, the IIWA's dashboard only display information for the active device which is by default the first capacitive device.**
 
 Then, it is now possible to change and modify IIWA's source code in real-time during development phase on your host computer.
 
@@ -239,7 +246,7 @@ After testing:
 Adding more devices
 ---
 
-You can add more devices for your tests. To add a new capacitive device named `SOIL-AREA-3` with device's address `26011DAB`:
+You can dynamically add more devices for your tests. To add a new capacitive device named `SOIL-AREA-3` with device's address `26011DAB`:
 
 	> cd intel-irris-waziapp-local
 	> cd build-local\scripts
@@ -270,7 +277,15 @@ You can alternatively use the more generic script `push_sensor_test_value.sh`:
 	
 assuming your capacitive device id is `63bfeddd6e45da24473eca6e` and your tensiometer device id is `63bfeddd6e45da24473eca72`.
 
+Resetting configuration
+---
 
+At any time, you can run again the starter-kit configuration script that will delete all devices and create a new initial configuration.
+
+	> cd intel-irris-waziapp-local
+	> cd build-local/scripts
+	> .\intel-irris-auto-config.sh
+	
 Enjoy!
 C. Pham and S. Githu
 
