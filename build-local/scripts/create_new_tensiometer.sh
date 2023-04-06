@@ -7,7 +7,6 @@ echo "--> calling create_full_tensiometer_device_with_dev_addr.sh $1 $2" >> ./in
 
 DEVICE=`cat ./LAST_CREATED_DEVICE.txt`
 echo "--> created device is $DEVICE" >> ./intel-irris-auto-config.log
-
 #add the temperature sensor
 echo "--> calling create_only_temperature_sensor.sh $DEVICE" >> ./intel-irris-auto-config.log
 ./create_only_temperature_sensor.sh $DEVICE

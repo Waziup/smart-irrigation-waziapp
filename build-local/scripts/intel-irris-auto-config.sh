@@ -12,10 +12,12 @@ fi
 #create capacitive SOIL-AREA-1 and device with address 26011DAA
 echo "--> calling create_full_capacitive_device.sh" >> ./intel-irris-auto-config.log
 ./create_full_capacitive_device_with_dev_addr.sh 1 AA
-
-#add the voltage monitor sensor
 DEVICE=`cat ./LAST_CREATED_DEVICE.txt`
 echo "--> created device is $DEVICE" >> ./intel-irris-auto-config.log
+#add the temperature sensor
+echo "--> calling create_only_temperature_sensor.sh $DEVICE" >> ./intel-irris-auto-config.log
+./create_only_temperature_sensor.sh $DEVICE
+#add the voltage monitor sensor
 echo "--> calling create_only_voltage_monitor_sensor.sh $DEVICE" >> ./intel-irris-auto-config.log 
 ./create_only_voltage_monitor_sensor.sh $DEVICE
 
@@ -32,10 +34,8 @@ echo "--> set default configuration for $DEVICE in IIWA" >> ./intel-irris-auto-c
 #create tensiometer SOIL-AREA-2 and device with address 26011DB2
 echo "--> calling create_full_tensiometer_device_with_dev_addr.sh 2 B1" >> ./intel-irris-auto-config.log
 ./create_full_tensiometer_device_with_dev_addr.sh 2 B1
-
 DEVICE=`cat ./LAST_CREATED_DEVICE.txt`
 echo "--> created device is $DEVICE" >> ./intel-irris-auto-config.log
-
 #add the temperature sensor
 echo "--> calling create_only_temperature_sensor.sh $DEVICE" >> ./intel-irris-auto-config.log
 ./create_only_temperature_sensor.sh $DEVICE
