@@ -334,6 +334,9 @@ def get_capacitive_sensor_dry_max(sensor_config):
 	if sensor_config["value"]["soil_type"] == "loamy":
 		return loamy_capacitive_sensor_dry_max
 
+	if sensor_config["value"]["sensor_max_value"] != "" and sensor_config["value"]["sensor_max_value"] != "undefined":
+		return int(sensor_config["value"]["sensor_max_value"])
+		
 	return default_capacitive_sensor_dry_max
 
 # TODO use BASE_URL
