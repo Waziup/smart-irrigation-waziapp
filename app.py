@@ -213,7 +213,8 @@ def monitor_all_configured_sensors():
 		"sensor_id" : sensorID,
 		"sensor_type" : sensor_type,
 		"value_index" : value_index,
-		"soil_condition" : soil_condition
+		"soil_condition" : soil_condition,
+		"sensor_value" : sensor_value
 	}
 	"""
 	iiwa_devices_data = []
@@ -222,6 +223,7 @@ def monitor_all_configured_sensors():
 	soil_type = 'undefined'
 	value_index = 'undefined'
 	soil_condition = ''
+	sensor_value = ''
 
 	number_of_iiwa_configurations = 0
 	
@@ -260,6 +262,7 @@ def monitor_all_configured_sensors():
 
 					sensor_type = read_iiwa_configurations['sensors'][x]['value']['sensor_type']
 					soil_type = read_iiwa_configurations['sensors'][x]['value']['soil_type']
+					sensor_value = str(last_PostedSensorValue)
 
 					if sensor_type == 'capacitive':
 						capacitive_soil_index_and_condition = get_capacitive_soil_condition(
@@ -279,7 +282,8 @@ def monitor_all_configured_sensors():
 						"sensor_id" : sensorID,
 						"sensor_type" : sensor_type,
 						"value_index" : value_index,
-						"soil_condition" : soil_condition
+						"soil_condition" : soil_condition,
+						"sensor_value" : sensor_value					
 					})
 				
 				# reset variables
@@ -287,6 +291,7 @@ def monitor_all_configured_sensors():
 				soil_type = 'undefined'
 				value_index = 'undefined'
 				soil_condition = ''
+				sensor_value = ''
 
 			return iiwa_devices_data
 

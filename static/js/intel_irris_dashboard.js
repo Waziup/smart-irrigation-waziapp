@@ -10,6 +10,7 @@ var iiwa_devices_valueIndex = '';
 var html_valueIndex = '';
 var html_valueIndex_isSet = false;
 var html_sensorGraph_link = '';
+var html_sensorType_image = '';
 var html_sensorConfigurator_link = '';
 
 const iiwa_headers = {
@@ -57,7 +58,7 @@ function generate_dashboard_cards(){
                 html_soilCondition = `
                     <p class="dashboard_card_text">Found no sensor!</p>
                 `;
-
+								
                 html_valueIndex = `
                     <img src="./static/images/no_sensor.svg" alt="No sensor">
                 `;
@@ -67,7 +68,7 @@ function generate_dashboard_cards(){
                 html_soilCondition = `
                     <p class="dashboard_card_text">Please configure!</p>
                 `;
-
+                
                 html_valueIndex = `
                     <img src="./static/images/unconfigured_device.svg" alt="Unconfigured">
                 `;
@@ -75,15 +76,25 @@ function generate_dashboard_cards(){
             }
             if (iiwa_devices_data_soilCondition != 'no sensor' && iiwa_devices_data_soilCondition != 'Unconfigured'){
                 html_soilCondition = `
-                    <p class="dashboard_card_text">Soil condition : <span id="dashboard_card_text_sensor_value">${iiwa_devices_data[x]['soil_condition']}</span></p>
-                `;
+										<table>
+											<tr>
+												<td class="dashboard_card_text">Soil condition : <span id="dashboard_card_text_sensor_value">${iiwa_devices_data[x]['soil_condition']}</span></td>
+											</tr>		
+											<tr>																					
+												<td class="dashboard_card_text">${iiwa_devices_data[x]['sensor_type']}</td>
+											</tr>			
+											<tr>																				
+												<td class="dashboard_card_text">Value : <span id="dashboard_card_text_sensor_value">${iiwa_devices_data[x]['sensor_value']}</span></td>								
+											</tr>
+										</table>                                        
+                `;              
             }
             /* *** */
 
             /* create html content for value index svg icons */
             if (iiwa_devices_valueIndex != 'undefined' && !html_valueIndex_isSet){
                 // we adopt the following rule: 
-                // 0:very dry; 1:dry; 2:dry-wet 3-wet-dry; 4-wet; 5-very wet/saturated
+                // 0:very dry; 1:dry; 2:dry; 3:wet; 4:wet; 5:saturated
 
                 if (iiwa_devices_valueIndex <= 0){
                     html_valueIndex = `
@@ -122,6 +133,18 @@ function generate_dashboard_cards(){
                 <a href="http://wazigate.local/#/devices/${iiwa_devices_data[x]['device_id']}/sensors/${iiwa_devices_data[x]['sensor_id']}" target="_blank"><img src="./static/images/graph.svg" alt="View sensor graph"></a>
             `;
 
+            // generate sensor type image
+            if (iiwa_devices_data[x]['sensor_type']=='capacitive') {
+            	html_sensorType_image = `
+                	<img src="./static/images/capacitive.png" alt="capacitive">
+            	`;
+            }
+            else if (iiwa_devices_data[x]['sensor_type']=='tensiometer_cbar') {	
+            	html_sensorType_image = `
+                	<img src="./static/images/tensiometer.png" alt="tensiometer">
+            	`;
+            }
+                        
             // generate link for sensor configurator page
             html_sensorConfigurator_link = `
                 <a href="intel_irris_sensor_configurator?deviceID=${iiwa_devices_data[x]['device_id']}&sensorID=${iiwa_devices_data[x]['sensor_id']}"><img src="./static/images/sensor_configurator.png" alt="Configure this sensor"></a>
@@ -138,10 +161,11 @@ function generate_dashboard_cards(){
                                 <div class="dashboard_card_sensor_value">
                                     ${html_soilCondition}
                                     ${html_valueIndex}
-                                </div>
+                                </div>                                                             
                                 <p></p>
                                 <div class="dashboard_card_footer_graph">
                                     ${html_sensorGraph_link}
+                                    ${html_sensorType_image}
                                 </div>
                                 <div class="dashboard_card_footer_sensor_configurator">
                                     ${html_sensorConfigurator_link}
@@ -159,6 +183,7 @@ function generate_dashboard_cards(){
             html_valueIndex = '';
             html_valueIndex_isSet = false;
             html_sensorGraph_link = '';
+            html_sensorType_image = '';
         }    
     }
 }
