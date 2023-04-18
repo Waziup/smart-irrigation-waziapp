@@ -111,6 +111,7 @@ def iiwa_remove_device(deviceID):
 			if (iiwa_sensors_configurations[x]['device_id'] == remove_device_id):
 				pop_indices.append(x)
 
+		pop_indices=pop_indices[::-1]
 		for b in range(0, len(pop_indices)):
 			iiwa_sensors_configurations.pop(pop_indices[b])
 
