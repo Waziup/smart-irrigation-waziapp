@@ -714,11 +714,9 @@ def iiwa_remove_device_function(deviceID):
 		
 		if (not requested_removal_exists):
 			print("IIWA remove device : submitted DeviceID does not exist in IIWA!")
-			return jsonify({"code" : 409,
-				"message" :  "IIWA remove device : submitted DeviceID does not exist in IIWA!"})
 
-	# ** lastly remove device id from sensors configurations **
-	if (requested_removal_exists and (not removed_from_sensorconfig_filename)):
+	# ** lastly remove all sensors with device id from sensors configurations **
+	if (not removed_from_sensorconfig_filename):
 
 		with open(iiwa_sensors_config_filename, "r") as file:
 			iiwa_sensors_config_data = json.load(file)
@@ -738,6 +736,7 @@ def iiwa_remove_device_function(deviceID):
 			if (iiwa_sensors_configurations[x]['device_id'] == remove_device_id):
 				pop_indices.append(x)
 
+		pop_indices=pop_indices[::-1]
 		for b in range(0, len(pop_indices)):
 			iiwa_sensors_configurations.pop(pop_indices[b])
 
@@ -761,7 +760,7 @@ def iiwa_remove_device_function(deviceID):
 		jsFile.close()
 
 		return jsonify({"code" : 200,
-				"message" :  "IIWA remove device : successfully removed the device and it's sensor(s) configuration(s)!"})
+				"message" :  "IIWA remove device : successfully removed the device and/or its sensor(s) configuration(s)!"})
 # ---------------------#
 
 # --------------------------------------------------------------------------
