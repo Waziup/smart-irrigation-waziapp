@@ -249,7 +249,7 @@ def update_sensor_configuration(deviceID,sensorID ):
 		if (soil_type == "hide"):
 			soil_type = "undefined"
 		if (soil_irrigation_type == "None"):
-			soil_irrigation_type = "undefined"
+			soil_irrigation_type = "furrow"
 		if (soil_temperature_value == ""):
 			soil_temperature_value = "undefined"
 		if (soil_temperature_sensor_id == ""):
