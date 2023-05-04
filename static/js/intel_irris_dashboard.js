@@ -129,8 +129,9 @@ function generate_dashboard_cards(){
             }
 
             // generate Wazigate Dashboard link for sensor graph
+            var true_host = window.location.host.split(':')[0];
             html_sensorGraph_link = `
-                <a href="http://wazigate.local/#/devices/${iiwa_devices_data[x]['device_id']}/sensors/${iiwa_devices_data[x]['sensor_id']}" target="_blank"><img src="./static/images/graph.svg" alt="View sensor graph"></a>
+                <a href="http://${true_host}/#/devices/${iiwa_devices_data[x]['device_id']}/sensors/${iiwa_devices_data[x]['sensor_id']}" target="_blank"><img src="./static/images/graph.svg" alt="View sensor graph"></a>
             `;
 
             // generate sensor type image
