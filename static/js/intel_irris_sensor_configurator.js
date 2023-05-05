@@ -86,9 +86,9 @@ function get_DeviceSensorID_configuration() {
 				sensor_min_value = sensors_configurations_response_asJSON['sensors'][x]['value']['sensor_min_value'];
 				soil_type = sensors_configurations_response_asJSON['sensors'][x]['value']['soil_type'];
 				soil_irrigation_type = sensors_configurations_response_asJSON['sensors'][x]['value']['soil_irrigation_type'];
-				soil_salinity = sensors_configurations_response_asJSON['globals']['soil_salinity'];
-				soil_bulk_density = sensors_configurations_response_asJSON['globals']['soil_bulk_density'];
-				soil_field_capacity = sensors_configurations_response_asJSON['globals']['soil_field_capacity'];
+				soil_salinity = sensors_configurations_response_asJSON['sensors'][x]['value']['soil_salinity'];
+				soil_bulk_density = sensors_configurations_response_asJSON['sensors'][x]['value']['soil_bulk_density'];
+				soil_field_capacity = sensors_configurations_response_asJSON['sensors'][x]['value']['soil_field_capacity'];
 				soil_temperature_value = sensors_configurations_response_asJSON['sensors'][x]['soil_temperature_source']['soil_temperature_value'];
 				soil_temperature_device_id = sensors_configurations_response_asJSON['sensors'][x]['soil_temperature_source']['soil_temperature_device_id'];
 				soil_temperature_sensor_id = sensors_configurations_response_asJSON['sensors'][x]['soil_temperature_source']['soil_temperature_sensor_id'];
