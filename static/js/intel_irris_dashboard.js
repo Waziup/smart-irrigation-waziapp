@@ -40,6 +40,7 @@ async function get_iiwa_devices_data(){
 // this function generates the HTML content for each received device/sensor data
 function generate_dashboard_cards(){
     iiwa_devices_data_count = iiwa_devices_data.length;
+    var wazigate_current_host = window.location.host.split(':')[0];
     
     // only generate cards when at least one data is present
     if (iiwa_devices_data_count > 0 ){ 
@@ -130,7 +131,7 @@ function generate_dashboard_cards(){
 
             // generate Wazigate Dashboard link for sensor graph
             html_sensorGraph_link = `
-                <a href="http://wazigate.local/#/devices/${iiwa_devices_data[x]['device_id']}/sensors/${iiwa_devices_data[x]['sensor_id']}" target="_blank"><img src="./static/images/graph.svg" alt="View sensor graph"></a>
+                <a href="http://${wazigate_current_host}/#/devices/${iiwa_devices_data[x]['device_id']}/sensors/${iiwa_devices_data[x]['sensor_id']}" target="_blank"><img src="./static/images/graph.svg" alt="View sensor graph"></a>
             `;
 
             // generate sensor type image
