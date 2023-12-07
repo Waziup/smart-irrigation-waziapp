@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/menu_bar.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/intel_irris_language_setting.css') }}" />
+
+  <script type="text/javascript"
+    src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+
+  <script type="module"
+    src="{{ url_for('static', filename='js/intel_irris_language_setting.js') }}"></script>
+  
+  <title></title>
+</head>
+
+<body>
+  <div class="topnav" id="myTopnav">
+    <img src="{{ url_for('static', filename='images/intel_irris_logo.png') }}" height="40" style="vertical-align:middle;margin:4px 0px">
+    <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='images/dashboard.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"> <span id="menu_dashboard" ></span></a>
+    <a href="{{ url_for('intel_irris_device_manager') }}"><img src="{{ url_for('static', filename='images/device_manager.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"> <span id="menu_device_manager" ></span></a>
+    <a href="{{ url_for('intel_irris_language_setting') }}"><img src="{{ url_for('static', filename='images/language.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"> <span id="menu_language_setting" ></span></a>
+    <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
+    <hr color="#f4b548">
+  </div>
+  <script>
+    function myFunction() {
+      var x = document.getElementById("myTopnav");
+      if (x.className === "topnav") {
+        x.className += " responsive";
+      } else {
+        x.className = "topnav";
+      }
+    }
+  </script>
+  
+  <div style="padding-left:16px; padding-top:16px">
+    <h1><span id="h1"></span></h1>
+    <div class="set_language">
+        <p style="text-align: center;"><em><span id="please_select_a_language"></span></em></p>
+        <div class="language_NameSelect">
+          <form action="" method="post" id="submit_selected_language">
+            <select name="languageName_select" class="languageName_select" id="languageName_select" required>
+            </select>
+            <br><br>
+            <button type="submit" value="submit" class="save_button"><span id="save"></span></button>
+          </form>
+        </div>
+      </div>
+  </div>
+</body>
+
+</html>

@@ -1,3 +1,7 @@
+:root{
+  --responsive_text_align : left;
+}
+
 body {margin:0;font-family:Arial}
 
 .topnav {
@@ -7,13 +11,16 @@ body {margin:0;font-family:Arial}
 }
 
 .topnav a {
-  float: left;
+  float: var(--responsive_text_align);
   display: block;
   color: #000000;
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
   font-size: 17px;
+}
+.topnav.right-to-left a {
+  float: right; /* Change float to right for right-to-left alignment */
 }
 
 .active {
@@ -50,7 +57,7 @@ body {margin:0;font-family:Arial}
   .topnav.responsive a {
     float: none;
     display: block;
-    text-align: left;
+    text-align: var(--responsive_text_align);
   }
   .topnav.responsive {float: none;}
   .topnav.responsive {position: relative;}

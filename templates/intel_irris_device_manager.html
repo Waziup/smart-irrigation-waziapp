@@ -3,25 +3,26 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>IIWA Devices</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <link rel="stylesheet" href="{{ url_for('static', filename='css/menu_bar.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/intel_irris_device_manager.css') }}" />
-
+  
   <script type="text/javascript"
-    src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+  src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
 
-  <script type="text/javascript"
+  <script type="module"
     src="{{ url_for('static', filename='js/intel_irris_device_manager.js') }}"></script>
   
+  <title></title>
 </head>
 
 <body>
   <div class="topnav" id="myTopnav">
     <img src="{{ url_for('static', filename='images/intel_irris_logo.png') }}" height="40" style="vertical-align:middle;margin:4px 0px">
-    <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='images/dashboard.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"> Dashboard</a>
-    <a href="{{ url_for('intel_irris_device_manager') }}"><img src="{{ url_for('static', filename='images/device_manager.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"> Device Manager</a>
+    <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='images/dashboard.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"> <span id="menu_dashboard" ></span></a>
+    <a href="{{ url_for('intel_irris_device_manager') }}"><img src="{{ url_for('static', filename='images/device_manager.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"> <span id="menu_device_manager" ></span></a>
+    <a href="{{ url_for('intel_irris_language_setting') }}"><img src="{{ url_for('static', filename='images/language.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"> <span id="menu_language_setting" ></span></a>
     <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
     <hr color="#f4b548">
   </div>
@@ -37,17 +38,17 @@
   </script>
 
   <div style="padding-left:16px; padding-top:16px">
-    <h1>IIWA Device Manager</h1>
+    <h1><span id="h1"></span></h1>
     <br>
     <div class="table_container">
-      <p style="text-align:center"><em>WaziGate devices added to IIWA</em></p><br>
+      <p style="text-align:center"><em><span id="table_heading"></span></em></p><br>
       <div class="tbl-header">
         <table cellpadding="0" cellspacing="0" border="0">
           <thead>
             <tr>
-              <th>Device Id</th>
-              <th>Device Name</th>
-              <th>Sensors</th>
+              <th><span id="table_header_deviceID"></span></th>
+              <th><span id="table_header_deviceName"></span></th>
+              <th><span id="table_header_sensors"></span></th>
             </tr>
           </thead>
         </table>
@@ -67,12 +68,11 @@
       
     <br>
     <div class="add_device">
-      <p style="text-align:center"><em>Add a WaziGate device to IIWA</em></p>
+      <p style="text-align:center"><em><span id="add_a_device"></span></em></p>
       <div class="add_deviceContainer">
-        <form action="" method="post" class="iiwa_add_device" onsubmit="make_AddDevice_HttpPOSTRequest()">
+        <form action="" method="post" class="iiwa_add_device" id="iiwa_add_device">
           <div class="add_deviceContainer_nameSelect">
             <select name="device_name" class="new_deviceName_select" id="new_deviceName_select"
-              onchange="showID(event)"
               required>
             </select>
           </div>
@@ -82,26 +82,22 @@
           </div>
           <div class="add_deviceContainer_sensorStructureSelect">
             <select name="sensors_structure" class="sensors_structure" id="sensors_structure" required>
-              <option value=""> -- Sensor(s) Structure -- </option>
-              <option value="1_capacitive" id="1_capacitive">1 Capacitive</option>
-              <option value="1_watermark" id="1_watermark">1 Watermark</option>
-              <option value="2_watermark" id="2_watermark">2 Watermark</option>
             </select>
           </div>
-          <button type="submit" value="submit" class="button" id="iiwa_add_device_submit">Add</button>
+          <button type="submit" value="submit" class="button" id="iiwa_add_device_submit"><span id="add"></span></span></button>
         </form>
       </div>
     </div>
     <br>
     
     <div class="remove_device">
-      <p style="text-align: center;"><em>Remove a WaziGate device from IIWA</em></p>
+      <p style="text-align: center;"><em><span id="remove_a_device"></span></em></p>
       <div class="remove_device_deviceNameSelect">
-        <form action="" method="post" onsubmit="make_DeleteDevice_HttpDELETERequest()">
+        <form action="" method="post" id="iiwa_remove_device">
           <select name="remove_deviceName_select" class="remove_deviceName_select" id="remove_deviceName_select" required>
           </select>
           <br><br>
-          <button type="submit" value="submit" class="remove_button">Remove</button>
+          <button type="submit" value="submit" class="remove_button"><span id="remove"></span></button>
         </form>
       </div>
     </div>

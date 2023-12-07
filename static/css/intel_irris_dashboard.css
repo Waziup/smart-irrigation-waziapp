@@ -1,6 +1,16 @@
+:root{
+  --body_direction : ltr;
+  /* switch to rtl for right-to-left*/
+
+  /* these will be used to set the card footer images to reverse order*/
+  --card_footer_images_float_left: left;
+  --card_footer_images_float_right: right;
+}
+
 body {
   background-color: #ffffff;
   height: 100%;
+  direction: var(--body_direction);
 }
 
 h1 {
@@ -88,15 +98,27 @@ h1 {
 /* *** */
 
 /* Card footer section styling */
+.dashboard_card_footer{
+  display: flex;
+  justify-content: space-between;
+
+}
+.dashboard_card_footer_sensor_image {
+  float: var(--card_footer_images_float_left);
+}
+.dashboard_card_footer_sensor_image img {
+  height: 3rem;
+}
+
 .dashboard_card_footer_graph {
-  float: left;
+  float: var(--card_footer_images_float_left);
 }
 .dashboard_card_footer_graph img {
   height: 3rem;
 }
 
 .dashboard_card_footer_sensor_configurator {
-  float: right;
+  float: var(--card_footer_images_float_right);
 }
 .dashboard_card_footer_sensor_configurator img {
   height: 3rem;

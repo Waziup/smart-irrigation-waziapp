@@ -3,7 +3,6 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>IIWA Sensor Configurator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/intel_irris_sensor_configurator.css') }}" />
@@ -20,16 +19,18 @@
         var sensorID = '{{ sensorID}}';
     </script>
 
-    <script type="text/javascript"
+    <script type="module"
         src="{{ url_for('static', filename='js/intel_irris_sensor_configurator.js') }}"></script>
-
+    
+    <title></title>
 </head>
 
 <body>
     <div class="topnav" id="myTopnav">
         <img src="{{ url_for('static', filename='images/intel_irris_logo.png') }}" height="40" style="vertical-align:middle;margin:4px 0px">
-        <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='images/dashboard.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"> Dashboard</a>
-        <a href="{{ url_for('intel_irris_device_manager') }}"><img src="{{ url_for('static', filename='images/device_manager.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"> Device Manager</a>
+        <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='images/dashboard.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"> <span id="menu_dashboard" ></span></a>
+        <a href="{{ url_for('intel_irris_device_manager') }}"><img src="{{ url_for('static', filename='images/device_manager.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"> <span id="menu_device_manager" ></span></a>
+        <a href="{{ url_for('intel_irris_language_setting') }}"><img src="{{ url_for('static', filename='images/language.png') }}" height="40" style="vertical-align:middle;margin:-14px 0px"> <span id="menu_language_setting" ></span></a>
         <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
         <hr color="#f4b548">
     </div>
@@ -45,144 +46,138 @@
     </script>
       
     <div style="padding-left:16px; padding-top:16px">
-        <h1>IIWA Sensor Configurator</h1>
+        <h1><span id="h1"></span></h1>
         <!--<p> Update the sensor configuration for the selected IIWA Device</p> -->
         {% if deviceName == 'not_iiwa_device' %}
-            <p>Not a WaziGate or IIWA device!</p>
+            <p><span id="unknown_device"></span></p>
         {% else %}
-            <p>Device Name : {{ deviceName }}</p>
+            <div class="sensor_configuration_brief">
+                <p><span id="device_name"></span> : {{ deviceName }}</p>
 
-            <!--<h2>Update parameters</h2> -->
-            <p>Toggle between basic/advanced parameters</p>
-            <p>[<span id="view_mode">basic</span>] mode</p>
-            <div>
-                <div class="toggle-container">
-                    <label class="toggle-switch">
-                        <input type="checkbox" class="toggle-switch-input" id="toggleCheckbox" onclick="toggle_Basic_Advanced_view()"/>
-                        <span class="toggle-switch-label" data-on="Advanced" data-off="Basic"></span>
-                        <span class="toggle-handle"></span>
-                    </label>
+                <!--<h2>Update parameters</h2> -->
+                <p><span id="toggle_between"></span></p>
+                <p>[<span id="view_mode"><span id="basic"></span></span>] mode</p>
+                <div>
+                    <div class="toggle-container">
+                        <label class="toggle-switch">
+                            <input type="checkbox" style="opacity: 0;" class="toggle-switch-input" id="toggleCheckbox"/>
+                            <span class="toggle-switch-label" id="toggle-switch-label" ></span>
+                            <span class="toggle-handle"></span>
+                        </label>
+                    </div>
                 </div>
             </div>
             <br>
 
-            <form action="" method="post" onsubmit="make_AddConfiguration_HttpPOSTRequest()">
+            <form action="" method="post" id="sensor_configuration_form">
                 <div class="accordion-body">
                     <div class="accordion">
                             <!--<p>Sensor Type is the only mandatory parameter to be filled</p> -->
                             <hr>
                         <div class="container">
-                            <div class="accordion-title">Moisture sensor parameters</div>
+                            <div class="accordion-title"><span id="moisture_sensor_parameters"></span></div>
                             <div class="accordion-content">
                                 <div class="sensor_parameters">
                                     <br>
                                     <div class="sensor_type_outer_div" id="sensor_type_outer_div">
-                                        <p> Sensor Type
+                                        <p> <span id="sensor_type"></span>
                                             <ul style="list-style-type:none;" id="sensor_type_ul">
                                                 <li><input type="radio" id="capacitive" name="sensor_type" value="capacitive"
                                                         required>
-                                                    <label for="capacitive">Capacitive</label>
+                                                    <label for="capacitive"><span id="capacitive_labelspan"></span></label>
                                                 </li>
                                                 <li><input type="radio" id="tensiometer_cbar" name="sensor_type" value="tensiometer_cbar">
-                                                    <label for="tensiometer_cbar">Tensiometer (cbar)</label>
+                                                    <label for="tensiometer_cbar"><span id="tensiometer_cbar_labelspan"></span></label>
                                                 </li>
                                                 <li><input type="radio" id="tensiometer_raw" name="sensor_type" value="tensiometer_raw">
-                                                    <label for="tensiometer_raw">Tensiometer (raw)</label>
+                                                    <label for="tensiometer_raw"><span id="tensiometer_raw_labelspan"></span></label>
                                                 </li>                                    
                                             </ul>
                                         </p>
                                     </div>
-                                    <p id="sensor_age_p">Sensor age
+                                    <p id="sensor_age_p"><span id="sensor_age"></span>
                                         <input id="sensor_age" class="sensor_age" name="sensor_age" type="text"
-                                            placeholder=" months " onchange="sensor_age_updated()">
+                                            placeholder=" months ">
                                     </p>   
-                                    <p id="sensor_max_value_p">Maximum sensor value
-                                        <input id="sensor_max_value" class="sensor_max_value" name="sensor_max_value" type="text"
-                                            placeholder=" max sensor value " onchange="sensor_max_value_updated()">
+                                    <p id="sensor_max_value_p"><span id="maximum_sensor_value"></span>
+                                        <input id="sensor_max_value" class="sensor_max_value" name="sensor_max_value" type="text">
                                     </p>        
-                                    <p id="sensor_min_value_p">Minimum sensor value
-                                        <input id="sensor_min_value" class="sensor_min_value" name="sensor_min_value" type="text"
-                                            placeholder=" min sensor value " onchange="sensor_min_value_updated()">
+                                    <p id="sensor_min_value_p"><span id="minumum_sensor_value"></span>
+                                        <input id="sensor_min_value" class="sensor_min_value" name="sensor_min_value" type="text">
                                     </p>        
                                 </div>
                             </div>
                         </div>
                         <hr>
                         <div class="container">
-                            <div class="accordion-title">Soil parameters</div>
+                            <div class="accordion-title"><span id="soil_parameters"></span></div>
                             <div class="accordion-content">
                                 <div class="soil_parameters">
-                                    <p id="soil_type_p"> Soil Type
-                                        <select name="soil_type" id="soil_type" class="input" onchange="soil_type_updated()">
-                                            <option value="undefined"> Undefined</option>
-                                            <option value="clay"> Clay</option>
-                                            <option value="silty"> Silty</option>
-                                            <option value="loamy"> Loamy</option>                                            
-                                            <option value="sandy"> Sandy</option>                                            
+                                    <p id="soil_type_p"> <span id="soil_type_p_span"></span>
+                                        <select name="soil_type" id="soil_type" class="input">
+                                            <option value="undefined"> </option>
+                                            <option value="clay"></option>
+                                            <option value="silty"></option>
+                                            <option value="loamy"></option>                                            
+                                            <option value="sandy"></option>                                            
                                         </select>
                                     </p>
                                     <div class="soil_irrigation_type" id="soil_irriation_type_outer_div">
-                                        <p> Soil Irrigation Type
+                                        <p> <span id="soil_irrigation_type"></span>
                                             <ul style="list-style-type:none;" id="soil_irrigation_type_ul">
                                                 <li><input type="radio" id="submersion" name="soil_irrigation_type" value="submersion">
-                                                    <label for="submersion">Submersion</label>
+                                                    <label for="submersion"><span id="submersion_label_span"></span></label>
                                                 </li>                                            
                                                 <li><input type="radio" id="furrow" name="soil_irrigation_type" value="furrow" checked required>
-                                                    <label for="furrow">Furrow</label>
+                                                    <label for="furrow"><span id="furrow_label_span"></span></label>
                                                 </li>
                                                 <li><input type="radio" id="sprinkler" name="soil_irrigation_type" value="sprinkler">
-                                                    <label for="sprinkler">Sprinkler</label>
+                                                    <label for="sprinkler"><span id="sprinkler_label_span"></span></label>
                                                 </li>
                                                 <li><input type="radio" id="drip" name="soil_irrigation_type" value="drip">
-                                                    <label for="drip">Drip</label>
+                                                    <label for="drip"><span id="drip_label_span"></span></label>
                                                 </li>
                                                 <li><input type="radio" id="subirrigation" name="soil_irrigation_type" value="subirrigation">
-                                                    <label for="subirrigation">Subirrigation</label>
+                                                    <label for="subirrigation"><span id="subirrigation_label_span"></span></label>
                                                 </li>                                                
                                             </ul>
                                         </p>
                                     </div>
-                                    <p id="soil_salinity_p">Soil Salinity
-                                        <input id="soil_salinity" class="soil_values" name="soil_salinity"
-                                            type="text" placeholder=" empty or -1 for undefined "  onchange="soil_salinity_updated()">
+                                    <p id="soil_salinity_p"><span id="soil_salinity_p_span"></span>
+                                        <input id="soil_salinity" class="soil_values" name="soil_salinity" type="text">
                                     </p>
-                                    <p id="soil_bulk_density_p">Soil Bulk Density
-                                        <input id="soil_bulk_density" class="soil_values" name="soil_bulk_density"
-                                            type="text" placeholder=" empty or -1 for undefined " onchange="soil_bulk_density_updated()">
+                                    <p id="soil_bulk_density_p"><span id="soil_bulk_density_p_span"></span>
+                                        <input id="soil_bulk_density" class="soil_values" name="soil_bulk_density" type="text">
                                     </p>
-                                    <p id="soil_field_capacity_p">Soil Field Capacity
-                                        <input id="soil_field_capacity" class="soil_values" name="soil_field_capacity"
-                                            type="text" placeholder=" empty or -1 for undefined " onchange="soil_field_capacity_updated()">
+                                    <p id="soil_field_capacity_p"><span id="soil_field_capacity_p_span"></span>
+                                        <input id="soil_field_capacity" class="soil_values" name="soil_field_capacity" type="text">
                                     </p>
                                     <br>
                                     <div class="soil_temperature_outer_div" id="soil_temperature_outer_div">
                                         <div class="soil_temperature">
-                                            <p>Please select a source for soil temperature value</p>
+                                            <p><span id="select_soil_temp_value_source"></span></p>
                                             <div id="soil_temperatureForm">
-                                                <p id="p_currentSource">Current soil temperature source is <em><span
+                                                <p id="p_currentSource"><span id="current_soil_temp_source"></span> <em><span
                                                         id="span_currentSource"></span></em></p>
                                                 <ul style="list-style-type:none;" id="soil_temperature_source_ul">
                                                     <li><input type="radio" id="soil_temp_source" name="soil_temp_source"
                                                             value="user">
-                                                        <label for="user">user input</label>
+                                                        <label for="user"><span id="user_input"></span></label>
                                                     </li>
                                                     <li><input type="radio" id="soil_temp_source" name="soil_temp_source"
                                                             value="sensor">
-                                                        <label for="sensor">real sensor</label>
+                                                        <label for="sensor"><span id="real_sensor"></span></label>
                                                     </li>
                                                 </ul>
                                                 <div id="show_sensor_field">
-                                                    <input id="soil_temperature_value" class="soil_values" onchange="soil_temperature_value_updated()"
-                                                        name="soil_temperature_value" type="text" placeholder=" enter temperature value">
+                                                    <input id="soil_temperature_value" class="soil_values" name="soil_temperature_value" type="text">
                                                     <br>
                                                     <div id="soil_temperature_source">
-                                                        <p>WaziGate DeviceID
-                                                            <input id="soil_temperature_device_id" class="soil_values" onchange="soil_temperature_device_id_updated()"
-                                                                name="soil_temperature_device_id" type="text" placeholder=" enter DeviceID"></li>
+                                                        <p><span id="wazigate_deviceID"></span>
+                                                            <input id="soil_temperature_device_id" class="soil_values" name="soil_temperature_device_id" type="text"></li>
                                                         </p>
-                                                        <p>WaziGate SensorID
-                                                            <input id="soil_temperature_sensor_id" class="soil_values" onchange="soil_temperature_sensor_id_updated()"
-                                                                name="soil_temperature_sensor_id" type="text" placeholder=" enter SensorID"></li>
+                                                        <p><span id="wazigate_sensorID"></span>
+                                                            <input id="soil_temperature_sensor_id" class="soil_values" name="soil_temperature_sensor_id" type="text"></li>
                                                         </p>
                                                     </div>
                                                 </div>
@@ -194,33 +189,32 @@
                         </div>
                         <hr>
                         <div class="container">
-                            <div class="accordion-title">Plant parameters</div>
+                            <div class="accordion-title"><span id="plant_parameters"></span></div>
                             <div class="accordion-content">
                                 <div class="plant_parameters">
-                                    <p id="plant_category_p">Plant category
-                                        <select name="plant_category" id="plant_category" class="plant_category" onchange="plant_category_updated()">
-                                            <option value="undefined">Undefined</option>
-                                            <option value="vegetable">Vegetable</option>
-                                            <option value="cereal">Cereal</option>
-                                            <option value="fruit_tree">Fruit Tree</option>
+                                    <p id="plant_category_p"><span id="plant_category_p_span"></span>
+                                        <select name="plant_category" id="plant_category" class="plant_category">
+                                            <option value="undefined"></option>
+                                            <option value="vegetable"></option>
+                                            <option value="cereal"></option>
+                                            <option value="fruit_tree"></option>
                                         </select>
                                     </p>
-                                    <p id="plant_type_p"> Plant type
-                                        <select name="plant_type" id="plant_type" class="plant_type" onchange="plant_type_updated()">
-                                            <option value="undefined"> Undefined</option>
-                                            <option value="tomatoes"> Tomatoes</option>                                            
-                                            <option value="potatoes"> Potatoes</option>
-                                            <option value="watermelon"> Watermelon</option>
-                                            <option value="artichoke"> Artichoke</option>                                                                                        
-                                            <option value="maize"> Maize</option>                                                                                       
-                                            <option value="wheat"> Wheat</option>
-                                            <option value="citrus"> Citrus</option>    
-                                            <option value="apple"> Apple</option>                                                                                      
+                                    <p id="plant_type_p"> <span id="plant_type_p_span"></span>
+                                        <select name="plant_type" id="plant_type" class="plant_type">
+                                            <option value="undefined"> </option>
+                                            <option value="tomatoes"> </option>                                            
+                                            <option value="potatoes"> </option>
+                                            <option value="watermelon"> </option>
+                                            <option value="artichoke"> </option>                                                                                        
+                                            <option value="maize"> </option>                                                                                       
+                                            <option value="wheat"> </option>
+                                            <option value="citrus"> </option>    
+                                            <option value="apple"> </option>                                                                                      
                                         </select>
                                     </p>
-                                    <p id="plant_variety_p"> Plant Variety
-                                        <input id="plant_variety" class="plant_values" name="plant_variety"
-                                            type="text" placeholder=" enter variery info " onchange="plant_variety_updated()">                                    
+                                    <p id="plant_variety_p"> <span id="plant_variety_p_span"></span>
+                                        <input id="plant_variety" class="plant_values" name="plant_variety" type="text">                                    
                                     <!--
                                         <select name="plant_variety" id="plant_variety" class="input" onchange="plant_variety_updated()">
                                             <option value="undefined">Undefined</option>
@@ -232,33 +226,30 @@
                                      -->   
                                     </p>
                                     <p id="plant_planting_date_p">
-                                        <label for="plant_planting_date">Planting Date</label>
-                                        <input type="date" id="plant_planting_date" name="plant_planting_date" onchange="plant_planting_date_updated()"
-                                            style=" border: thin solid #f4b548; border-radius: 4px;height: 30px;">
+                                        <label for="plant_planting_date"><span id="planting_date"></span></label>
+                                        <input  id="plant_planting_date" name="plant_planting_date" style=" border: thin solid #f4b548; border-radius: 4px;height: 30px;" onfocus="(this.type='date')">
                                     </p>
                                 </div>
                             </div>
                         </div>
                         <hr>
                         <div class="container">
-                            <div class="accordion-title">Weather parameters</div>
+                            <div class="accordion-title"><span id="weather_parameters"></span></div>
                             <div class="accordion-content">
                                 <div class="weather-parameters">
-                                    <p id="weather_region_p"> Region
-                                        <select name="weather_region" id="weather_region" class="weather_region" onchange="weather_region_updated()">
-                                            <option value="undefined"> Undefined</option>
-                                            <option value="arid"> Arid</option>
-                                            <option value="semi-arid"> Semi-Arid</option>
-                                            <option value="dry"> Dry</option>
+                                    <p id="weather_region_p"> <span id="region"></span>
+                                        <select name="weather_region" id="weather_region" class="weather_region">
+                                            <option value="undefined"></option>
+                                            <option value="arid"></option>
+                                            <option value="semi-arid"></option>
+                                            <option value="dry"></option>
                                         </select>
                                     </p>
-                                    <p id="weather_weekly_evaporation_p">Weekly evaporation (in mm)
-                                        <input id="weather_weekly_evaporation" class="weather_values" name="weather_weekly_evaporation"
-                                            type="text" placeholder=" value in mm " onchange="weather_weekly_evaporation_updated()">
+                                    <p id="weather_weekly_evaporation_p"><span id="weekly_evaporation"></span>
+                                        <input id="weather_weekly_evaporation" class="weather_values" name="weather_weekly_evaporation" type="text">
                                     </p>
-                                    <p id="weather_weekly_pluviometry_p">Weekly pluviometry (in mm)
-                                        <input id="weather_weekly_pluviometry" class="weather_values" name="weather_weekly_pluviometry"
-                                            type="text" placeholder=" value in mm " onchange="weather_weekly_pluviometry_updated()">
+                                    <p id="weather_weekly_pluviometry_p"><span id="weekly_pluviometry"></span>
+                                        <input id="weather_weekly_pluviometry" class="weather_values" name="weather_weekly_pluviometry" type="text">
                                     </p>
                                 </div>
                             </div>
@@ -266,7 +257,7 @@
                         <hr>
                                             
                         <br>
-                        <button type="submit" value="submit" class="update_parameters">Save this configuration</button>
+                        <button type="submit" value="submit" class="update_parameters"><span id="save_this_configuration"></span></button>
                     </div>
                 </div>
                 <br>

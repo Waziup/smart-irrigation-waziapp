@@ -1,11 +1,34 @@
-window.onload = function(){
-	// check if the device/sensor IDs exist on WaziGate
-	check_if_WaziGate_device_sensor();
-};
+import {load_html_texts_for_current_language, webui_texts} from './util_load_SensorConfigurator_html_texts.js';
 
-const exists_on_WaziGate_devicesensor_ID_url = 'exists_on_WaziGate_DeviceSensor_ID'
-const sensors_configurations_url = 'sensors_configurations'
+if (deviceName != "not_iiwa_device"){
+
+	document.getElementById('toggleCheckbox').addEventListener('click', toggle_Basic_Advanced_view);
+	document.getElementById('sensor_configuration_form').addEventListener('submit', make_AddConfiguration_HttpPOSTRequest);
+	document.getElementById('sensor_age').addEventListener('change', sensor_age_updated);
+	document.getElementById('sensor_max_value').addEventListener('change', sensor_max_value_updated);
+	document.getElementById('sensor_min_value').addEventListener('change', sensor_min_value_updated);
+	document.getElementById('soil_type').addEventListener('change', soil_type_updated);
+	document.getElementById('soil_salinity').addEventListener('change', soil_salinity_updated);
+	document.getElementById('soil_bulk_density').addEventListener('change', soil_bulk_density_updated);
+	document.getElementById('soil_field_capacity').addEventListener('change', soil_field_capacity_updated);
+	document.getElementById('soil_temperature_value').addEventListener('change', soil_temperature_value_updated);
+	document.getElementById('soil_temperature_device_id').addEventListener('change', soil_temperature_device_id_updated);
+	document.getElementById('soil_temperature_sensor_id').addEventListener('change', soil_temperature_sensor_id_updated);
+	document.getElementById('plant_category').addEventListener('change', plant_category_updated);
+	document.getElementById('plant_type').addEventListener('change', plant_type_updated);
+	document.getElementById('plant_variety').addEventListener('change', plant_variety_updated);
+	document.getElementById('plant_planting_date').addEventListener('change', plant_planting_date_updated);
+	document.getElementById('weather_region').addEventListener('change',weather_region_updated);
+	document.getElementById('weather_weekly_evaporation').addEventListener('change', weather_weekly_evaporation_updated);
+	document.getElementById('weather_weekly_pluviometry').addEventListener('change', weather_weekly_pluviometry_updated);
+}
+
+const exists_on_WaziGate_devicesensor_ID_url = 'exists_on_WaziGate_DeviceSensor_ID';
+const sensors_configurations_url = 'sensors_configurations';
 const sensorConfigurationHttpPOSTRequest_Base_url = '/devices/';
+
+var thisPage_webui_texts = {}; // stores the page texts
+const thisPage_webui_texts_list = 'intel_irris_sensor_configurator_page';
 
 const iiwa_headers = {
 	'Content-Type': 'application/json'
@@ -22,7 +45,7 @@ var sensor_age = '0';
 var sensor_max_value = '';
 var sensor_min_value = '';
 var soil_type = 'undefined';
-var soil_irrigation_type = 'furrow';
+var soil_irrigation_type = 'undefined';
 var soil_salinity = '';
 var soil_bulk_density = '';
 var soil_field_capacity = '';
@@ -41,6 +64,99 @@ var sensors_configurations_response_asJSON; // stores the current IIWA sensor co
 
 var selected_temperature_source; // for HTML content 
 
+var number_of_configurations = 0;
+
+/* ****  Function(s) for Web UI language setting **** */
+export function load_other_configuration_text_contents(){
+	thisPage_webui_texts = webui_texts;
+	//console.log(thisPage_webui_texts)
+	check_if_WaziGate_device_sensor(); 	
+}
+
+function set_Elementpage_texts(){
+	document.getElementById('device_name').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['device_name'];
+	document.getElementById('toggle_between').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['toggle_between'];
+	document.getElementById('basic').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['basic'];
+	
+	const toggleSwitchLabel = document.getElementById('toggle-switch-label');
+	toggleSwitchLabel.setAttribute('data-on', thisPage_webui_texts[thisPage_webui_texts_list]['advanced_capA']);
+    toggleSwitchLabel.setAttribute('data-off', thisPage_webui_texts[thisPage_webui_texts_list]['basic_capB']);
+
+	document.getElementById('moisture_sensor_parameters').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['moisture_sensor_parameters'];
+	document.getElementById('sensor_type').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['sensor_type'];
+	document.getElementById('capacitive_labelspan').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['capacitive'];
+	document.getElementById('tensiometer_cbar_labelspan').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['tensiometer_cbar'];
+	document.getElementById('tensiometer_raw_labelspan').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['tensiometer_raw'];
+	document.getElementById('sensor_age').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['sensor_age'];
+	document.getElementById('maximum_sensor_value').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['maximum_sensor_value'];
+	document.getElementById('sensor_max_value').placeholder = thisPage_webui_texts[thisPage_webui_texts_list]['max_sensor_value'];
+	document.getElementById('minumum_sensor_value').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['minumum_sensor_value'];
+	document.getElementById('sensor_min_value').placeholder = thisPage_webui_texts[thisPage_webui_texts_list]['min_sensor_value'];
+	document.getElementById('soil_parameters').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['soil_parameters'];
+	document.getElementById('soil_type_p_span').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['soil_type'];
+	document.querySelector('#soil_type [value="undefined"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['undefined_capU'];
+	document.querySelector('#soil_type [value="clay"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['clay'];
+	document.querySelector('#soil_type [value="silty"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['silty'];
+	document.querySelector('#soil_type [value="loamy"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['loamy'];
+	document.querySelector('#soil_type [value="sandy"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['sandy'];
+	document.getElementById('soil_irrigation_type').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['soil_irrigation_type'];
+	document.getElementById('submersion_label_span').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['submersion'];
+	document.getElementById('furrow_label_span').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['furrow'];
+	document.getElementById('sprinkler_label_span').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['sprinkler'];
+	document.getElementById('drip_label_span').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['drip'];
+	document.getElementById('subirrigation_label_span').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['subirrigation'];
+	document.getElementById('soil_salinity_p_span').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['soil_salinity'];
+	document.getElementById('soil_salinity').placeholder = thisPage_webui_texts[thisPage_webui_texts_list]['empty_or-1'];
+	document.getElementById('soil_bulk_density_p_span').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['soil_bulk_density'];
+	document.getElementById('soil_bulk_density').placeholder = thisPage_webui_texts[thisPage_webui_texts_list]['empty_or-1'];
+	document.getElementById('soil_field_capacity_p_span').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['soil_field_capacity'];
+	document.getElementById('soil_field_capacity').placeholder = thisPage_webui_texts[thisPage_webui_texts_list]['empty_or-1'];
+	document.getElementById('select_soil_temp_value_source').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['select_soil_temp_value_source'];
+	document.getElementById('current_soil_temp_source').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['current_soil_temp_source'];
+	document.getElementById('user_input').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['user_input'];
+	document.getElementById('soil_temperature_value').placeholder = thisPage_webui_texts[thisPage_webui_texts_list]['enter_temp_value'];
+	document.getElementById('real_sensor').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['real_sensor'];
+	document.getElementById('wazigate_deviceID').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['wazigate_deviceID'];
+	document.getElementById('soil_temperature_device_id').placeholder = thisPage_webui_texts[thisPage_webui_texts_list]['enter_deviceID'];
+	document.getElementById('wazigate_sensorID').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['wazigate_sensorID'];
+	document.getElementById('soil_temperature_sensor_id').placeholder = thisPage_webui_texts[thisPage_webui_texts_list]['enter_deviceID'];
+	document.getElementById('plant_parameters').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['plant_parameters'];
+	document.getElementById('plant_category_p_span').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['plant_category'];
+	document.querySelector('#plant_category [value="undefined"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['undefined_capU'];
+	document.querySelector('#plant_category [value="vegetable"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['vegetable'];
+	document.querySelector('#plant_category [value="cereal"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['cereal'];
+	document.querySelector('#plant_category [value="fruit_tree"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['fruit_tree'];
+	document.getElementById('plant_variety_p_span').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['plant_variety'];
+	document.getElementById('plant_variety').placeholder = thisPage_webui_texts[thisPage_webui_texts_list]['enter_variety_info'];
+	document.getElementById('plant_type_p_span').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['plant_type'];
+	document.querySelector('#plant_type [value="undefined"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['undefined_capU'];
+	document.querySelector('#plant_type [value="tomatoes"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['tomatoes'];
+	document.querySelector('#plant_type [value="potatoes"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['potatoes'];
+	document.querySelector('#plant_type [value="watermelon"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['watermelon'];
+	document.querySelector('#plant_type [value="artichoke"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['artichoke'];
+	document.querySelector('#plant_type [value="maize"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['maize'];
+	document.querySelector('#plant_type [value="wheat"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['wheat'];
+	document.querySelector('#plant_type [value="citrus"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['citrus'];
+	document.querySelector('#plant_type [value="apple"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['apple'];
+	document.getElementById('planting_date').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['planting_date'];
+	document.getElementById('plant_planting_date').placeholder = thisPage_webui_texts[thisPage_webui_texts_list]['mm_dd_yyyy'];
+	document.getElementById('weather_parameters').innerHTML =  thisPage_webui_texts[thisPage_webui_texts_list]['weather_parameters'];
+	document.getElementById('region').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['region'];
+	document.querySelector('#weather_region [value="undefined"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['undefined_capU'];
+	document.querySelector('#weather_region [value="arid"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['arid'];
+	document.querySelector('#weather_region [value="semi-arid"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['semi_arid'];
+	document.querySelector('#weather_region [value="dry"]').textContent = thisPage_webui_texts[thisPage_webui_texts_list]['dry'];
+	document.getElementById('weekly_evaporation').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['weekly_evaporation'];
+	document.getElementById('weather_weekly_evaporation').placeholder = thisPage_webui_texts[thisPage_webui_texts_list]['value_in_mm'];
+	document.getElementById('weekly_pluviometry').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['weekly_pluviometry'];
+	document.getElementById('weather_weekly_pluviometry').placeholder = thisPage_webui_texts[thisPage_webui_texts_list]['value_in_mm'];
+	document.getElementById('save_this_configuration').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['save_this_configuration'];
+
+}
+
+window.addEventListener('onload', load_html_texts_for_current_language("intel_irris_sensor_configurator_page"));
+/* ***************************** */
+
 async function check_if_WaziGate_device_sensor(){
 	const exists_on_WaziGate_devicesensor_ID_response = await fetch(exists_on_WaziGate_devicesensor_ID_url + '?deviceID=' + deviceID + '&sensorID=' + sensorID);
 	var exists_on_WaziGate_devicesensor_ID_response_asJSON = await exists_on_WaziGate_devicesensor_ID_response.json();
@@ -49,13 +165,18 @@ async function check_if_WaziGate_device_sensor(){
 
 	// if the device/sensor ID exists, obtain it's current configuration
 	if (exists_on_WaziGate_devicesensor_ID_response_asJSON == '[{"status":"200"}]'){
+		
+		set_Elementpage_texts();
 		// obtain all current configurations
 		fetch_sensors_configurations();
 	}
 	// if the device/sensor ID doesn't exits on WaziGate or IIWA, inform user
 	if (deviceName == 'not_iiwa_device' || exists_on_WaziGate_devicesensor_ID_response_asJSON == '[{"status":"404"}]'){
+		
+		document.getElementById('unknown_device').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['unknown_device'];
 		console.log("Invalid deviceID " + deviceID + " or sensorID " + sensorID + " has been provided!");
-		alert("Oops! The provided device/sensor ID doesn't seem to exist on WaziGate or IIWA!");
+		alert(thisPage_webui_texts[thisPage_webui_texts_list]['unknown_device_alert']);
+		
 		// return the user back to the Dashboard page automatically
 		window.location.href = "/";
 	}
@@ -78,7 +199,7 @@ function get_DeviceSensorID_configuration() {
 	//console.log("number_of_configurations = " + number_of_configurations);
 
 	if (number_of_configurations != 0) { // can only display config data if config exists
-		for (x = 0; x < number_of_configurations; x++) {
+		for (var x = 0; x < number_of_configurations; x++) {
 			if (sensors_configurations_response_asJSON['sensors'][x]['device_id'] == deviceID && sensors_configurations_response_asJSON['sensors'][x]['sensor_id'] == sensorID) {
 				sensor_type = sensors_configurations_response_asJSON['sensors'][x]['value']['sensor_type'];
 				sensor_age = sensors_configurations_response_asJSON['sensors'][x]['value']['sensor_age'];
@@ -122,6 +243,9 @@ function get_DeviceSensorID_configuration() {
 	if (typeof (soil_temperature_sensor_id) == "undefined" || soil_temperature_sensor_id == "undefined") {
 		soil_temperature_sensor_id = '';
 	}
+	if (soil_irrigation_type == 'undefined' || typeof (soil_irrigation_type) == "undefined"){
+		soil_irrigation_type = '';
+	}
 	if (soil_salinity == 'undefined' || typeof (soil_salinity) == "undefined") {
 		soil_salinity = '';
 	}
@@ -131,11 +255,14 @@ function get_DeviceSensorID_configuration() {
 	if (soil_field_capacity == 'undefined' || typeof (soil_field_capacity) == "undefined") {
 		soil_field_capacity = '';
 	}
+	if (plant_planting_date == 'undefined' || typeof (plant_planting_date) == "undefined"){
+		plant_planting_date = '';
+	}
 	if (plant_type == 'undefined' || typeof (plant_type) == "undefined") {
 		plant_type = 'undefined';
 	}
 	if (plant_variety == 'undefined' || typeof (plant_variety) == "undefined") {
-		plant_variety = 'undefined';
+		plant_variety = '';
 	}	
 	if (weather_region == 'undefined' || typeof (weather_region) == "undefined") {
 		weather_region = 'undefined';
@@ -252,7 +379,7 @@ function update_accordion_parameters() {
 	/* *** */
 
 	/* show current soil type (select)*/
-	soil_type_select = document.getElementById('soil_type');
+	let soil_type_select = document.getElementById('soil_type');
 	soil_type_select.value = soil_type;
 	/* *** */
 	/* show current irrigation type (radio)*/
@@ -265,10 +392,14 @@ function update_accordion_parameters() {
 			// only one radio can be logically checked, don't check the rest
 			break;
 		}
+		else{
+			soil_irrigation_type_radios[k].checked = false;
+		}
 	}
+	/*
 	if (current_soil_irrigation_type == '') { // clear radio if no option is configured
 		document.querySelector('input[name="soil_irrigation_type"]:checked').checked = false;
-	}
+	}*/
 	/* *** */
 
 	/* show current soil salinity (input)*/
@@ -459,7 +590,7 @@ function toggle_Basic_Advanced_view() {
 	view_mode_text = document.getElementById("view_mode");
 
 	if (toggleCheckbox.checked == true) {
-		view_mode_text.innerHTML = "advanced";
+		view_mode_text.innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['advanced'];
 		view_mode = 'advanced';
 		update_accordion_parameters();
 	}

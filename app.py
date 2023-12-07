@@ -36,13 +36,20 @@ if (iiwa_argument.continuous_computation == "false"):
 
 # --- IIWA configurations filepaths ---#
 iiwa_devices_filename = 'config/intel_irris_devices.json'
+iiwa_html_language_config_filename = 'config/intel_irris_html_language_configurations.json'
 iiwa_sensors_config_filename = 'config/intel_irris_sensors_configurations.json'
+
+html_texts_for_arabic_filepath = 'static/html_texts_for_each_language/arabic.json'
+html_texts_for_english_filepath = 'static/html_texts_for_each_language/english.json'
 # -----------------------#
 
 # only for soil condition, 'fr' or 'en'
 iiwa_lang = 'en'
 
 BASE_URL = "http://localhost/"
+
+iiwa_app_BASE_URL = "http://localhost:" # app.py runs on the internal IP address of the computer
+iiwa_app_BASE_URL_PORT = "5000" # app.py runs on port 5000
 
 # common headers for requests
 iiwa_headers = {
@@ -77,7 +84,7 @@ def dashboard():
 		added_devices = "Cannot find intel_irris_devices.json!"
 		no_iiwa_devices = True
 	else:
-		print("Found list of added IIWA devices!")
+		print("Found intel_irris_devices.json file")
 
 		f = open(iiwa_devices_filename, 'r')
 		iiwa_devices = json.loads(f.read())
@@ -87,11 +94,25 @@ def dashboard():
 
 		added_devices = ""
 
+		# identify the current Web UI language
+		current_webui_language_name = current_webui_language();
+		#print("Current Web UI language is %s" % current_webui_language_name)
+
 		# check if the json list is updated
 		if (iiwa_devices_count == 0):
 			# instruct user to add a device
 			no_iiwa_devices = True
-			added_devices = "No Wazigate devices have been added to IIWA! Use the Device Manager to add some."
+
+			# create the texts for the pages based on current language
+			if current_webui_language_name == 'arabic':
+				f = open(html_texts_for_arabic_filepath, 'r', encoding="utf8")
+				added_devices = json.loads(f.read())['dashboard_page']['no_devices']
+				f.close()
+			
+			elif current_webui_language_name == 'english':
+				f = open(html_texts_for_english_filepath, 'r')
+				added_devices = json.loads(f.read())['dashboard_page']['no_devices']
+				f.close()
 		else:
 			no_iiwa_devices = False
 
@@ -130,6 +151,14 @@ def intel_irris_sensor_configurator():
 		deviceID = deviceID,
 		deviceName = deviceName,
 		sensorID = sensorID)
+# ---------------------#
+
+# returns HTML Language setting HTML page
+# allow POST method for the html form actions on this page
+@app.route("/intel_irris_language_setting", methods=['POST', 'GET'])
+def intel_irris_language_setting():
+
+	return render_template("intel_irris_language_setting.html")
 # ---------------------#
 
 # --------------------------------------------------------------------------
@@ -763,6 +792,15 @@ def iiwa_remove_device_function(deviceID):
 				"message" :  "IIWA remove device : successfully removed the device and/or its sensor(s) configuration(s)!"})
 # ---------------------#
 
+# function to return the name of the current Web UI language
+def current_webui_language():
+	intel_irris_html_language_configurations = open(iiwa_html_language_config_filename, 'r')
+	current_html_language = json.loads(intel_irris_html_language_configurations.read())['current_html_language']
+	intel_irris_html_language_configurations.close()
+
+	return current_html_language
+# ---------------------#
+
 # --------------------------------------------------------------------------
 # function to periodically compute humidity index value
 # --------------------------------------------------------------------------
@@ -781,5 +819,5 @@ if (iiwa_run_continuous_computation):
 # --------------------------------------------------------------------------
 if __name__ == "__main__":
 	# Run on IP address of the host computer at Port 5000
-	app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False)
+	app.run(host='0.0.0.0', port=iiwa_app_BASE_URL_PORT, debug=True, use_reloader=True)
 # ---------------------#

@@ -1,12 +1,22 @@
+import {load_html_texts_for_current_language, webui_texts} from './util_load_DeviceManager_html_texts.js';
+
+window.addEventListener('onload', load_html_texts_for_current_language("intel_irris_device_manager_page"));
+document.getElementById('new_deviceName_select').addEventListener('change', showID);
+document.getElementById('iiwa_add_device').addEventListener('submit', make_AddDevice_HttpPOSTRequest);
+document.getElementById('iiwa_remove_device').addEventListener('submit', make_DeleteDevice_HttpDELETERequest);
+
 const request_gateway_devices_url = '/wazigate_devices';
 const get_iiwa_devices = '/devices';
 
-const deviceHttpPOSTRequest_url = '/devices/'
-const deviceHttpDELETERequest_url = '/devices/'
+const deviceHttpPOSTRequest_url = '/devices/';
+const deviceHttpDELETERequest_url = '/devices/';
+
+var thisPage_webui_texts = {};
+const thisPage_webui_texts_list = 'intel_irris_device_manager_page';
 
 var gateway_devices;
-var gateway_devices_IDs = []
-var gateway_devices_names = []
+var gateway_devices_IDs = [];
+var gateway_devices_names = [];
 var selected_value;
 var selected_index;
 
@@ -15,6 +25,69 @@ var data;
 const iiwa_headers = {
 	'Content-Type': 'application/json'
 };
+
+/* ****  Function(s) for Web UI language setting **** */
+export function load_other_device_manager_text_contents(){
+	thisPage_webui_texts = webui_texts;
+	//console.log(thisPage_webui_texts)
+	
+	load_table_texts();
+	load_new_device_form();
+	load_remove_a_device_form();	
+}
+
+function load_table_texts(){
+	document.getElementById('table_heading').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['table_heading'];
+	document.getElementById('table_header_deviceID').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['table_header_deviceID'];
+	document.getElementById('table_header_deviceName').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['table_header_deviceName'];
+	document.getElementById('table_header_sensors').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['table_header_sensors'];
+}
+
+function load_new_device_form(){
+	document.getElementById('add_a_device').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['add_a_device'];
+
+	// generate the dropdown for selecting sensor(s) structure
+	var select = document.getElementById("sensors_structure");
+	select.innerHTML = "";
+	const select_options_value_and_id = ['1_capacitive', '1_watermark', '2_watermark'];
+	const select_options = [thisPage_webui_texts[thisPage_webui_texts_list]['1_capacitive'], thisPage_webui_texts[thisPage_webui_texts_list]['1_watermark'], thisPage_webui_texts[thisPage_webui_texts_list]['2_watermark']];
+	const number_of_select_options = 2;
+	select.options[select.options.length] = new Option(thisPage_webui_texts[thisPage_webui_texts_list]['sensors_structure']);
+	
+	for (var x = 0; x <= number_of_select_options; x++) {
+		//option text								//option value
+		select.options[select.options.length] = new Option(select_options[x], select_options[x]);
+	}
+
+	// put the "Add" text
+	document.getElementById('add').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['add'];
+
+}
+
+function load_remove_a_device_form(){
+	document.getElementById('remove_a_device').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['remove_a_device'];
+
+	// put the "Remove" text
+	document.getElementById('remove').innerHTML = thisPage_webui_texts[thisPage_webui_texts_list]['remove'];
+}
+/* ***************************** */
+
+// periodically call the get requests to automatically load new data on the page
+var dropdowns_updated = false
+function update_Device_Manager_data() {
+	if (dropdowns_updated != true) {
+		getGatewayDevices();
+		//update devices table
+		getTableData();
+	}
+	// prevent refreshing dropdowns when an option is selected
+	dropdowns_updated = true
+	setTimeout(update_Device_Manager_data, 10);
+}
+update_Device_Manager_data();
+
+
+/* **** Function(s) for device/sensor data processing/visualization **** */
 
 /* functions that get gateway devices and show in dropdown */
 async function getGatewayDevices() {
@@ -27,7 +100,7 @@ async function getGatewayDevices() {
 	console.log("WaziGate device(s) available to be added to IIWA = " + length);
 
 	// push device IDs and names to list
-	for (i = 0; i < length; i++) {
+	for (let i = 0; i < length; i++) {
 		var device_name = gateway_devices[i]['name']
 
 		if (!device_name.match(/gateway/i)) {
@@ -41,10 +114,10 @@ async function getGatewayDevices() {
 }
 
 function update_newDeviceSelect_byName() {
-	var select = document.getElementById("new_deviceName_select")
+	var select = document.getElementById('new_deviceName_select');
 	select.innerHTML = "";
 
-	select.options[select.options.length] = new Option('Select a device by name');
+	select.options[select.options.length] = new Option(thisPage_webui_texts[thisPage_webui_texts_list]['select_a_device']);
 	for (var x = 0; x < gateway_devices_names.length; x++) {
 		//option text								//option value
 		select.options[select.options.length] = new Option(gateway_devices_names[x], gateway_devices_names[x]);
@@ -122,22 +195,10 @@ function update_device_select() {
 	}
 }
 /* *** */
-
-// periodically call the get requests to automatically load new data on the page
-var dropdowns_updated = false
-function update_Device_Manager_data() {
-	if (dropdowns_updated != true) {
-		getGatewayDevices();
-		//update devices table
-		getTableData();
-	}
-	// prevent refreshing dropdowns when an option is selected
-	dropdowns_updated = true
-	setTimeout(update_Device_Manager_data, 10);
-}
-update_Device_Manager_data();
+/* ***************************** */
 
 
+/* **** Functions that make HTTP requests **** */
 
 // function that submits data from adding a new device form
 async function make_AddDevice_HttpPOSTRequest() {

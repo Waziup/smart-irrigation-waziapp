@@ -3,7 +3,7 @@ from app import *
 from __main__ import app
 
 # --------------------------------------------------------------------------
-# REST APIs for IIWA device/sensor management
+# REST APIs for IIWA device,sensor and language management
 # --------------------------------------------------------------------------
 
 # adds a device to IIWA by writing to 'intel_irris_devices.json' a device_id, device_name, and sensors_structure
@@ -434,6 +434,76 @@ def sensors_configurations():
 	f.close()
 
 	return jsonify(read_sensors_configurations)
+# ---------------------#
+
+# sets the HTML text language by writing to 'intel_irris_html_language_configurations.json'
+@app.route("/html_language_configurations/<language>", methods=['POST'])
+def set_current_html_language(language):
+	current_html_language = language
+	# check if they POSTed language is supported
+	with open(iiwa_html_language_config_filename, "r") as file:
+			iiwa_supported_languages = json.load(file)['supported_iiwa_html_languages']
+
+	if current_html_language in iiwa_supported_languages:
+		print("IIWA : Requested to set the HTML language to : %s" % current_html_language)
+			
+		# 1. Read IIWA HTML language configurations file
+		with open(iiwa_html_language_config_filename, "r") as file:
+			iiwa_html_language_configurations = json.load(file)
+		
+		# 2. Update the current_HTML_language field
+		#iiwa_html_language_configurations.pop('current_html_language')
+		iiwa_html_language_configurations['current_html_language'] = current_html_language
+		# 3. Write to json file
+		with open(iiwa_html_language_config_filename, "w") as file:
+			json.dump(iiwa_html_language_configurations, file)
+			print("IIWA : Successfully updated IIWA device list!")
+			return jsonify(iiwa_html_language_configurations)
+
+	else:
+		print("IIWA set HTML language : The provided language is not supported!")
+		return jsonify({"code" : 400,
+			"message" :  "IIWA set HTML language : The provided language is not supported!"})
+# ---------------------#
+
+# returns all data in 'intel_irris_html_language_configurations.json'
+@app.route("/html_language_configurations", methods=['GET'])
+def html_language_configurations():
+	f = open(iiwa_html_language_config_filename, 'r')
+	read_iiwa_html_language_configurations = json.loads(f.read())
+	f.close()
+
+	return jsonify(read_iiwa_html_language_configurations)
+# ---------------------#
+
+# returns the html text according to the current language. Data is from 'static/html_texts_for_each_language'
+@app.route("/html_texts_for_current_language", methods=['GET'])
+def html_texts_for_current_language():
+
+	# first identify the current language, 
+	# avoiding this method! Takes time for page to load cause of two API requests
+	#html_language_configurations_response = requests.get(iiwa_app_BASE_URL + iiwa_app_BASE_URL_PORT + '/html_language_configurations')
+	#current_html_language = html_language_configurations_response.json()['current_html_language']
+
+	# first get the current language. This method is faster
+	intel_irris_html_language_configurations = open(iiwa_html_language_config_filename, 'r')
+	current_html_language = json.loads(intel_irris_html_language_configurations.read())['current_html_language']
+	intel_irris_html_language_configurations.close()
+
+	# check the current language and return the texts for the pages based on that language
+	if current_html_language == 'arabic':
+		f = open(html_texts_for_arabic_filepath, 'r', encoding="utf8")
+		read_html_texts_for_arabic = json.loads(f.read())
+		f.close()
+
+		return jsonify(read_html_texts_for_arabic)
+	
+	elif current_html_language == 'english':
+		f = open(html_texts_for_english_filepath, 'r')
+		read_html_texts_for_english = json.loads(f.read())
+		f.close()
+
+		return jsonify(read_html_texts_for_english)
 # ---------------------#
 
 # --------------------------------------------------------------------------

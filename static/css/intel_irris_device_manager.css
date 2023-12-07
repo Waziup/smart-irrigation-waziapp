@@ -1,6 +1,12 @@
+:root{
+    --body_direction : ltr;
+    /* switch to rtl for right-to-left*/
+}
+
 body {
     background-color: #ffffff;
     height: max-content;
+    direction: var(--body_direction);
 }
 
 h1 {

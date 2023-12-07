@@ -1,0 +1,7 @@
+{
+    "supported_iiwa_html_languages": {
+        "english": "english",
+        "arabic": "arabic"
+    },
+    "current_html_language": "english"
+}
